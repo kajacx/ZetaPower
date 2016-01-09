@@ -1,0 +1,16 @@
+[
+{
+  "modid": "zetapower",
+  "name": "Zeta Power",
+  "description": "This mod is powered by Zeta Power.",
+  "version": "0.0.1",
+  "mcversion": "1.8",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["kajacx"],
+  "credits": "Idea based on novel \"Soon I will be invincibe\" by Austin Grossman",
+  "logoFile": "img/logo/zeta_logo.jpg",
+  "screenshots": ["img/screenshots/screenshot1.png"],
+  "dependencies": []
+}
+]

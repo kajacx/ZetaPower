@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "type=and": { "model":"zetapower:block_properties_and" },
+        "type=or": { "model":"zetapower:block_properties_or" }
+    }
+}

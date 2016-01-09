@@ -1,0 +1,6 @@
+{
+    "parent":"zetapower:item/standart_item",
+    "textures": {
+        "layer0":"zetapower:items/zeta_ingot"
+    }
+}

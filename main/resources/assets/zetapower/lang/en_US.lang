@@ -1,0 +1,8 @@
+< en_US.lang - English localization file for the mod Zeta Power >
+
+item.zeta_ingot.name=Zeta Ingot
+tile.zeta_ore.name=Zeta Ore
+tile.block_properties.and.name=And Block
+tile.block_properties.or.name=Or Block
+item.meta_item.a.name=Meta A
+item.meta_item.b.name=Meta B
