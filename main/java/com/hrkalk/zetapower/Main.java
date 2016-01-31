@@ -8,6 +8,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
+import com.hrkalk.zetapower.proxy.CommonProxy;
+
 @Mod(modid = Main.MODID, name = Main.MODNAME, version = Main.VERSION)
 public class Main {
 
@@ -18,7 +20,7 @@ public class Main {
     @Instance
     public static Main instance = new Main();
 
-    @SidedProxy(clientSide = "com.hrkalk.zetapower.ClientProxy", serverSide = "com.hrkalk.zetapower.ServerProxy")
+    @SidedProxy(clientSide = "com.hrkalk.zetapower.proxy.ClientProxy", serverSide = "com.hrkalk.zetapower.proxy.ServerProxy")
     public static CommonProxy proxy;
 
     @EventHandler

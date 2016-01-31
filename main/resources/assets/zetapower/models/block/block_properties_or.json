@@ -1,0 +1,6 @@
+{
+    "parent":"block/cube_all",
+    "textures": {
+        "all": "zetapower:blocks/block_properties_or"
+    }
+}

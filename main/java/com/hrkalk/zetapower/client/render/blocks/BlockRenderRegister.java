@@ -12,13 +12,13 @@ import com.hrkalk.zetapower.blocks.ModBlocks;
 public final class BlockRenderRegister {
 
     public static void preInit() {
-        ModelBakery.addVariantName(Item.getItemFromBlock(ModBlocks.propertyBlock), "zetapower:block_properties_black", "zetapower:block_properties_white");
+        ModelBakery.addVariantName(Item.getItemFromBlock(ModBlocks.propertyBlock), "zetapower:block_properties_and", "zetapower:block_properties_or");
     }
 
     public static void registerBlockRenderer() {
-        reg(ModBlocks.tutorialBlock);
-        reg(ModBlocks.propertyBlock, 0, "block_properties_white");
-        reg(ModBlocks.propertyBlock, 1, "block_properties_black");
+        reg(ModBlocks.zetaOre);
+        reg(ModBlocks.propertyBlock, 0, "block_properties_and");
+        reg(ModBlocks.propertyBlock, 1, "block_properties_or");
     }
 
     public static String modid = Main.MODID;

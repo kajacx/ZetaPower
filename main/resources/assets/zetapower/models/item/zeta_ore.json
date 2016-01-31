@@ -1,5 +1,5 @@
 {
-    "parent":"zetapower:block/block_properties_white",
+    "parent":"zetapower:block/zeta_ore",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 170 ],

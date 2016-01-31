@@ -1,9 +1,9 @@
 <en_US.lang - English localization file for the mod "Tutorial">
 
 item.tutorial_item.name=Tutorial Item
-tile.tutorial_block.name=Tutorial Block
+tile.zeta_ore.name=Zeta Ore
 
-tile.block_properties.black.name=Black Properties Block
-tile.block_properties.white.name=White Properties Block
+tile.block_properties.and.name=And Block
+tile.block_properties.or.name=Or Block
 item.meta_item.black.name=Black Meta Item
 item.meta_item.white.name=White Meta Item

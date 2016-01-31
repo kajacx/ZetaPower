@@ -1,6 +1,6 @@
 {
     "parent": "block/cube_all",
     "textures": {
-        "all": "zetapower:blocks/tutorial_block"
+        "all": "zetapower:blocks/zeta_ore"
     }
 }

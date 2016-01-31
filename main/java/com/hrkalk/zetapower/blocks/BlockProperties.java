@@ -26,12 +26,12 @@ public class BlockProperties extends Block implements IMetaBlockName {
         this.setCreativeTab(CreativeTabs.tabBlock);
         this.setHardness(2);
         this.setResistance(6);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(TYPE, EnumType.WHITE));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(TYPE, EnumType.AND));
     }
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return this.getDefaultState().withProperty(TYPE, meta == 0 ? EnumType.WHITE : EnumType.BLACK);
+        return this.getDefaultState().withProperty(TYPE, meta == 0 ? EnumType.AND : EnumType.OR);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class BlockProperties extends Block implements IMetaBlockName {
 
     @Override
     public String getSpecialName(ItemStack stack) {
-        return stack.getItemDamage() == 0 ? "white" : "black";
+        return stack.getItemDamage() == 0 ? "and" : "or";
     }
 
     @Override
@@ -68,7 +68,7 @@ public class BlockProperties extends Block implements IMetaBlockName {
     }
 
     public enum EnumType implements IStringSerializable {
-        WHITE(0, "white"), BLACK(1, "black");
+        AND(0, "and"), OR(1, "or");
 
         private int ID;
         private String name;
