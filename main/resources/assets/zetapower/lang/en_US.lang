@@ -1,6 +1,6 @@
 <en_US.lang - English localization file for the mod "Tutorial">
 
-item.tutorial_item.name=Tutorial Item
+item.zeta_ingot.name=Zeta Ingot
 tile.zeta_ore.name=Zeta Ore
 
 tile.block_properties.and.name=And Block
