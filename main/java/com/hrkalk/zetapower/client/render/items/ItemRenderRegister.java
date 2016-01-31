@@ -11,13 +11,13 @@ import com.hrkalk.zetapower.items.ModItems;
 public final class ItemRenderRegister {
 
     public static void preInit() {
-        ModelBakery.addVariantName(ModItems.metaItem, "zetapower:meta_item_white", "zetapower:meta_item_black");
+        ModelBakery.addVariantName(ModItems.metaItem, "zetapower:meta_item_a", "zetapower:meta_item_b");
     }
 
     public static void registerItemRenderer() {
         reg(ModItems.zetaIngot);
-        reg(ModItems.metaItem, 0, "meta_item_white");
-        reg(ModItems.metaItem, 1, "meta_item_black");
+        reg(ModItems.metaItem, 0, "meta_item_a");
+        reg(ModItems.metaItem, 1, "meta_item_b");
     }
 
     public static void reg(Item item) {

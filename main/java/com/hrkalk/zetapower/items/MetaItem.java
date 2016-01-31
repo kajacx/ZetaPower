@@ -17,7 +17,7 @@ public class MetaItem extends Item {
 
     @Override
     public String getUnlocalizedName(ItemStack stack) {
-        return super.getUnlocalizedName() + "." + (stack.getItemDamage() == 0 ? "white" : "black");
+        return super.getUnlocalizedName() + "." + (stack.getItemDamage() == 0 ? "a" : "b");
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
