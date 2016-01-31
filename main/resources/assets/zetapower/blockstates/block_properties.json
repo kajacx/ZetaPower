@@ -1,6 +1,6 @@
 {
-	"variants": {
-		"type=white": { "model":"zetapower:block_properties_white" },
-		"type=black": { "model":"zetapower:block_properties_black" }
-	}
+    "variants": {
+        "type=and": { "model":"zetapower:block_properties_and" },
+        "type=or": { "model":"zetapower:block_properties_or" }
+    }
 }

@@ -13,8 +13,8 @@ public class ClientProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent e) {
         super.preInit(e);
         System.out.println("Client preinit");
-        ItemRenderRegister.preInit();
         BlockRenderRegister.preInit();
+        ItemRenderRegister.preInit();
     }
 
     @Override

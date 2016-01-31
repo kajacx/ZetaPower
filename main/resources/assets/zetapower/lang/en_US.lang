@@ -5,5 +5,5 @@ tile.zeta_ore.name=Zeta Ore
 
 tile.block_properties.and.name=And Block
 tile.block_properties.or.name=Or Block
-item.meta_item.black.name=Black Meta Item
-item.meta_item.white.name=White Meta Item
+item.meta_item.black.name=Black Meta Item 1
+item.meta_item.white.name=White Meta Item 0

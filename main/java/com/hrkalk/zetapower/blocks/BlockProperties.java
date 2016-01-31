@@ -20,18 +20,23 @@ public class BlockProperties extends Block implements IMetaBlockName {
 
     public static final PropertyEnum TYPE = PropertyEnum.create("type", BlockProperties.EnumType.class);
 
-    public BlockProperties(String unlocalizedName) {
-        super(Material.iron);
+    public BlockProperties(String unlocalizedName, Material material, float hardness, float resistance) {
+        super(material);
         this.setUnlocalizedName(unlocalizedName);
         this.setCreativeTab(CreativeTabs.tabBlock);
-        this.setHardness(2);
-        this.setResistance(6);
+        this.setHardness(hardness);
+        this.setResistance(resistance);
         this.setDefaultState(this.blockState.getBaseState().withProperty(TYPE, EnumType.AND));
     }
 
     @Override
+    protected BlockState createBlockState() {
+        return new BlockState(this, new IProperty[] { TYPE });
+    }
+
+    @Override
     public IBlockState getStateFromMeta(int meta) {
-        return this.getDefaultState().withProperty(TYPE, meta == 0 ? EnumType.AND : EnumType.OR);
+        return getDefaultState().withProperty(TYPE, meta == 0 ? EnumType.AND : EnumType.OR);
     }
 
     @Override
@@ -46,20 +51,15 @@ public class BlockProperties extends Block implements IMetaBlockName {
     }
 
     @Override
-    protected BlockState createBlockState() {
-        return new BlockState(this, new IProperty[] { TYPE });
+    public String getSpecialName(ItemStack stack) {
+        return stack.getItemDamage() == 0 ? "and" : "or";
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void getSubBlocks(Item itemIn, CreativeTabs tab, List list) {
-        list.add(new ItemStack(itemIn, 1, 0));
-        list.add(new ItemStack(itemIn, 1, 1));
-    }
-
-    @Override
-    public String getSpecialName(ItemStack stack) {
-        return stack.getItemDamage() == 0 ? "and" : "or";
+        list.add(new ItemStack(itemIn, 1, 0)); //Meta 0
+        list.add(new ItemStack(itemIn, 1, 1)); //Meta 1
     }
 
     @Override
@@ -67,8 +67,9 @@ public class BlockProperties extends Block implements IMetaBlockName {
         return new ItemStack(Item.getItemFromBlock(this), 1, this.getMetaFromState(world.getBlockState(pos)));
     }
 
-    public enum EnumType implements IStringSerializable {
-        AND(0, "and"), OR(1, "or");
+    public static enum EnumType implements IStringSerializable {
+        AND(0, "and"),
+        OR(1, "or");
 
         private int ID;
         private String name;
@@ -80,16 +81,16 @@ public class BlockProperties extends Block implements IMetaBlockName {
 
         @Override
         public String getName() {
-            return this.name;
-        }
-
-        public int getID() {
-            return this.ID;
+            return name;
         }
 
         @Override
         public String toString() {
-            return this.getName();
+            return name;
+        }
+
+        public int getID() {
+            return ID;
         }
     }
 }
