@@ -12,24 +12,23 @@ import com.hrkalk.zetapower.blocks.ModBlocks;
 public final class BlockRenderRegister {
 
     public static void preInit() {
-        ModelBakery.addVariantName(Item.getItemFromBlock(ModBlocks.propertyBlock),
-                "zetapower:block_properties_and", "zetapower:block_properties_or");
+        ModelBakery.addVariantName(Item.getItemFromBlock(ModBlocks.propertyBlock), "zetapower:block_properties_black", "zetapower:block_properties_white");
     }
 
     public static void registerBlockRenderer() {
-        reg(ModBlocks.zetaOre);
-        reg(ModBlocks.propertyBlock, 0, "block_properties_and");
-        reg(ModBlocks.propertyBlock, 1, "block_properties_or");
+        reg(ModBlocks.tutorialBlock);
+        reg(ModBlocks.propertyBlock, 0, "block_properties_white");
+        reg(ModBlocks.propertyBlock, 1, "block_properties_black");
     }
 
+    public static String modid = Main.MODID;
+
     public static void reg(Block block) {
-        Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-                .register(Item.getItemFromBlock(block), 0,
-                        new ModelResourceLocation(Main.MODID + ":" + block.getUnlocalizedName().substring(5), "inventory"));
+        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(block), 0, new ModelResourceLocation(modid + ":" + block.getUnlocalizedName().substring(5), "inventory"));
     }
 
     public static void reg(Block block, int meta, String file) {
-        Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-                .register(Item.getItemFromBlock(block), meta, new ModelResourceLocation(Main.MODID + ":" + file, "inventory"));
+        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(block), meta, new ModelResourceLocation(modid + ":" + file, "inventory"));
     }
+
 }

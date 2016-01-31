@@ -1,18 +1,16 @@
 package com.hrkalk.zetapower.blocks;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public final class ModBlocks {
 
-    public static Block zetaOre;
-    public static Block propertyBlock;
+	public static Block tutorialBlock;
+	public static Block propertyBlock;
 
-    public static void createBlocks() {
-        GameRegistry.registerBlock(zetaOre = new BasicBlock("zeta_ore"), "zeta_ore");
+	public static void createBlocks() {
+	    GameRegistry.registerBlock(tutorialBlock = new BasicBlock("tutorial_block").setLightLevel(1.0f), "tutorial_block");
+	    GameRegistry.registerBlock(propertyBlock = new BlockProperties("block_properties"), ItemBlockMeta.class, "block_properties");
+	}
 
-        GameRegistry.registerBlock(propertyBlock = new BlockProperties("block_properties", Material.wood, 1, 1),
-                ItemBlockMeta.class, "block_properties");
-    }
 }

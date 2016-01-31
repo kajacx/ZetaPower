@@ -1,17 +1,21 @@
 package com.hrkalk.zetapower.crafting;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-
 import com.hrkalk.zetapower.blocks.ModBlocks;
 import com.hrkalk.zetapower.items.ModItems;
 
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
 public final class ModCrafting {
-    public static void initCrafting(FMLInitializationEvent e) {
-        GameRegistry.addRecipe(new ItemStack(ModBlocks.zetaOre, 2), "##", "##", '#', ModItems.zetaIngot);
-        GameRegistry.addShapelessRecipe(new ItemStack(ModBlocks.zetaOre), Blocks.sand, ModItems.zetaIngot);
-        GameRegistry.addSmelting(ModBlocks.zetaOre, new ItemStack(ModItems.zetaIngot), .8f);
-    }
+
+	public static void initCrafting() {
+		GameRegistry.addRecipe(new ItemStack(ModBlocks.tutorialBlock),	"##","##",	'#', ModItems.tutorialItem);
+		//or: GameRegistry.addRecipe(new ItemStack(ModBlocks.tutorialBlock), new Object[]{"##","##", '#', ModItems.tutorialItem});
+
+		GameRegistry.addShapelessRecipe(new ItemStack(ModItems.tutorialItem), Items.redstone, new ItemStack(Items.dye, 1, 4));
+		//or: GameRegistry.addShapelessRecipe(new ItemStack(ModItems.tutorialItem), new Object[]{Items.redstone, new ItemStack(Items.dye, 1, 4)});
+
+		GameRegistry.addSmelting(Items.diamond, new ItemStack(ModItems.tutorialItem), 1.0f);
+	}
 }

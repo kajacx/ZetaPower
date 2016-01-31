@@ -1,6 +1,6 @@
 {
     "parent":"zetapower:item/standard_item",
     "textures": {
-        "layer0":"zetapower:items/meta_b"
+        "layer0":"zetapower:items/tutorial_item"
     }
 }

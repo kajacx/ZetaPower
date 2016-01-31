@@ -1,0 +1,6 @@
+{
+	"parent": "zetapower:item/standard_item",
+	"textures": {
+		"layer0": "zetapower:blocks/block_properties_black"
+	}
+}

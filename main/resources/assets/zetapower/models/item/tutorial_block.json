@@ -1,5 +1,5 @@
 {
-    "parent":"zetapower:block/block_properties_and",
+    "parent":"zetapower:block/tutorial_block",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 170 ],
