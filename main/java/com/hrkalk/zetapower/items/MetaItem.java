@@ -6,13 +6,15 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import com.hrkalk.zetapower.ZetaTab;
+
 public class MetaItem extends Item {
 
     public MetaItem(String unlocalizedName) {
         super();
         this.setHasSubtypes(true);
         this.setUnlocalizedName(unlocalizedName);
-        this.setCreativeTab(CreativeTabs.tabMaterials);
+        this.setCreativeTab(ZetaTab.instance);
     }
 
     @Override

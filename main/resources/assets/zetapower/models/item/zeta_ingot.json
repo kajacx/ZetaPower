@@ -1,5 +1,5 @@
 {
-    "parent":"zetapower:item/standart_item",
+    "parent":"zetapower:item/standard_item",
     "textures": {
         "layer0":"zetapower:items/zeta_ingot"
     }

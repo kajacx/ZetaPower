@@ -18,6 +18,13 @@ public final class ItemRenderRegister {
         reg(ModItems.zetaIngot);
         reg(ModItems.metaItem, 0, "meta_item_a");
         reg(ModItems.metaItem, 1, "meta_item_b");
+
+        reg(ModItems.zetaSword);
+        reg(ModItems.zetaPickaxe);
+        reg(ModItems.zetaShovel);
+        reg(ModItems.zetaHoe);
+        reg(ModItems.zetaAxe);
+        reg(ModItems.zetaMultitool);
     }
 
     public static void reg(Item item) {

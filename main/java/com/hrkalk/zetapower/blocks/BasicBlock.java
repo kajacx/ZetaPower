@@ -2,14 +2,15 @@ package com.hrkalk.zetapower.blocks;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
+
+import com.hrkalk.zetapower.ZetaTab;
 
 public class BasicBlock extends Block {
 
     public BasicBlock(String unlocalizedName, Material material, float hardness, float resistance) {
         super(material);
         this.setUnlocalizedName(unlocalizedName);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        this.setCreativeTab(ZetaTab.instance);
         this.setHardness(hardness);
         this.setResistance(resistance);
     }

@@ -1,0 +1,6 @@
+{
+    "parent": "zetapower:item/standard_tool",
+    "textures": {
+        "layer0": "zetapower:items/zeta_sword"
+    }
+}

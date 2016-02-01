@@ -16,6 +16,7 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
+import com.hrkalk.zetapower.ZetaTab;
 import com.hrkalk.zetapower.blocks.ItemBlockMeta.IMetaBlockName;
 
 public class BlockProperties extends Block implements IMetaBlockName {
@@ -25,7 +26,7 @@ public class BlockProperties extends Block implements IMetaBlockName {
     public BlockProperties(String unlocalizedName, Material material, float hardness, float resistance) {
         super(material);
         this.setUnlocalizedName(unlocalizedName);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        this.setCreativeTab(ZetaTab.instance);
         this.setHardness(hardness);
         this.setResistance(resistance);
         this.setDefaultState(this.blockState.getBaseState().withProperty(TYPE, EnumType.AND));

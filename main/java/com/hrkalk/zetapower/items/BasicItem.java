@@ -1,11 +1,12 @@
 package com.hrkalk.zetapower.items;
 
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+
+import com.hrkalk.zetapower.ZetaTab;
 
 public class BasicItem extends Item {
     public BasicItem(String unlocalizedName) {
         this.setUnlocalizedName(unlocalizedName);
-        this.setCreativeTab(CreativeTabs.tabMisc);
+        this.setCreativeTab(ZetaTab.instance);
     }
 }
