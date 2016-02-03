@@ -16,4 +16,9 @@ item.zeta_hoe.name=Zeta Hoe
 item.zeta_axe.name=Zeta Axe
 item.zeta_multitool.name=Zeta Multitool
 
+item.zeta_helmet.name=Zeta Helmet
+item.zeta_chestplate.name=Zeta Chestplate
+item.zeta_leggings.name=Zeta Leggings
+item.zeta_boots.name=Zeta Boots
+
 itemGroup.zetapower=Zeta Power

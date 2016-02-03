@@ -22,5 +22,11 @@ public final class ModCrafting {
         GameRegistry.addRecipe(new ItemStack(ModItems.zetaHoe), "##", " $", " $", '#', ModItems.zetaIngot, '$', Items.stick);
         GameRegistry.addRecipe(new ItemStack(ModItems.zetaAxe), "##", "#$", " $", '#', ModItems.zetaIngot, '$', Items.stick);
         GameRegistry.addRecipe(new ItemStack(ModItems.zetaMultitool), "#$#", "#$#", " $ ", '#', ModItems.zetaIngot, '$', Items.stick);
+
+        //armor
+        GameRegistry.addRecipe(new ItemStack(ModItems.zetaHelmet), "###", "# #", '#', ModItems.zetaIngot);
+        GameRegistry.addRecipe(new ItemStack(ModItems.zetaChestplate), "# #", "###", "###", '#', ModItems.zetaIngot);
+        GameRegistry.addRecipe(new ItemStack(ModItems.zetaLeggings), "###", "# #", "# #", '#', ModItems.zetaIngot);
+        GameRegistry.addRecipe(new ItemStack(ModItems.zetaBoots), "# #", "# #", '#', ModItems.zetaIngot);
     }
 }
