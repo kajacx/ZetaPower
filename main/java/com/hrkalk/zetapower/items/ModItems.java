@@ -32,7 +32,7 @@ public final class ModItems {
     //food
     public static Item customSnack;
 
-    public static void init() {
+    public static void preInit() {
         GameRegistry.registerItem(zetaIngot = new BasicItem("zeta_ingot"), "zeta_ingot");
         GameRegistry.registerItem(metaItem = new MetaItem("meta_item"), "meta_item");
 

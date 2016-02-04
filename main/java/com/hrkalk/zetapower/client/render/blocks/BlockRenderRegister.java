@@ -20,6 +20,8 @@ public final class BlockRenderRegister {
         reg(ModBlocks.zetaOre);
         reg(ModBlocks.propertyBlock, 0, "block_properties_and");
         reg(ModBlocks.propertyBlock, 1, "block_properties_or");
+        reg(ModBlocks.zetaOre2);
+        reg(ModBlocks.zetaOre3);
     }
 
     public static void reg(Block block) {

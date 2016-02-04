@@ -11,8 +11,8 @@ import com.hrkalk.zetapower.items.ModItems;
 public class CommonProxy {
     public void preInit(FMLPreInitializationEvent e) {
         System.out.println("Common preinit");
-        ModItems.init();
-        ModBlocks.createBlocks();
+        ModItems.preInit();
+        ModBlocks.preInit();
     }
 
     public void init(FMLInitializationEvent e) {
