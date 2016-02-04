@@ -3,6 +3,8 @@ package com.hrkalk.zetapower.items;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -27,6 +29,9 @@ public final class ModItems {
     public static Item zetaLeggings;
     public static Item zetaBoots;
 
+    //food
+    public static Item customSnack;
+
     public static void init() {
         GameRegistry.registerItem(zetaIngot = new BasicItem("zeta_ingot"), "zeta_ingot");
         GameRegistry.registerItem(metaItem = new MetaItem("meta_item"), "meta_item");
@@ -44,5 +49,13 @@ public final class ModItems {
         GameRegistry.registerItem(zetaChestplate = new ItemModArmor("zeta_chestplate", zetaArmorMaterial, 1, 1), "zeta_chestplate");
         GameRegistry.registerItem(zetaLeggings = new ItemModArmor("zeta_leggings", zetaArmorMaterial, 2, 2), "zeta_leggings");
         GameRegistry.registerItem(zetaBoots = new ItemModArmor("zeta_boots", zetaArmorMaterial, 1, 3), "zeta_boots");
+
+        //food
+
+        GameRegistry.registerItem(customSnack = new ModItemFood("custom_snack", 2, 0.2f, false,
+                new PotionEffect(Potion.moveSpeed.id, 1200, 1),
+                new PotionEffect(Potion.jump.id, 600, 0),
+                new PotionEffect(Potion.regeneration.id, 200, 1))
+                .setAlwaysEdible(), "custom_snack");
     }
 }

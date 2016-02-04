@@ -32,6 +32,9 @@ public final class ItemRenderRegister {
         reg(ModItems.zetaChestplate);
         reg(ModItems.zetaLeggings);
         reg(ModItems.zetaBoots);
+
+        //food
+        reg(ModItems.customSnack);
     }
 
     public static void reg(Item item) {

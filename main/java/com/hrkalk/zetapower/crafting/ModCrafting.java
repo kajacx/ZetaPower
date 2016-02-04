@@ -28,5 +28,8 @@ public final class ModCrafting {
         GameRegistry.addRecipe(new ItemStack(ModItems.zetaChestplate), "# #", "###", "###", '#', ModItems.zetaIngot);
         GameRegistry.addRecipe(new ItemStack(ModItems.zetaLeggings), "###", "# #", "# #", '#', ModItems.zetaIngot);
         GameRegistry.addRecipe(new ItemStack(ModItems.zetaBoots), "# #", "# #", '#', ModItems.zetaIngot);
+
+        //food
+        GameRegistry.addRecipe(new ItemStack(ModItems.customSnack), "#$#", '#', ModItems.zetaIngot, '$', Items.bread);
     }
 }

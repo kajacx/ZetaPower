@@ -1,5 +1,7 @@
 < en_US.lang - English localization file for the mod Zeta Power >
 
+itemGroup.zetapower=Zeta Power
+
 item.zeta_ingot.name=Zeta Ingot
 tile.zeta_ore.name=Zeta Ore
 
@@ -21,4 +23,4 @@ item.zeta_chestplate.name=Zeta Chestplate
 item.zeta_leggings.name=Zeta Leggings
 item.zeta_boots.name=Zeta Boots
 
-itemGroup.zetapower=Zeta Power
+item.custom_snack.name=Custom Snack
