@@ -1,17 +1,20 @@
 package com.hrkalk.zetapower.client.render.items;
 
+import com.hrkalk.zetapower.Main;
+import com.hrkalk.zetapower.items.ModItems;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-
-import com.hrkalk.zetapower.Main;
-import com.hrkalk.zetapower.items.ModItems;
+import net.minecraft.util.ResourceLocation;
 
 public final class ItemRenderRegister {
 
     public static void preInit() {
-        ModelBakery.addVariantName(ModItems.metaItem, "zetapower:meta_item_a", "zetapower:meta_item_b");
+        ModelBakery.registerItemVariants(ModItems.metaItem,
+                new ResourceLocation("zetapower", "meta_item_a"),
+                new ResourceLocation("zetapower", "meta_item_b"));
     }
 
     public static void registerItemRenderer() {

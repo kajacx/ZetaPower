@@ -2,6 +2,9 @@ package com.hrkalk.zetapower.blocks;
 
 import java.util.List;
 
+import com.hrkalk.zetapower.ZetaTab;
+import com.hrkalk.zetapower.blocks.ItemBlockMeta.IMetaBlockName;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -16,12 +19,9 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
-import com.hrkalk.zetapower.ZetaTab;
-import com.hrkalk.zetapower.blocks.ItemBlockMeta.IMetaBlockName;
-
 public class BlockProperties extends Block implements IMetaBlockName {
 
-    public static final PropertyEnum TYPE = PropertyEnum.create("type", BlockProperties.EnumType.class);
+    public static final PropertyEnum<EnumType> TYPE = PropertyEnum.create("type", BlockProperties.EnumType.class);
 
     public BlockProperties(String unlocalizedName, Material material, float hardness, float resistance) {
         super(material);
@@ -44,7 +44,7 @@ public class BlockProperties extends Block implements IMetaBlockName {
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        EnumType type = (EnumType) state.getValue(TYPE);
+        EnumType type = state.getValue(TYPE);
         return type.getID();
     }
 
@@ -71,8 +71,7 @@ public class BlockProperties extends Block implements IMetaBlockName {
     }
 
     public static enum EnumType implements IStringSerializable {
-        AND(0, "and"),
-        OR(1, "or");
+        AND(0, "and"), OR(1, "or");
 
         private int ID;
         private String name;
