@@ -1,12 +1,12 @@
 package com.hrkalk.zetapower.items;
 
+import com.hrkalk.zetapower.gui.ZetaTab;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
-
-import com.hrkalk.zetapower.ZetaTab;
 
 public class ModItemFood extends ItemFood {
 

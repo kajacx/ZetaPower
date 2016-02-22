@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.hrkalk.zetapower.ZetaTab;
+import com.hrkalk.zetapower.gui.ZetaTab;
 
 public class ItemModMultitool extends ItemPickaxe {
     private static Set<Block> effectiveAgainst = Sets.newHashSet(new Block[] {

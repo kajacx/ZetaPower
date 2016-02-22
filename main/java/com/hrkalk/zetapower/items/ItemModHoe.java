@@ -1,8 +1,8 @@
 package com.hrkalk.zetapower.items;
 
-import net.minecraft.item.ItemHoe;
+import com.hrkalk.zetapower.gui.ZetaTab;
 
-import com.hrkalk.zetapower.ZetaTab;
+import net.minecraft.item.ItemHoe;
 
 public class ItemModHoe extends ItemHoe {
 

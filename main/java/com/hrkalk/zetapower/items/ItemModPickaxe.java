@@ -1,8 +1,8 @@
 package com.hrkalk.zetapower.items;
 
-import net.minecraft.item.ItemPickaxe;
+import com.hrkalk.zetapower.gui.ZetaTab;
 
-import com.hrkalk.zetapower.ZetaTab;
+import net.minecraft.item.ItemPickaxe;
 
 public class ItemModPickaxe extends ItemPickaxe {
 

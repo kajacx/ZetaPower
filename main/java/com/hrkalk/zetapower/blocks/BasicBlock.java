@@ -1,9 +1,9 @@
 package com.hrkalk.zetapower.blocks;
 
+import com.hrkalk.zetapower.gui.ZetaTab;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-
-import com.hrkalk.zetapower.ZetaTab;
 
 public class BasicBlock extends Block {
 

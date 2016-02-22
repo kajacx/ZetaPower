@@ -1,8 +1,15 @@
 < en_US.lang - English localization file for the mod Zeta Power >
 
+<Custom creative tab>
 itemGroup.zetapower=Zeta Power
 
+<Items>
 item.zeta_ingot.name=Zeta Ingot
+
+item.meta_item.a.name=Meta A
+item.meta_item.b.name=Meta B
+
+<Blocks>
 tile.zeta_ore.name=Zeta Ore
 tile.zeta_ore_2.name=Rich Zeta Ore
 tile.zeta_ore_3.name=Richer Zeta Ore
@@ -10,9 +17,9 @@ tile.zeta_ore_3.name=Richer Zeta Ore
 tile.block_properties.and.name=And Block
 tile.block_properties.or.name=Or Block
 
-item.meta_item.a.name=Meta A
-item.meta_item.b.name=Meta B
+tile.zeta_tile_entity.name=Zeta Tile Entity - Block
 
+<Tools>
 item.zeta_sword.name=Zeta Sword
 item.zeta_pickaxe.name=Zeta Pickaxe
 item.zeta_shovel.name=Zeta Shovel
@@ -20,9 +27,14 @@ item.zeta_hoe.name=Zeta Hoe
 item.zeta_axe.name=Zeta Axe
 item.zeta_multitool.name=Zeta Multitool
 
+<Armor>
 item.zeta_helmet.name=Zeta Helmet
 item.zeta_chestplate.name=Zeta Chestplate
 item.zeta_leggings.name=Zeta Leggings
 item.zeta_boots.name=Zeta Boots
 
+<Food>
 item.custom_snack.name=Custom Snack
+
+<Tile Entities>
+container.zeta_tile_entity.name=Zeta Tile Entity - Tile Entity

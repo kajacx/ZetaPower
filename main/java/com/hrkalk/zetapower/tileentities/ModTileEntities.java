@@ -7,11 +7,11 @@ public class ModTileEntities {
     public static Block tileEntity;
 
     public static void preInit() {
-        GameRegistry.registerBlock(tileEntity = new ModBlockTileEntity("tile_entity"), "tile_entity");
+        GameRegistry.registerBlock(tileEntity = new ModBlockTileEntity("zeta_tile_entity"), "zeta_tile_entity");
     }
 
     public static void init() {
-        GameRegistry.registerTileEntity(ModTileEntity.class, "zetapower_tile_entity");
+        GameRegistry.registerTileEntity(ModTileEntity.class, "zeta_tile_entity");
     }
 
 }

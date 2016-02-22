@@ -1,13 +1,13 @@
 package com.hrkalk.zetapower.items;
 
+import com.hrkalk.zetapower.gui.ZetaTab;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
-
-import com.hrkalk.zetapower.ZetaTab;
 
 public class ItemModArmor extends ItemArmor {
 

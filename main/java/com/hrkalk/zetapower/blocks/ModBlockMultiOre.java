@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-import com.hrkalk.zetapower.ZetaTab;
+import com.hrkalk.zetapower.gui.ZetaTab;
 import com.hrkalk.zetapower.items.ModItems;
 
 public class ModBlockMultiOre extends Block {

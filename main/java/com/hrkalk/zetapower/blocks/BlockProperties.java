@@ -2,8 +2,8 @@ package com.hrkalk.zetapower.blocks;
 
 import java.util.List;
 
-import com.hrkalk.zetapower.ZetaTab;
 import com.hrkalk.zetapower.blocks.ItemBlockMeta.IMetaBlockName;
+import com.hrkalk.zetapower.gui.ZetaTab;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;

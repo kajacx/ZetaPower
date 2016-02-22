@@ -2,12 +2,12 @@ package com.hrkalk.zetapower.blocks;
 
 import java.util.Random;
 
+import com.hrkalk.zetapower.gui.ZetaTab;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
-
-import com.hrkalk.zetapower.ZetaTab;
 
 public class ModBlockOre extends Block {
 

@@ -2,11 +2,11 @@ package com.hrkalk.zetapower.items;
 
 import java.util.List;
 
+import com.hrkalk.zetapower.gui.ZetaTab;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
-import com.hrkalk.zetapower.ZetaTab;
 
 public class MetaItem extends Item {
 
