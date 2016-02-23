@@ -26,11 +26,12 @@ public class ModTileEntity extends TileEntity implements ITickable, IInventory {
     public void update() {
         if (!worldObj.isRemote) {
             //we are on server
-            count++;
-
+            //this works, no need for endless spam
+            /* count++;
+            
             if (count % 100 == 0) {
                 System.out.println("Count is: " + count);
-            }
+            }*/
         }
     }
 

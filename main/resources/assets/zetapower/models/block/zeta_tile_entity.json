@@ -1,0 +1,6 @@
+{
+    "parent": "block/cube_all",
+    "textures": {
+        "all": "zetapower:blocks/zeta_tile_entity"
+    }
+}

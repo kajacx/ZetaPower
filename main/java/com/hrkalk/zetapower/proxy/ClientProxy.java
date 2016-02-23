@@ -1,11 +1,12 @@
 package com.hrkalk.zetapower.proxy;
 
+import com.hrkalk.zetapower.client.render.blocks.BlockRenderRegister;
+import com.hrkalk.zetapower.client.render.items.ItemRenderRegister;
+import com.hrkalk.zetapower.client.render.tileentities.TileEntitiesRegister;
+
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
-import com.hrkalk.zetapower.client.render.blocks.BlockRenderRegister;
-import com.hrkalk.zetapower.client.render.items.ItemRenderRegister;
 
 public class ClientProxy extends CommonProxy {
 
@@ -23,6 +24,7 @@ public class ClientProxy extends CommonProxy {
         System.out.println("Client init");
         ItemRenderRegister.registerItemRenderer();
         BlockRenderRegister.registerBlockRenderer();
+        TileEntitiesRegister.registerTileEntitiesRenderer();
     }
 
     @Override

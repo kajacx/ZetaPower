@@ -54,4 +54,14 @@ public class ModBlockTileEntity extends BlockContainer {
         }
         return true;
     }
+
+    @Override
+    public boolean isOpaqueCube() {
+        return false;
+    }
+
+    @Override
+    public int getRenderType() {
+        return 2;
+    }
 }
