@@ -1,4 +1,4 @@
-package com.hrkalk.zetapower.utils;
+package com.hrkalk.zetapower.utils.loader;
 
 import java.util.HashSet;
 import java.util.Set;

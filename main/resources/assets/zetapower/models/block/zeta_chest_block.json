@@ -1,6 +1,6 @@
 {
     "parent": "block/cube_all",
     "textures": {
-        "all": "zetapower:blocks/zeta_tile_entity"
+        "all": "zetapower:blocks/zeta_chest_block"
     }
 }

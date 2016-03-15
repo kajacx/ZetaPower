@@ -1,4 +1,4 @@
-package com.hrkalk.zetapower.utils;
+package com.hrkalk.zetapower.utils.loader;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,9 +6,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
-
-import com.hrkalk.zetapower.utils.loader.FileUtil;
-import com.hrkalk.zetapower.utils.loader.IOUtil;
 
 public class DynamicClassLoader extends AggressiveClassLoader {
     LinkedList<F1<String, byte[]>> loaders = new LinkedList<F1<String, byte[]>>();

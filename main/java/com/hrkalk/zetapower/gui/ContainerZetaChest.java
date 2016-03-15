@@ -1,6 +1,6 @@
 package com.hrkalk.zetapower.gui;
 
-import com.hrkalk.zetapower.tileentities.ModTileEntity;
+import com.hrkalk.zetapower.tileentities.ZetaChest;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -8,17 +8,17 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class ContainerModTileEntity extends Container {
+public class ContainerZetaChest extends Container {
 
-    private ModTileEntity te;
+    private ZetaChest te;
 
-    public ContainerModTileEntity(IInventory playerInv, ModTileEntity te) {
+    public ContainerZetaChest(IInventory playerInv, ZetaChest te) {
         this.te = te;
 
         // Tile Entity, Slot 0-8, Slot IDs 0-8
         for (int y = 0; y < 3; ++y) {
             for (int x = 0; x < 3; ++x) {
-                this.addSlotToContainer(new Slot(te, x + y * 3, 62 + x * 18, 17 + y * 18));
+                this.addSlotToContainer(new ZetaChestSlot(te, x + y * 3, 62 + x * 18, 17 + y * 18));
             }
         }
 
@@ -29,7 +29,7 @@ public class ContainerModTileEntity extends Container {
             }
         }
 
-        // Player Inventory, Slot 0-8, Slot IDs 36-44
+        // Player Inventory, Slot 0-8, Slot IDs 36-44 (hotbar)
         for (int x = 0; x < 9; ++x) {
             this.addSlotToContainer(new Slot(playerInv, x, 8 + x * 18, 142));
         }

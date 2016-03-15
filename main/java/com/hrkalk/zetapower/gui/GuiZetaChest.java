@@ -1,18 +1,18 @@
 package com.hrkalk.zetapower.gui;
 
-import com.hrkalk.zetapower.tileentities.ModTileEntity;
+import com.hrkalk.zetapower.tileentities.ZetaChest;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
-public class GuiModTileEntity extends GuiContainer {
+public class GuiZetaChest extends GuiContainer {
     private IInventory playerInv;
-    private ModTileEntity te;
+    private ZetaChest te;
 
-    public GuiModTileEntity(IInventory playerInv, ModTileEntity te) {
-        super(new ContainerModTileEntity(playerInv, te));
+    public GuiZetaChest(IInventory playerInv, ZetaChest te) {
+        super(new ContainerZetaChest(playerInv, te));
 
         this.xSize = 176;
         this.ySize = 166;
@@ -24,7 +24,7 @@ public class GuiModTileEntity extends GuiContainer {
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-        mc.getTextureManager().bindTexture(new ResourceLocation("zetapower", "textures/gui/test.png"));
+        mc.getTextureManager().bindTexture(new ResourceLocation("zetapower", "textures/gui/zeta_chest_gui.png"));
         drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
     }
 

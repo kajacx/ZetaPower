@@ -1,45 +1,66 @@
 package com.hrkalk.zetapower.tileentities;
 
-import com.hrkalk.zetapower.utils.Log;
+import com.hrkalk.zetapower.utils.L;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ITickable;
 
-public class ModTileEntity extends TileEntity implements ITickable, IInventory {
-    private int count;
+public class ZetaChest extends TileEntity implements ITickable, IInventory {
     private ItemStack[] inventory;
     private String customName;
+    private EnumFacing facing;
+    private int[] limit; //limit of items in each inventory
+    private Item[] validItems; //certain item or null for any
 
-    public ModTileEntity() {
-        this.inventory = new ItemStack[this.getSizeInventory()];
+    public ZetaChest() {
+        inventory = new ItemStack[getSizeInventory()];
+        limit = new int[getSizeInventory()];
+        validItems = new Item[getSizeInventory()];
+
+        //test
+        for (int i = 0; i < getSizeInventory(); i++) {
+            limit[i] = i + 10;
+        }
+
+        validItems[0] = Items.diamond;
+        validItems[1] = Items.carrot;
+
+        //legit
+        for (int i = 0; i < getSizeInventory(); i++) {
+            if (validItems[i] != null) {
+                inventory[i] = new ItemStack(validItems[i], 0);
+            }
+        }
+
+        L.d("Testing trace...");
     }
 
     @Override
     public void update() {
         if (!worldObj.isRemote) {
             //we are on server
-            //this works, no need for endless spam
-            /* count++;
-            
-            if (count % 100 == 0) {
-                System.out.println("Count is: " + count);
-            }*/
+
         }
     }
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
-
-        compound.setInteger("count", count);
 
         NBTTagList list = new NBTTagList();
         for (int i = 0; i < this.getSizeInventory(); ++i) {
@@ -55,13 +76,13 @@ public class ModTileEntity extends TileEntity implements ITickable, IInventory {
         if (this.hasCustomName()) {
             compound.setString("CustomName", this.getCustomName());
         }
+
+        compound.setInteger("Facing", facing.getHorizontalIndex());
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-
-        count = compound.getInteger("count");
 
         NBTTagList list = compound.getTagList("Items", 10);
         for (int i = 0; i < list.tagCount(); ++i) {
@@ -73,6 +94,33 @@ public class ModTileEntity extends TileEntity implements ITickable, IInventory {
         if (compound.hasKey("CustomName", 8)) {
             this.setCustomName(compound.getString("CustomName"));
         }
+
+        try {
+            facing = EnumFacing.getHorizontal(compound.getInteger("Facing"));
+        } catch (Exception ex) {
+            L.e(ex);
+        }
+    }
+
+    @Override
+    public Packet<?> getDescriptionPacket() {
+        NBTTagCompound nbttagcompound = new NBTTagCompound();
+        this.writeToNBT(nbttagcompound);
+        return new S35PacketUpdateTileEntity(this.pos, 0, nbttagcompound);
+    };
+
+    @Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
+        readFromNBT(pkt.getNbtCompound());
+        Minecraft.getMinecraft().renderGlobal.markBlockForUpdate(pkt.getPos());
+    }
+
+    public EnumFacing getEnumFacing() {
+        return facing;
+    }
+
+    public void setEnumFacing(EnumFacing facing) {
+        this.facing = facing;
     }
 
     public String getCustomName() {
@@ -85,7 +133,7 @@ public class ModTileEntity extends TileEntity implements ITickable, IInventory {
 
     @Override
     public String getName() {
-        return this.hasCustomName() ? this.customName : "container.zeta_tile_entity";
+        return this.hasCustomName() ? this.customName : "container.zeta_chest";
     }
 
     @Override
@@ -147,16 +195,22 @@ public class ModTileEntity extends TileEntity implements ITickable, IInventory {
 
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
-        if (index < 0 || index >= this.getSizeInventory())
+        if (index < 0 || index >= this.getSizeInventory()) {
+            L.w("Invalid index: " + index);
             return;
+        }
 
         if (stack != null && stack.stackSize > this.getInventoryStackLimit()) {
-            Log.warning("Reducing stack size when inserting into an inventory");
+            L.w("Reducing stack size when inserting into an inventory");
             stack.stackSize = this.getInventoryStackLimit();
         }
 
         if (stack != null && stack.stackSize == 0)
             stack = null;
+
+        if (stack == null && validItems[index] != null) {
+            stack = new ItemStack(validItems[index], 0);
+        }
 
         this.inventory[index] = stack;
         this.markDirty();
@@ -165,6 +219,14 @@ public class ModTileEntity extends TileEntity implements ITickable, IInventory {
     @Override
     public int getInventoryStackLimit() {
         return 64;
+    }
+
+    public int getInventoryStackLimit(int index) {
+        if (index < 0 || index >= getSizeInventory()) {
+            L.w("Invalid index: " + index);
+            return getInventoryStackLimit();
+        }
+        return limit[index];
     }
 
     @Override
@@ -184,7 +246,30 @@ public class ModTileEntity extends TileEntity implements ITickable, IInventory {
 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return true;
+        if (stack == null) {
+            L.w("stack is null at index: " + index);
+            return true;
+        }
+
+        if (index < 0 || index >= getSizeInventory()) {
+            L.w("invalid index: " + index);
+            return false;
+        }
+
+        //work-around to fix broken hopper mechanics
+        if (itemsInSlot(index) >= getInventoryStackLimit(index))
+            return false;
+
+        return validItems[index] == null || validItems[index] == stack.getItem();
+    }
+
+    public int itemsInSlot(int index) {
+        if (index < 0 || index >= getSizeInventory())
+            return 0;
+        if (inventory[index] == null)
+            return 0;
+
+        return inventory[index].stackSize;
     }
 
     @Override

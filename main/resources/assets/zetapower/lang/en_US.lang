@@ -17,7 +17,7 @@ tile.zeta_ore_3.name=Richer Zeta Ore
 tile.block_properties.and.name=And Block
 tile.block_properties.or.name=Or Block
 
-tile.zeta_tile_entity.name=Zeta Tile Entity - Block
+tile.zeta_chest_block.name=Zeta Chest
 
 <Tools>
 item.zeta_sword.name=Zeta Sword
@@ -37,4 +37,4 @@ item.zeta_boots.name=Zeta Boots
 item.custom_snack.name=Custom Snack
 
 <Tile Entities>
-container.zeta_tile_entity=Zeta Tile Entity - Tile Entity
+container.zeta_chest=Zeta Chest

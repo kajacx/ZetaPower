@@ -11,5 +11,5 @@ public interface F1<A, T> {
      * @param obj The parameter
      * @return Result of execution
      */
-	T e(A obj);
+    T e(A obj);
 }

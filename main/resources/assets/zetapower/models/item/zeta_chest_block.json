@@ -1,5 +1,5 @@
 {
-    "parent":"zetapower:block/zeta_tile_entity",
+    "parent":"zetapower:block/zeta_chest_block",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 170 ],

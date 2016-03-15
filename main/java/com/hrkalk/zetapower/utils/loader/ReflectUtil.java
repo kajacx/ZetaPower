@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Created by Quan on 22/12/2014.
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ReflectUtil {
 
     public static <A> A newInstance(Class<A> cla) {
@@ -159,7 +160,7 @@ public class ReflectUtil {
     }
 
     public static void invokeStatic(String methodName, Class<?> clazz) {
-        invoke(getMethod(methodName, clazz), null, null);
+        invoke(getMethod(methodName, clazz), null, (Object[]) null);
     }
 
     public static <A> A getStaticFieldValue(String field, Class clazz) {

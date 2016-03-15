@@ -4,10 +4,12 @@ import com.hrkalk.zetapower.Main;
 import com.hrkalk.zetapower.blocks.ModBlocks;
 import com.hrkalk.zetapower.blocks.ZetaWorldGen;
 import com.hrkalk.zetapower.crafting.ModCrafting;
+import com.hrkalk.zetapower.event.EventHandlerCommon;
 import com.hrkalk.zetapower.gui.ModGuiHandler;
 import com.hrkalk.zetapower.items.ModItems;
-import com.hrkalk.zetapower.tileentities.ModTileEntities;
+import com.hrkalk.zetapower.tileentities.TileEntities;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -19,15 +21,16 @@ public class CommonProxy {
         System.out.println("Common preinit");
         ModItems.preInit();
         ModBlocks.preInit();
-        ModTileEntities.preInit();
+        TileEntities.preInit();
     }
 
     public void init(FMLInitializationEvent e) {
         System.out.println("Common init");
         ModCrafting.initCrafting(e);
         GameRegistry.registerWorldGenerator(new ZetaWorldGen(), 0);
-        ModTileEntities.init();
+        TileEntities.init();
         NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, new ModGuiHandler());
+        MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
     }
 
     public void postInit(FMLPostInitializationEvent e) {
