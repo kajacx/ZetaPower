@@ -11,9 +11,9 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public final class ModCrafting {
     public static void initCrafting(FMLInitializationEvent e) {
-        GameRegistry.addRecipe(new ItemStack(ModBlocks.zetaOre, 2), "##", "##", '#', ModItems.zetaIngot);
-        GameRegistry.addShapelessRecipe(new ItemStack(ModBlocks.zetaOre), Blocks.SAND, ModItems.zetaIngot);
-        GameRegistry.addSmelting(ModBlocks.zetaOre, new ItemStack(ModItems.zetaIngot), .8f);
+        GameRegistry.addRecipe(new ItemStack(ModBlocks.zetaOre, 2), "##", "##", '#', ModItems.zetaIngot); //broken, zeta ore not visible
+        GameRegistry.addShapelessRecipe(new ItemStack(ModBlocks.zetaOre), Blocks.SAND, ModItems.zetaIngot); //broken, zeta ore not visible
+        GameRegistry.addSmelting(ModBlocks.zetaOre, new ItemStack(ModItems.zetaIngot), .8f); //broken, zeta ore not visible
 
         //tools
         GameRegistry.addRecipe(new ItemStack(ModItems.zetaSword), "#", "#", "$", '#', ModItems.zetaIngot, '$', Items.STICK);

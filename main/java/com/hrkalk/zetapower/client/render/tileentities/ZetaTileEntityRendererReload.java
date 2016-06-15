@@ -38,14 +38,14 @@ public class ZetaTileEntityRendererReload extends TileEntitySpecialRenderer<Zeta
 
     public void renderTileEntityAt2(double x, double y, double z, float partialTicks, int destroyStage, int facing) {
 
-        rotator.cameraLeft(.01f);
-        rotator.cameraSpin(.02f);
-        rotator.cameraUp(.003f);
+        rotator.cameraLeft(.002f);
+        //rotator.cameraSpin(.02f);
+        //rotator.cameraUp(.003f);
 
         float time = (float) (System.currentTimeMillis() % 10000000 / 1000d);
 
         rotator.pushTransformMatrix();
-        tmp.set((float) x, (float) (y + Math.sin(time) / 5), (float) z);
+        tmp.set((float) x, (float) (y + Math.sin(time) / 5 + .3f), (float) z);
         rotator.transform(tmp);
         renderTileEntityAt3(tmp.x, tmp.y, tmp.z, partialTicks, destroyStage, facing);
 

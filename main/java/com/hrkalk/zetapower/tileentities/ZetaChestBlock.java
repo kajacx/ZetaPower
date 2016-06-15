@@ -34,6 +34,7 @@ public class ZetaChestBlock extends BlockContainer {
         setHardness(2.0f);
         setResistance(6.0f);
         setCreativeTab(ZetaTab.instance);
+        L.i("Adding the magnificant Zeta Chest");
     }
 
     @Override

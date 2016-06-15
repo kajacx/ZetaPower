@@ -1,6 +1,7 @@
 package com.hrkalk.zetapower.tileentities;
 
 import net.minecraft.block.Block;
+import net.minecraft.item.ItemBlock;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class TileEntities {
@@ -8,6 +9,7 @@ public class TileEntities {
 
     public static void preInit() {
         GameRegistry.register((zetaChestBlock = new ZetaChestBlock("zeta_chest_block")).setRegistryName("zeta_chest_block"));
+        GameRegistry.register(new ItemBlock(zetaChestBlock).setRegistryName("zeta_chest_block"));
     }
 
     public static void init() {

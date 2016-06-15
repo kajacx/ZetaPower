@@ -1,6 +1,7 @@
 package com.hrkalk.zetapower.items;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import com.hrkalk.zetapower.utils.L;
 
@@ -10,7 +11,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
-import net.minecraft.item.ItemAxe;
 import net.minecraft.potion.PotionEffect;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -47,6 +47,10 @@ public final class ModItems {
             float[] newData = new float[data.length + 1];
             System.arraycopy(data, 0, newData, 0, data.length);
             newData[data.length] = value;
+
+            Field modifiersField = Field.class.getDeclaredField("modifiers");
+            modifiersField.setAccessible(true);
+            modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
             f.set(null, newData);
         } catch (Exception ex) {
             L.d("Failed to add value to array via reflection");
@@ -58,8 +62,8 @@ public final class ModItems {
     public static void preInit() {
 
         // -- WARNING: UGLY HACK TO MAKE THINGS WORK. FORGE SHOULD FIX THIS, CUSTOM TOOL MATERIALS ARE BROKEN --
-        addValue(ItemAxe.class, "ATTACK_DAMAGES", 7f);
-        addValue(ItemAxe.class, "ATTACK_SPEEDS", -3f);
+        //addValue(ItemAxe.class, "ATTACK_DAMAGES", 7f);
+        //addValue(ItemAxe.class, "ATTACK_SPEEDS", -3f);
         //TODO: fix this madness
 
         GameRegistry.register((zetaIngot = new BasicItem("zeta_ingot")).setRegistryName("zeta_ingot"));
@@ -70,7 +74,7 @@ public final class ModItems {
         GameRegistry.register((zetaPickaxe = new ItemModPickaxe("zeta_pickaxe", zetaMaterial)).setRegistryName("zeta_pickaxe"));
         GameRegistry.register((zetaShovel = new ItemModShovel("zeta_shovel", zetaMaterial)).setRegistryName("zeta_shovel"));
         GameRegistry.register((zetaHoe = new ItemModHoe("zeta_hoe", zetaMaterial)).setRegistryName("zeta_hoe"));
-        GameRegistry.register((zetaAxe = new ItemModAxe("zeta_axe", zetaMaterial)).setRegistryName("zeta_axe"));
+        GameRegistry.register((zetaAxe = new ItemModAxe("zeta_axe", zetaMaterial, 7, -3)).setRegistryName("zeta_axe"));
         GameRegistry.register((zetaMultitool = new ItemModMultitool("zeta_multitool", zetaMaterial)).setRegistryName("zeta_multitool"));
 
         //armor

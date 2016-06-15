@@ -5,17 +5,19 @@ import com.hrkalk.zetapower.blocks.ModBlocks;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
 
 public final class BlockRenderRegister {
 
     public static void preInit() {
-        ModelBakery.registerItemVariants(Item.getItemFromBlock(ModBlocks.propertyBlock),
+        /*
+         * TODO: fix this
+         * Item i = Item.getItemFromBlock(ModBlocks.propertyBlock);
+        L.d("My item: " + i);
+        ModelBakery.registerItemVariants(i,
                 new ResourceLocation("zetapower", "block_properties_and"),
-                new ResourceLocation("zetapower", "block_properties_or"));
+                new ResourceLocation("zetapower", "block_properties_or"));*/
     }
 
     public static void registerBlockRenderer() {
