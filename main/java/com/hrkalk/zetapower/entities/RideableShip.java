@@ -2,7 +2,6 @@ package com.hrkalk.zetapower.entities;
 
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
@@ -13,8 +12,7 @@ public class RideableShip extends EntityAnimal {
         // TODO Auto-generated constructor stub
     }
 
-    @Override
-    public boolean interact(EntityPlayer player) {
+    /*public boolean interact(EntityPlayer player) {
         if (super.interact(player)) {
             return true;
         } else if (this.worldObj.isRemote || this.riddenByEntity != null && this.riddenByEntity != player) {
@@ -23,7 +21,7 @@ public class RideableShip extends EntityAnimal {
             player.mountEntity(this);
             return true;
         }
-    }
+    }*/
 
     @Override
     public boolean canBeSteered() {

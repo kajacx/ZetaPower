@@ -1,10 +1,10 @@
 package com.hrkalk.zetapower.blocks;
 
+import com.hrkalk.zetapower.items.ModItems;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-
-import com.hrkalk.zetapower.items.ModItems;
 
 public final class ModBlocks {
 
@@ -14,13 +14,14 @@ public final class ModBlocks {
     public static Block zetaOre3;
 
     public static void preInit() {
-        GameRegistry.registerBlock(zetaOre = new BasicBlock("zeta_ore"), "zeta_ore");
+        zetaOre = new BasicBlock("zeta_ore");
+        zetaOre.setRegistryName("zeta_ore");
+        GameRegistry.register(zetaOre);
 
-        GameRegistry.registerBlock(propertyBlock = new BlockProperties("block_properties", Material.wood, 1, 1),
-                ItemBlockMeta.class, "block_properties");
+        propertyBlock = new BlockProperties("block_properties", Material.WOOD, 1, 1);
+        GameRegistry.register(propertyBlock.setRegistryName("block_properties"));
 
-        GameRegistry.registerBlock(zetaOre2 = new ModBlockOre("zeta_ore_2", Material.rock, ModItems.zetaIngot, 2, 4),
-                "zeta_ore_2");
-        GameRegistry.registerBlock(zetaOre3 = new ModBlockMultiOre("zeta_ore_3", Material.rock), "zeta_ore_3");
+        GameRegistry.register(zetaOre2 = new ModBlockOre("zeta_ore_2", Material.ROCK, ModItems.zetaIngot, 2, 4).setRegistryName("zeta_ore_2"));
+        GameRegistry.register(zetaOre3 = new ModBlockOre("zeta_ore_3", Material.ROCK, ModItems.zetaIngot).setRegistryName("zeta_ore_3"));
     }
 }

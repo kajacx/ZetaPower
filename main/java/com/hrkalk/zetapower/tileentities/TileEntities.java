@@ -7,7 +7,7 @@ public class TileEntities {
     public static Block zetaChestBlock;
 
     public static void preInit() {
-        GameRegistry.registerBlock(zetaChestBlock = new ZetaChestBlock("zeta_chest_block"), "zeta_chest_block");
+        GameRegistry.register((zetaChestBlock = new ZetaChestBlock("zeta_chest_block")).setRegistryName("zeta_chest_block"));
     }
 
     public static void init() {

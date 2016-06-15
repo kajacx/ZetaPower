@@ -16,7 +16,6 @@ public class ZetaTileEntityRendererReload extends TileEntitySpecialRenderer<Zeta
 
     private static final ResourceLocation texture = new ResourceLocation("zetapower", "textures/tileentities/zeta_chest.png");
     private ModelChest model = new ModelChest();
-    private static float SPEED = .01f;
     EntityRotator rotator = new EntityRotator();
 
     public static void main(String[] args) {

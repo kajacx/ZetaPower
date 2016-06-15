@@ -24,7 +24,7 @@ public class ModItemFood extends ItemFood {
         super.onFoodEaten(stack, world, player);
 
         for (int i = 0; i < effects.length; i++) {
-            if (!world.isRemote && effects[i] != null && effects[i].getPotionID() > 0) {
+            if (!world.isRemote && effects[i] != null && effects[i].getPotion() != null) {
                 player.addPotionEffect(new PotionEffect(this.effects[i]));
             }
         }

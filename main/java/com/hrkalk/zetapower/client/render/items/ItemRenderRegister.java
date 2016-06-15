@@ -4,8 +4,8 @@ import com.hrkalk.zetapower.Main;
 import com.hrkalk.zetapower.items.ModItems;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelBakery;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 
@@ -19,8 +19,8 @@ public final class ItemRenderRegister {
 
     public static void registerItemRenderer() {
         reg(ModItems.zetaIngot);
-        reg(ModItems.metaItem, 0, "meta_item_a");
-        reg(ModItems.metaItem, 1, "meta_item_b");
+        /*reg(ModItems.metaItem, 0, "meta_item_a");
+        reg(ModItems.metaItem, 1, "meta_item_b");*/
 
         //tools
         reg(ModItems.zetaSword);

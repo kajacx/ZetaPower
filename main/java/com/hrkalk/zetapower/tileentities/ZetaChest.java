@@ -2,7 +2,6 @@ package com.hrkalk.zetapower.tileentities;
 
 import com.hrkalk.zetapower.utils.L;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
@@ -10,15 +9,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class ZetaChest extends TileEntity implements ITickable, IInventory {
     private ItemStack[] inventory;
@@ -37,8 +33,8 @@ public class ZetaChest extends TileEntity implements ITickable, IInventory {
             limit[i] = i + 10;
         }
 
-        validItems[0] = Items.diamond;
-        validItems[1] = Items.carrot;
+        validItems[0] = Items.DIAMOND;
+        validItems[1] = Items.CARROT;
 
         //legit
         for (int i = 0; i < getSizeInventory(); i++) {
@@ -59,7 +55,7 @@ public class ZetaChest extends TileEntity implements ITickable, IInventory {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound compound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
 
         NBTTagList list = new NBTTagList();
@@ -78,6 +74,8 @@ public class ZetaChest extends TileEntity implements ITickable, IInventory {
         }
 
         compound.setInteger("Facing", facing.getHorizontalIndex());
+
+        return compound;
     }
 
     @Override
@@ -102,18 +100,18 @@ public class ZetaChest extends TileEntity implements ITickable, IInventory {
         }
     }
 
-    @Override
+    /*@Override
     public Packet<?> getDescriptionPacket() {
         NBTTagCompound nbttagcompound = new NBTTagCompound();
         this.writeToNBT(nbttagcompound);
         return new S35PacketUpdateTileEntity(this.pos, 0, nbttagcompound);
     };
-
+    
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
         readFromNBT(pkt.getNbtCompound());
         Minecraft.getMinecraft().renderGlobal.markBlockForUpdate(pkt.getPos());
-    }
+    }*/
 
     public EnumFacing getEnumFacing() {
         return facing;
@@ -142,8 +140,8 @@ public class ZetaChest extends TileEntity implements ITickable, IInventory {
     }
 
     @Override
-    public IChatComponent getDisplayName() {
-        return this.hasCustomName() ? new ChatComponentText(this.getName()) : new ChatComponentTranslation(this.getName());
+    public ITextComponent getDisplayName() {
+        return this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName());
     }
 
     @Override

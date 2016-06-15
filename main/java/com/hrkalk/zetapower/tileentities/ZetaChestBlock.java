@@ -17,9 +17,11 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
 public class ZetaChestBlock extends BlockContainer {
@@ -27,7 +29,7 @@ public class ZetaChestBlock extends BlockContainer {
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
     protected ZetaChestBlock(String unlocalizedName) {
-        super(Material.wood);
+        super(Material.WOOD);
         setUnlocalizedName(unlocalizedName);
         setHardness(2.0f);
         setResistance(6.0f);
@@ -71,7 +73,8 @@ public class ZetaChestBlock extends BlockContainer {
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
+            ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!world.isRemote) {
             player.openGui(Main.instance, ModGuiHandler.ZETA_CHEST_GUI, world, pos.getX(), pos.getY(), pos.getZ());
         }
@@ -79,7 +82,7 @@ public class ZetaChestBlock extends BlockContainer {
     }
 
     @Override
-    public ItemStack getPickBlock(MovingObjectPosition target, World world, BlockPos pos) {
+    public ItemStack getPickBlock(IBlockState state, RayTraceResult result, World world, BlockPos pos, EntityPlayer player) {
         ItemStack stack = new ItemStack(Item.getItemFromBlock(this), 1);
         if (world.getTileEntity(pos) instanceof ZetaChest) {
             ZetaChest te = (ZetaChest) world.getTileEntity(pos);
@@ -92,13 +95,13 @@ public class ZetaChestBlock extends BlockContainer {
     }
 
     @Override
-    public boolean isOpaqueCube() {
+    public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
     @Override
-    public int getRenderType() {
-        return 2;
+    public EnumBlockRenderType getRenderType(IBlockState state) {
+        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
 }
