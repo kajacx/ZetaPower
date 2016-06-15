@@ -11,8 +11,8 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 
 public class ZetaTileEntityRenderer extends TileEntitySpecialRenderer<ZetaChest> {
 
-    private static TileEntitySpecialRenderer<ZetaChest> instance = null;
-    private static long lastLoaded = 0;
+    private TileEntitySpecialRenderer<ZetaChest> instance = null;
+    private long lastLoaded = 0;
     private static File file = new File("../bin/com/hrkalk/zetapower/client/render/tileentities/ZetaTileEntityRendererReload.class");
 
     @SuppressWarnings("unchecked")
@@ -35,7 +35,7 @@ public class ZetaTileEntityRenderer extends TileEntitySpecialRenderer<ZetaChest>
             } else {
                 L.e("Enum facing is null");
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             L.e("Error in rendering via dynamic classload");
             e.printStackTrace(System.out);
         }

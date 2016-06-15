@@ -55,7 +55,7 @@ public class ContainerZetaChest extends Container {
                     return null;
             } else {
                 // From Player Inventory to TE Inventory
-                if (!this.mergeItemStack(current, 0, 9, false))
+                if (!this.mergeItemStack2(current, 0, 9))
                     return null;
             }
 
@@ -69,5 +69,69 @@ public class ContainerZetaChest extends Container {
             slot.onPickupFromSlot(playerIn, current);
         }
         return previous;
+    }
+
+    private boolean mergeItemStack2(ItemStack stack, int startIndex, int endIndex) {
+        if (startIndex <= endIndex)
+            return false;
+
+        boolean success = false;
+        int index = startIndex;
+
+        Slot slot;
+        ItemStack stackInSlot;
+
+        if (stack.isStackable()) {
+            while (stack.stackSize > 0 && index < endIndex) {
+                slot = this.inventorySlots.get(index);
+                stackInSlot = slot.getStack();
+
+                if (stackInSlot != null && stackInSlot.getItem() == stack.getItem() && (!stack.getHasSubtypes() || stack.getMetadata() == stackInSlot.getMetadata()) && ItemStack.areItemStackTagsEqual(stack, stackInSlot)) {
+                    int l = stackInSlot.stackSize + stack.stackSize;
+                    int maxsize = Math.min(stack.getMaxStackSize(), slot.getItemStackLimit(stack));
+
+                    if (l <= maxsize) {
+                        stack.stackSize = 0;
+                        stackInSlot.stackSize = l;
+                        slot.onSlotChanged();
+                        success = true;
+                    } else if (stackInSlot.stackSize < maxsize) {
+                        stack.stackSize -= stack.getMaxStackSize() - stackInSlot.stackSize;
+                        stackInSlot.stackSize = stack.getMaxStackSize();
+                        slot.onSlotChanged();
+                        success = true;
+                    }
+                }
+
+                index++;
+            }
+        } else if (stack.stackSize > 0) {
+            index = startIndex;
+
+            while (index != endIndex && stack.stackSize > 0) {
+                slot = this.inventorySlots.get(index);
+                stackInSlot = slot.getStack();
+
+                // Forge: Make sure to respect isItemValid in the slot.
+                if (stackInSlot == null && slot.isItemValid(stack)) {
+                    if (stack.stackSize < slot.getItemStackLimit(stack)) {
+                        slot.putStack(stack.copy());
+                        stack.stackSize = 0;
+                        success = true;
+                        break;
+                    } else {
+                        ItemStack newstack = stack.copy();
+                        newstack.stackSize = slot.getItemStackLimit(stack);
+                        slot.putStack(newstack);
+                        stack.stackSize -= slot.getItemStackLimit(stack);
+                        success = true;
+                    }
+                }
+
+                index++;
+            }
+        }
+
+        return success;
     }
 }
