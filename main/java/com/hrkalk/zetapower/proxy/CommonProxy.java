@@ -4,6 +4,7 @@ import com.hrkalk.zetapower.Main;
 import com.hrkalk.zetapower.blocks.ModBlocks;
 import com.hrkalk.zetapower.blocks.ZetaWorldGen;
 import com.hrkalk.zetapower.crafting.ModCrafting;
+import com.hrkalk.zetapower.entities.ModEntities;
 import com.hrkalk.zetapower.event.EventHandlerCommon;
 import com.hrkalk.zetapower.gui.ModGuiHandler;
 import com.hrkalk.zetapower.items.ModItems;
@@ -29,6 +30,7 @@ public class CommonProxy {
         ModCrafting.initCrafting(e);
         GameRegistry.registerWorldGenerator(new ZetaWorldGen(), 0);
         TileEntities.init();
+        ModEntities.init();
         NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, new ModGuiHandler());
         MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
     }

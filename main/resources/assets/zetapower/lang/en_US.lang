@@ -9,6 +9,8 @@ item.zeta_ingot.name=Zeta Ingot
 item.meta_item.a.name=Meta A
 item.meta_item.b.name=Meta B
 
+item.spawn_ship.name=Spawn Ship
+
 <Blocks>
 tile.zeta_ore.name=Zeta Ore
 tile.zeta_ore_2.name=Rich Zeta Ore
@@ -38,3 +40,6 @@ item.custom_snack.name=Custom Snack
 
 <Tile Entities>
 container.zeta_chest=Zeta Chest
+
+<Entities>
+entity.zetapower.ridable_ship.name=Ridable Ship

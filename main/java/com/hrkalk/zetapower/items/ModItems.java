@@ -21,6 +21,7 @@ public final class ModItems {
 
     public static Item zetaIngot;
     public static Item metaItem;
+    public static Item spawnShip;
 
     //tools
     public static Item zetaSword;
@@ -68,6 +69,7 @@ public final class ModItems {
 
         GameRegistry.register((zetaIngot = new BasicItem("zeta_ingot")).setRegistryName("zeta_ingot"));
         GameRegistry.register((metaItem = new MetaItem("meta_item")).setRegistryName("meta_item"));
+        GameRegistry.register((spawnShip = new ItemModSpawnShip("spawn_ship")).setRegistryName("spawn_ship"));
 
         //tools
         GameRegistry.register((zetaSword = new ItemModSword("zeta_sword", zetaMaterial)).setRegistryName("zeta_sword"));

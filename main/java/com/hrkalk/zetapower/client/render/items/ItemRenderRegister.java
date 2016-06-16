@@ -19,8 +19,9 @@ public final class ItemRenderRegister {
 
     public static void registerItemRenderer() {
         reg(ModItems.zetaIngot);
-        /*reg(ModItems.metaItem, 0, "meta_item_a");
-        reg(ModItems.metaItem, 1, "meta_item_b");*/
+        reg(ModItems.metaItem, 0, "meta_item_a");
+        reg(ModItems.metaItem, 1, "meta_item_b");
+        reg(ModItems.spawnShip);
 
         //tools
         reg(ModItems.zetaSword);
