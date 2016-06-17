@@ -43,3 +43,8 @@ container.zeta_chest=Zeta Chest
 
 <Entities>
 entity.zetapower.ridable_ship.name=Ridable Ship
+
+<Key Bindings>
+key.categories.zetapower=Zeta Power Keys
+key.ping=Ping
+key.pong=Pong

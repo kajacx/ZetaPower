@@ -1,15 +1,18 @@
 package com.hrkalk.zetapower.entities;
 
+import static net.minecraft.entity.SharedMonsterAttributes.MAX_HEALTH;
+import static net.minecraft.entity.SharedMonsterAttributes.MOVEMENT_SPEED;
+
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class RideableShip extends EntityAnimal {
@@ -36,12 +39,19 @@ public class RideableShip extends EntityAnimal {
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
+        getEntityAttribute(MAX_HEALTH).setBaseValue(10.0D);
+        getEntityAttribute(MOVEMENT_SPEED).setBaseValue(0.25D);
     }
 
     @Override
     public boolean canBeSteered() {
+        Entity entity = this.getControllingPassenger();
+
+        return entity instanceof EntityPlayer;
+    }
+
+    @Override
+    public boolean canPassengerSteer() {
         return true;
     }
 
@@ -50,43 +60,7 @@ public class RideableShip extends EntityAnimal {
      */
     @Override
     public void moveEntityWithHeading(float strafe, float forward) {
-        Entity entity = this.getPassengers().isEmpty() ? null : (Entity) this.getPassengers().get(0);
-
-        if (this.isBeingRidden() && this.canBeSteered()) {
-            this.prevRotationYaw = this.rotationYaw = entity.rotationYaw;
-            this.rotationPitch = entity.rotationPitch * 0.5F;
-            this.setRotation(this.rotationYaw, this.rotationPitch);
-            this.rotationYawHead = this.renderYawOffset = this.rotationYaw;
-            this.stepHeight = 1.0F;
-            this.jumpMovementFactor = this.getAIMoveSpeed() * 0.1F;
-
-            if (this.canPassengerSteer()) {
-                float f = (float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue() * 0.225F;
-
-                this.setAIMoveSpeed(f);
-                super.moveEntityWithHeading(0.0F, 1.0F);
-            } else {
-                this.motionX = 0.0D;
-                this.motionY = 0.0D;
-                this.motionZ = 0.0D;
-            }
-
-            this.prevLimbSwingAmount = this.limbSwingAmount;
-            double d1 = this.posX - this.prevPosX;
-            double d0 = this.posZ - this.prevPosZ;
-            float f1 = MathHelper.sqrt_double(d1 * d1 + d0 * d0) * 4.0F;
-
-            if (f1 > 1.0F) {
-                f1 = 1.0F;
-            }
-
-            this.limbSwingAmount += (f1 - this.limbSwingAmount) * 0.4F;
-            this.limbSwing += this.limbSwingAmount;
-        } else {
-            this.stepHeight = 0.5F;
-            this.jumpMovementFactor = 0.02F;
-            super.moveEntityWithHeading(strafe, forward);
-        }
+        super.moveEntityWithHeading(strafe, forward);
     }
 
     /**
@@ -96,7 +70,14 @@ public class RideableShip extends EntityAnimal {
     @Override
     @Nullable
     public Entity getControllingPassenger() {
-        return this.getPassengers().isEmpty() ? null : (Entity) this.getPassengers().get(0);
+        List<Entity> list = getPassengers();
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    //TODO: make co-pilots happen
+    @Override
+    protected boolean canFitPassenger(Entity passenger) {
+        return this.getPassengers().size() < 1;
     }
 
     @Override
@@ -108,6 +89,12 @@ public class RideableShip extends EntityAnimal {
     @Override
     public boolean isBreedingItem(ItemStack stack) {
         //You cannot breed a ship, dummy....
+        return false;
+    }
+
+    @Override
+    public boolean isOnLadder() {
+        // this better doesn't happen...
         return false;
     }
 }
