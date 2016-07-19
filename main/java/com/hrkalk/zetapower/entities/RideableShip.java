@@ -46,7 +46,6 @@ import net.minecraft.inventory.IInventoryChangedListener;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -68,26 +67,27 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
             return p_apply_1_ instanceof EntityHorse && ((EntityHorse) p_apply_1_).isBreeding();
         }
     };
-    private static final IAttribute JUMP_STRENGTH = (new RangedAttribute((IAttribute) null, "horse.jumpStrength", 0.7D, 0.0D, 2.0D)).setDescription("Jump Strength").setShouldWatch(true);
+    private static final IAttribute JUMP_STRENGTH = (new RangedAttribute((IAttribute) null, "horse.jumpStrength", 0.7D,
+            0.0D, 2.0D)).setDescription("Jump Strength").setShouldWatch(true);
     private static final UUID ARMOR_MODIFIER_UUID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
-    private static final DataParameter<Byte> STATUS = EntityDataManager.<Byte> createKey(EntityHorse.class, DataSerializers.BYTE);
-    private static final DataParameter<Integer> HORSE_TYPE = EntityDataManager.<Integer> createKey(EntityHorse.class, DataSerializers.VARINT);
-    private static final DataParameter<Integer> HORSE_VARIANT = EntityDataManager.<Integer> createKey(EntityHorse.class, DataSerializers.VARINT);
-    private static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.<Optional<UUID>> createKey(EntityHorse.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-    private static final DataParameter<Integer> HORSE_ARMOR = EntityDataManager.<Integer> createKey(EntityHorse.class, DataSerializers.VARINT);
-    private static final String[] HORSE_TEXTURES = new String[] { "textures/entity/horse/horse_white.png", "textures/entity/horse/horse_creamy.png", "textures/entity/horse/horse_chestnut.png", "textures/entity/horse/horse_brown.png", "textures/entity/horse/horse_black.png", "textures/entity/horse/horse_gray.png", "textures/entity/horse/horse_darkbrown.png" };
-    private static final String[] HORSE_TEXTURES_ABBR = new String[] { "hwh", "hcr", "hch", "hbr", "hbl", "hgr", "hdb" };
-    private static final String[] HORSE_MARKING_TEXTURES = new String[] { null, "textures/entity/horse/horse_markings_white.png", "textures/entity/horse/horse_markings_whitefield.png", "textures/entity/horse/horse_markings_whitedots.png", "textures/entity/horse/horse_markings_blackdots.png" };
-    private static final String[] HORSE_MARKING_TEXTURES_ABBR = new String[] { "", "wo_", "wmo", "wdo", "bdo" };
-    private int eatingHaystackCounter;
-    private int openMouthCounter;
+    private static final DataParameter<Byte> STATUS = EntityDataManager.<Byte>createKey(EntityHorse.class,
+            DataSerializers.BYTE);
+    private static final DataParameter<Integer> HORSE_TYPE = EntityDataManager.<Integer>createKey(EntityHorse.class,
+            DataSerializers.VARINT);
+    private static final DataParameter<Integer> HORSE_VARIANT = EntityDataManager.<Integer>createKey(EntityHorse.class,
+            DataSerializers.VARINT);
+    private static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager
+            .<Optional<UUID>>createKey(EntityHorse.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+    private static final DataParameter<Integer> HORSE_ARMOR = EntityDataManager.<Integer>createKey(EntityHorse.class,
+            DataSerializers.VARINT);
+
     private int jumpRearingCounter;
-    public int tailCounter;
     public int sprintCounter;
     protected boolean horseJumping;
-    private AnimalChest horseChest;
-    private boolean hasReproduced;
-    /** "The higher this value, the more likely the horse is to be tamed next time a player rides it." */
+    /**
+     * "The higher this value, the more likely the horse is to be tamed next
+     * time a player rides it."
+     */
     protected int temper;
     protected float jumpPower;
     private boolean allowStandSliding;
@@ -111,7 +111,6 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
         this.isImmuneToFire = false;
         this.setChested(false);
         this.stepHeight = 1.0F;
-        this.initHorseChest();
     }
 
     @Override
@@ -131,7 +130,7 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
         this.dataManager.register(STATUS, Byte.valueOf((byte) 0));
         this.dataManager.register(HORSE_TYPE, Integer.valueOf(HorseType.HORSE.getOrdinal()));
         this.dataManager.register(HORSE_VARIANT, Integer.valueOf(0));
-        this.dataManager.register(OWNER_UNIQUE_ID, Optional.<UUID> absent());
+        this.dataManager.register(OWNER_UNIQUE_ID, Optional.<UUID>absent());
         this.dataManager.register(HORSE_ARMOR, Integer.valueOf(HorseArmorType.NONE.getOrdinal()));
     }
 
@@ -227,12 +226,9 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
         return this.getHorseWatchableBoolean(16);
     }
 
-    public boolean getHasReproduced() {
-        return this.hasReproduced;
-    }
-
     /**
-     * Set horse armor stack (for example: new ItemStack(Items.iron_horse_armor))
+     * Set horse armor stack (for example: new
+     * ItemStack(Items.iron_horse_armor))
      */
     public void setHorseArmorStack(ItemStack itemStackIn) {
         HorseArmorType horsearmortype = HorseArmorType.getByItemStack(itemStackIn);
@@ -244,7 +240,8 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
             int i = horsearmortype.getProtection();
 
             if (i != 0) {
-                this.getEntityAttribute(SharedMonsterAttributes.ARMOR).applyModifier((new AttributeModifier(ARMOR_MODIFIER_UUID, "Horse armor bonus", i, 0)).setSaved(false));
+                this.getEntityAttribute(SharedMonsterAttributes.ARMOR).applyModifier(
+                        (new AttributeModifier(ARMOR_MODIFIER_UUID, "Horse armor bonus", i, 0)).setSaved(false));
             }
         }
     }
@@ -257,10 +254,6 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
         this.setHorseWatchableBoolean(8, chested);
     }
 
-    public void setHasReproduced(boolean hasReproducedIn) {
-        this.hasReproduced = hasReproducedIn;
-    }
-
     public void setHorseSaddled(boolean saddled) {
         this.setHorseWatchableBoolean(4, saddled);
     }
@@ -271,11 +264,13 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
         Entity entity = source.getEntity();
-        return this.isBeingRidden() && entity != null && this.isRidingOrBeingRiddenBy(entity) ? false : super.attackEntityFrom(source, amount);
+        return this.isBeingRidden() && entity != null && this.isRidingOrBeingRiddenBy(entity) ? false
+                : super.attackEntityFrom(source, amount);
     }
 
     /**
-     * Returns true if this entity should push and be pushed by other entities when colliding.
+     * Returns true if this entity should push and be pushed by other entities
+     * when colliding.
      */
     @Override
     public boolean canBePushed() {
@@ -306,12 +301,14 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
                 }
             }
 
-            IBlockState iblockstate = this.worldObj.getBlockState(new BlockPos(this.posX, this.posY - 0.2D - this.prevRotationYaw, this.posZ));
+            IBlockState iblockstate = this.worldObj
+                    .getBlockState(new BlockPos(this.posX, this.posY - 0.2D - this.prevRotationYaw, this.posZ));
             Block block = iblockstate.getBlock();
 
             if (iblockstate.getMaterial() != Material.AIR && !this.isSilent()) {
                 SoundType soundtype = block.getSoundType();
-                this.worldObj.playSound((EntityPlayer) null, this.posX, this.posY, this.posZ, soundtype.getStepSound(), this.getSoundCategory(), soundtype.getVolume() * 0.5F, soundtype.getPitch() * 0.75F);
+                this.worldObj.playSound((EntityPlayer) null, this.posX, this.posY, this.posZ, soundtype.getStepSound(),
+                        this.getSoundCategory(), soundtype.getVolume() * 0.5F, soundtype.getPitch() * 0.75F);
             }
         }
     }
@@ -323,40 +320,18 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
         return 2;
     }
 
-    private void initHorseChest() {
-        AnimalChest animalchest = this.horseChest;
-        this.horseChest = new AnimalChest("HorseChest", this.getChestSize());
-        this.horseChest.setCustomName(this.getName());
-
-        if (animalchest != null) {
-            animalchest.removeInventoryChangeListener(this);
-            int i = Math.min(animalchest.getSizeInventory(), this.horseChest.getSizeInventory());
-
-            for (int j = 0; j < i; ++j) {
-                ItemStack itemstack = animalchest.getStackInSlot(j);
-
-                if (itemstack != null) {
-                    this.horseChest.setInventorySlotContents(j, itemstack.copy());
-                }
-            }
-        }
-
-        this.horseChest.addInventoryChangeListener(this);
-        this.updateHorseSlots();
-        this.itemHandler = new net.minecraftforge.items.wrapper.InvWrapper(this.horseChest);
-    }
-
     /**
      * Updates the items in the saddle and armor slots of the horse's inventory.
      */
     private void updateHorseSlots() {
         if (!this.worldObj.isRemote) {
-            this.setHorseSaddled(this.horseChest.getStackInSlot(0) != null);
+            this.setHorseSaddled(true);
         }
     }
 
     /**
-     * Called by InventoryBasic.onInventoryChanged() on a array that is never filled.
+     * Called by InventoryBasic.onInventoryChanged() on a array that is never
+     * filled.
      */
     @Override
     public void onInventoryChanged(InventoryBasic invBasic) {
@@ -378,7 +353,8 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
     }
 
     /**
-     * Checks if the entity's current position is a valid location to spawn this entity.
+     * Checks if the entity's current position is a valid location to spawn this
+     * entity.
      */
     @Override
     public boolean getCanSpawnHere() {
@@ -390,7 +366,8 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
         double d0 = Double.MAX_VALUE;
         Entity entity = null;
 
-        for (Entity entity1 : this.worldObj.getEntitiesInAABBexcluding(entityIn, entityIn.getEntityBoundingBox().addCoord(distance, distance, distance), IS_HORSE_BREEDING)) {
+        for (Entity entity1 : this.worldObj.getEntitiesInAABBexcluding(entityIn,
+                entityIn.getEntityBoundingBox().addCoord(distance, distance, distance), IS_HORSE_BREEDING)) {
             double d1 = entity1.getDistanceSq(entityIn.posX, entityIn.posY, entityIn.posZ);
 
             if (d1 < d0) {
@@ -439,7 +416,8 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
     }
 
     /**
-     * Get number of ticks, at least during which the living entity will be silent.
+     * Get number of ticks, at least during which the living entity will be
+     * silent.
      */
     @Override
     public int getTalkInterval() {
@@ -464,12 +442,6 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
         if (stack != null && stack.getItem() == ModItems.spawnShip) {
             this.setTamedBy(player);
             this.worldObj.setEntityState(this, (byte) 7);
-            return true;
-        }
-
-        if (stack != null && stack.getItem() == Items.SADDLE) {
-            horseChest.setInventorySlotContents(0, stack.copy());
-            stack.stackSize--;
             return true;
         }
 
@@ -523,39 +495,21 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
     }
 
     /**
-     * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
-     * the animal type)
+     * Checks if the parameter is an item which this animal can be fed to breed
+     * it (wheat, carrots or seeds depending on the animal type)
      */
     @Override
     public boolean isBreedingItem(@Nullable ItemStack stack) {
         return false;
     }
 
-    private void moveTail() {
-        this.tailCounter = 1;
-    }
-
     /**
-     * Called when the mob's health reaches 0.
-     */
-    @Override
-    public void onDeath(DamageSource cause) {
-        super.onDeath(cause);
-
-        if (!this.worldObj.isRemote) {
-            this.dropChestItems();
-        }
-    }
-
-    /**
-     * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
-     * use this to react to sunlight and start to burn.
+     * Called frequently so the entity can update its state every tick as
+     * required. For example, zombies and skeletons use this to react to
+     * sunlight and start to burn.
      */
     @Override
     public void onLivingUpdate() {
-        if (this.rand.nextInt(200) == 0) {
-            this.moveTail();
-        }
 
         super.onLivingUpdate();
 
@@ -564,13 +518,12 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
                 this.heal(1.0F);
             }
 
-            if (!this.isEatingHaystack() && !this.isBeingRidden() && this.rand.nextInt(300) == 0 && this.worldObj.getBlockState(new BlockPos(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY) - 1, MathHelper.floor_double(this.posZ))).getBlock() == Blocks.GRASS) {
+            if (!this.isEatingHaystack() && !this.isBeingRidden() && this.rand.nextInt(300) == 0
+                    && this.worldObj
+                            .getBlockState(new BlockPos(MathHelper.floor_double(this.posX),
+                                    MathHelper.floor_double(this.posY) - 1, MathHelper.floor_double(this.posZ)))
+                            .getBlock() == Blocks.GRASS) {
                 this.setEatingHaystack(true);
-            }
-
-            if (this.isEatingHaystack() && ++this.eatingHaystackCounter > 50) {
-                this.eatingHaystackCounter = 0;
-                this.setEatingHaystack(false);
             }
 
             if (this.isSkeletonTrap() && this.skeletonTrapTime++ >= 18000) {
@@ -591,18 +544,9 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
             this.resetTexturePrefix();
         }
 
-        if (this.openMouthCounter > 0 && ++this.openMouthCounter > 30) {
-            this.openMouthCounter = 0;
-            this.setHorseWatchableBoolean(128, false);
-        }
-
         if (this.canPassengerSteer() && this.jumpRearingCounter > 0 && ++this.jumpRearingCounter > 20) {
             this.jumpRearingCounter = 0;
             this.setRearing(false);
-        }
-
-        if (this.tailCounter > 0 && ++this.tailCounter > 8) {
-            this.tailCounter = 0;
         }
 
         if (this.sprintCounter > 0) {
@@ -640,7 +584,8 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
             }
         } else {
             this.allowStandSliding = false;
-            this.rearingAmount += (0.8F * this.rearingAmount * this.rearingAmount * this.rearingAmount - this.rearingAmount) * 0.6F - 0.05F;
+            this.rearingAmount += (0.8F * this.rearingAmount * this.rearingAmount * this.rearingAmount
+                    - this.rearingAmount) * 0.6F - 0.05F;
 
             if (this.rearingAmount < 0.0F) {
                 this.rearingAmount = 0.0F;
@@ -681,10 +626,6 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
             this.jumpRearingCounter = 1;
             this.setRearing(true);
         }
-    }
-
-    public void dropChestItems() {
-        this.dropItemsInChest(this, this.horseChest);
     }
 
     private void dropItemsInChest(Entity entityIn, AnimalChest animalChestIn) {
@@ -755,7 +696,8 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
             this.jumpMovementFactor = this.getAIMoveSpeed() * 0.1F;
 
             if (this.canPassengerSteer()) {
-                this.setAIMoveSpeed((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
+                this.setAIMoveSpeed(
+                        (float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
                 super.moveEntityWithHeading(strafe, forward);
             } else if (entitylivingbase instanceof EntityPlayer) {
                 this.motionX = 0.0D;
@@ -793,7 +735,6 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
         super.writeEntityToNBT(compound);
         compound.setBoolean("EatingHaystack", this.isEatingHaystack());
         compound.setBoolean("ChestedHorse", this.isChested());
-        compound.setBoolean("HasReproduced", this.getHasReproduced());
         compound.setBoolean("Bred", this.isBreeding());
         compound.setBoolean("SkeletonTrap", this.isSkeletonTrap());
         compound.setInteger("SkeletonTrapTime", this.skeletonTrapTime);
@@ -802,30 +743,7 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
             compound.setString("OwnerUUID", this.getOwnerUniqueId().toString());
         }
 
-        if (this.isChested()) {
-            NBTTagList nbttaglist = new NBTTagList();
 
-            for (int i = 2; i < this.horseChest.getSizeInventory(); ++i) {
-                ItemStack itemstack = this.horseChest.getStackInSlot(i);
-
-                if (itemstack != null) {
-                    NBTTagCompound nbttagcompound = new NBTTagCompound();
-                    nbttagcompound.setByte("Slot", (byte) i);
-                    itemstack.writeToNBT(nbttagcompound);
-                    nbttaglist.appendTag(nbttagcompound);
-                }
-            }
-
-            compound.setTag("Items", nbttaglist);
-        }
-
-        if (this.horseChest.getStackInSlot(1) != null) {
-            compound.setTag("ArmorItem", this.horseChest.getStackInSlot(1).writeToNBT(new NBTTagCompound()));
-        }
-
-        if (this.horseChest.getStackInSlot(0) != null) {
-            compound.setTag("SaddleItem", this.horseChest.getStackInSlot(0).writeToNBT(new NBTTagCompound()));
-        }
     }
 
     /**
@@ -837,7 +755,6 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
         this.setEatingHaystack(compound.getBoolean("EatingHaystack"));
         this.setBreeding(compound.getBoolean("Bred"));
         this.setChested(compound.getBoolean("ChestedHorse"));
-        this.setHasReproduced(compound.getBoolean("HasReproduced"));
         this.setHorseTamed(compound.getBoolean("Tame"));
         this.setSkeletonTrap(compound.getBoolean("SkeletonTrap"));
         this.skeletonTrapTime = compound.getInteger("SkeletonTrapTime");
@@ -857,38 +774,10 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
         IAttributeInstance iattributeinstance = this.getAttributeMap().getAttributeInstanceByName("Speed");
 
         if (iattributeinstance != null) {
-            this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(iattributeinstance.getBaseValue() * 0.25D);
+            this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED)
+                    .setBaseValue(iattributeinstance.getBaseValue() * 0.25D);
         }
 
-        if (this.isChested()) {
-            NBTTagList nbttaglist = compound.getTagList("Items", 10);
-            this.initHorseChest();
-
-            for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-                NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-                int j = nbttagcompound.getByte("Slot") & 255;
-
-                if (j >= 2 && j < this.horseChest.getSizeInventory()) {
-                    this.horseChest.setInventorySlotContents(j, ItemStack.loadItemStackFromNBT(nbttagcompound));
-                }
-            }
-        }
-
-        if (compound.hasKey("ArmorItem", 10)) {
-            ItemStack itemstack = ItemStack.loadItemStackFromNBT(compound.getCompoundTag("ArmorItem"));
-
-            if (itemstack != null && HorseArmorType.isHorseArmor(itemstack.getItem())) {
-                this.horseChest.setInventorySlotContents(1, itemstack);
-            }
-        }
-
-        if (compound.hasKey("SaddleItem", 10)) {
-            ItemStack itemstack1 = ItemStack.loadItemStackFromNBT(compound.getCompoundTag("SaddleItem"));
-
-            if (itemstack1 != null && itemstack1.getItem() == Items.SADDLE) {
-                this.horseChest.setInventorySlotContents(0, itemstack1);
-            }
-        }
 
         this.updateHorseSlots();
     }
@@ -902,8 +791,9 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
     }
 
     /**
-     * Called only once on an entity when first time spawned, via egg, mob spawner, natural spawning etc, but not called
-     * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
+     * Called only once on an entity when first time spawned, via egg, mob
+     * spawner, natural spawning etc, but not called when entity is reloaded
+     * from nbt. Mainly used for initializing attributes and inventory
      */
     @Override
     @Nullable
@@ -939,7 +829,8 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
             this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(this.getModifiedMaxHealth());
 
             if (horsetype == HorseType.HORSE) {
-                this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.getModifiedMovementSpeed());
+                this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED)
+                        .setBaseValue(this.getModifiedMovementSpeed());
             } else {
                 this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.17499999701976776D);
             }
@@ -956,8 +847,9 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
     }
 
     /**
-     * returns true if all the conditions for steering the entity are met. For pigs, this is true if it is being ridden
-     * by a player and the player is holding a carrot-on-a-stick
+     * returns true if all the conditions for steering the entity are met. For
+     * pigs, this is true if it is being ridden by a player and the player is
+     * holding a carrot-on-a-stick
      */
     @Override
     public boolean canBeSteered() {
@@ -1015,7 +907,8 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
     }
 
     /**
-     * "Spawns particles for the horse entity. par1 tells whether to spawn hearts. If it is false, it spawns smoke."
+     * "Spawns particles for the horse entity. par1 tells whether to spawn
+     * hearts. If it is false, it spawns smoke."
      */
     @SideOnly(Side.CLIENT)
     protected void spawnHorseParticles(boolean p_110216_1_) {
@@ -1025,7 +918,10 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
             double d0 = this.rand.nextGaussian() * 0.02D;
             double d1 = this.rand.nextGaussian() * 0.02D;
             double d2 = this.rand.nextGaussian() * 0.02D;
-            this.worldObj.spawnParticle(enumparticletypes, this.posX + this.rand.nextFloat() * this.width * 2.0F - this.width, this.posY + 0.5D + this.rand.nextFloat() * this.height, this.posZ + this.rand.nextFloat() * this.width * 2.0F - this.width, d0, d1, d2, new int[0]);
+            this.worldObj.spawnParticle(enumparticletypes,
+                    this.posX + this.rand.nextFloat() * this.width * 2.0F - this.width,
+                    this.posY + 0.5D + this.rand.nextFloat() * this.height,
+                    this.posZ + this.rand.nextFloat() * this.width * 2.0F - this.width, d0, d1, d2, new int[0]);
         }
     }
 
@@ -1055,7 +951,8 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
             float f = MathHelper.cos(this.renderYawOffset * 0.017453292F);
             float f1 = 0.7F * this.prevRearingAmount;
             float f2 = 0.15F * this.prevRearingAmount;
-            passenger.setPosition(this.posX + f1 * f3, this.posY + this.getMountedYOffset() + passenger.getYOffset() + f2, this.posZ - f1 * f);
+            passenger.setPosition(this.posX + f1 * f3,
+                    this.posY + this.getMountedYOffset() + passenger.getYOffset() + f2, this.posZ - f1 * f);
 
             if (passenger instanceof EntityLivingBase) {
                 ((EntityLivingBase) passenger).renderYawOffset = this.renderYawOffset;
@@ -1074,14 +971,16 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
      * Returns randomized jump strength
      */
     private double getModifiedJumpStrength() {
-        return 0.4000000059604645D + this.rand.nextDouble() * 0.2D + this.rand.nextDouble() * 0.2D + this.rand.nextDouble() * 0.2D;
+        return 0.4000000059604645D + this.rand.nextDouble() * 0.2D + this.rand.nextDouble() * 0.2D
+                + this.rand.nextDouble() * 0.2D;
     }
 
     /**
      * Returns randomized movement speed
      */
     private double getModifiedMovementSpeed() {
-        return (0.44999998807907104D + this.rand.nextDouble() * 0.3D + this.rand.nextDouble() * 0.3D + this.rand.nextDouble() * 0.3D) * 0.25D;
+        return (0.44999998807907104D + this.rand.nextDouble() * 0.3D + this.rand.nextDouble() * 0.3D
+                + this.rand.nextDouble() * 0.3D) * 0.25D;
     }
 
     public boolean isSkeletonTrap() {
@@ -1105,35 +1004,10 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
         return this.height;
     }
 
-    @Override
-    public boolean replaceItemInInventory(int inventorySlot, @Nullable ItemStack itemStackIn) {
-        int i = inventorySlot - 400;
-
-        if (i >= 0 && i < 2 && i < this.horseChest.getSizeInventory()) {
-            if (i == 0 && itemStackIn != null && itemStackIn.getItem() != Items.SADDLE) {
-                return false;
-            } else if (i != 1 || (itemStackIn == null || HorseArmorType.isHorseArmor(itemStackIn.getItem()))) {
-                this.horseChest.setInventorySlotContents(i, itemStackIn);
-                this.updateHorseSlots();
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            int j = inventorySlot - 500 + 2;
-
-            if (j >= 2 && j < this.horseChest.getSizeInventory()) {
-                this.horseChest.setInventorySlotContents(j, itemStackIn);
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
-
     /**
-     * For vehicles, the first passenger is generally considered the controller and "drives" the vehicle. For example,
-     * Pigs, Horses, and Boats are generally "steered" by the controlling passenger.
+     * For vehicles, the first passenger is generally considered the controller
+     * and "drives" the vehicle. For example, Pigs, Horses, and Boats are
+     * generally "steered" by the controlling passenger.
      */
     @Override
     @Nullable
@@ -1160,19 +1034,25 @@ public class RideableShip extends EntityAnimal implements IInventoryChangedListe
     }
 
     // FORGE
-    private net.minecraftforge.items.IItemHandler itemHandler = null; // Initialized by initHorseChest above.
+    private net.minecraftforge.items.IItemHandler itemHandler = null; // Initialized
+                                                                      // by
+                                                                      // initHorseChest
+                                                                      // above.
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, net.minecraft.util.EnumFacing facing) {
+    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability,
+            net.minecraft.util.EnumFacing facing) {
         if (capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
             return (T) itemHandler;
         return super.getCapability(capability, facing);
     }
 
     @Override
-    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, net.minecraft.util.EnumFacing facing) {
-        return capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability,
+            net.minecraft.util.EnumFacing facing) {
+        return capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
+                || super.hasCapability(capability, facing);
     }
 
     @Override
