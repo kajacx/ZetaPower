@@ -30,7 +30,7 @@ public class L {
 
     public static void d(String msg) {
         System.out.println("Debug: " + msg);
-        trace();
+        //trace();
     }
 
     public static void d(String msg, int traceDepth) {

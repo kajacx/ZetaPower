@@ -1,6 +1,7 @@
 package com.hrkalk.zetapower.entities;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -102,8 +103,16 @@ public class RideableShip extends Entity {// EntityAnimal {
         }
     }
 
+
+    private List<String> whitelist = Arrays.asList("RideableShipReload", "zetapower.utils");
+
     private Class<?> loadClass() {
-        FilteredClassLoader classLoader = new FilteredClassLoader((className) -> className.contains("RideableShipReload"), "../bin");
+        FilteredClassLoader classLoader = new FilteredClassLoader((className) -> whitelist.stream().anyMatch(whitelisted -> {
+            //L.d("Whitelisted: " + whitelisted);
+            //L.d("ClassName: " + className);
+            //L.d("Result: " + className.contains(whitelisted));
+            return className.contains(whitelisted);
+        }), "../bin");
         Class<?> contextClass = classLoader.load("com.hrkalk.zetapower.entities.RideableShipReload");
         return contextClass;
         //return new DynamicClassLoader("../bin").load("com.hrkalk.zetapower.entities.RideableShipReload");
