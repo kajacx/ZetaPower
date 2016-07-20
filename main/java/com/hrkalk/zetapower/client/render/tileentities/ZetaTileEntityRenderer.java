@@ -29,7 +29,8 @@ public class ZetaTileEntityRenderer extends TileEntitySpecialRenderer<ZetaChest>
                 instance = (TileEntitySpecialRenderer<ZetaChest>) i;
             }
 
-            //instance.renderTileEntityAt(te, x, y, z, partialTicks, destroyStage);
+            // instance.renderTileEntityAt(te, x, y, z, partialTicks,
+            // destroyStage);
             if (te.getEnumFacing() != null) {
                 ReflectUtil.invoke("renderTileEntityAt2", instance, x, y, z, partialTicks, destroyStage, te.getEnumFacing().getHorizontalIndex());
             } else {
@@ -43,8 +44,7 @@ public class ZetaTileEntityRenderer extends TileEntitySpecialRenderer<ZetaChest>
     }
 
     private Class<?> loadClass() {
-        return new DynamicClassLoader("../bin")
-                .load("com.hrkalk.zetapower.client.render.tileentities.ZetaTileEntityRendererReload");
+        return new DynamicClassLoader("../bin").load("com.hrkalk.zetapower.client.render.tileentities.ZetaTileEntityRendererReload");
     }
 
 }

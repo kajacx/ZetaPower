@@ -63,9 +63,9 @@ public class EntityRotator {
             tmp2.set(rotForward);
         }
         //L.s("Tmp2: " + tmp2 + ", atan: " + Math.atan2(tmp2.z, tmp2.x) * MathUtils.radToDeg);
-        GlStateManager.rotate(angle2 * MathUtils.radToDeg, tmp2.x, tmp2.y, tmp2.z);//*/
+        GlStateManager.rotate(angle2 * MathUtils.radToDegF, tmp2.x, tmp2.y, tmp2.z);//*/
 
-        GlStateManager.rotate(angle1 * MathUtils.radToDeg, tmp1.x, tmp1.y, tmp1.z);//*/
+        GlStateManager.rotate(angle1 * MathUtils.radToDegF, tmp1.x, tmp1.y, tmp1.z);//*/
 
         invertedRotation.setIdentity();
         invertedRotation.rotate(angle2, tmp2);

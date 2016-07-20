@@ -1,7 +1,7 @@
 package com.hrkalk.zetapower.utils;
 
 public class L {
-    public static int traceDepth = 2;
+    public static int traceDepth = 1;
 
     private static int spamC = 0;
 
@@ -50,8 +50,8 @@ public class L {
     private static void trace(int depth) { //Cheers, love
         if (depth > 0) {
             StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-            System.out.println("Called from:");
-            for (int i = 3; i < 3 + depth; i++) {
+            System.out.print("  --  Called from: ");
+            for (int i = 4; i < 4 + depth; i++) {
                 System.out.format("%s.%s (%d)%n", trace[i].getClassName(), trace[i].getMethodName(), trace[i].getLineNumber());
             }
         }

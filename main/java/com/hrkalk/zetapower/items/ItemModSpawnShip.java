@@ -1,5 +1,6 @@
 package com.hrkalk.zetapower.items;
 
+import com.hrkalk.zetapower.entities.RideableShip;
 import com.hrkalk.zetapower.utils.L;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,15 +22,17 @@ public class ItemModSpawnShip extends BasicItem {
      */
     @Override
     public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        L.d("on item use");
         if (worldIn.isRemote) {
-            return EnumActionResult.SUCCESS;
+            return EnumActionResult.PASS;
         }
 
-        pos = pos.offset(facing);
+        // pos = pos.offset(facing);
 
-        //Entity entity = spawnCreature(worldIn, getEntityIdFromItem(stack), pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+        RideableShip ship = new RideableShip(worldIn, playerIn.posX, playerIn.posY + 2, playerIn.posZ);
 
-        L.i("This really doesnt do anything yet");
+
+        worldIn.spawnEntityInWorld(ship);
 
         return EnumActionResult.SUCCESS;
     }

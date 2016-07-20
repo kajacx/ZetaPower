@@ -42,7 +42,7 @@ item.custom_snack.name=Custom Snack
 container.zeta_chest=Zeta Chest
 
 <Entities>
-entity.zetapower.ridable_ship.name=Ridable Ship
+entity.zetapower.rideable_ship.name=Ridable Ship
 
 <Key Bindings>
 key.categories.zetapower=Zeta Power Keys

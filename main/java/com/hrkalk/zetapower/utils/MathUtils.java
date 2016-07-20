@@ -8,12 +8,22 @@ public class MathUtils {
     /**
      * Multiply by this to convert radians to degrees
      */
-    public static float radToDeg = 180 / (float) Math.PI;
+    public static double radToDeg = 180 / Math.PI;
 
     /**
      * Multiply by this to convert degrees to radians
      */
-    public static float degToRad = (float) Math.PI / 180;
+    public static double degToRad = Math.PI / 180;
+
+    /**
+     * Multiply by this to convert radians to degrees
+     */
+    public static float radToDegF = (float) radToDeg;
+
+    /**
+     * Multiply by this to convert degrees to radians
+     */
+    public static float degToRadF = (float) degToRad;
 
     /**
      * Multiplies matrix with a vector, including transposition
