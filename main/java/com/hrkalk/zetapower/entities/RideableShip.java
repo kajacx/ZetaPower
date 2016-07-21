@@ -151,16 +151,16 @@ public class RideableShip extends Entity {// EntityAnimal {
 
     @Override
     public void readEntityFromNBT(NBTTagCompound compound) {
-        compound.setDouble("posX", this.posX);
-        compound.setDouble("posY", this.posY);
-        compound.setDouble("posZ", this.posZ);
+        this.posX = NBTReader.readDoubleOr(compound, "posX", 0);
+        this.posY = NBTReader.readDoubleOr(compound, "posY", 0);
+        this.posZ = NBTReader.readDoubleOr(compound, "posZ", 0);
     }
 
     @Override
     public void writeEntityToNBT(NBTTagCompound compound) {
-        this.posX = NBTReader.readDoubleOr(compound, "posX", 0);
-        this.posY = NBTReader.readDoubleOr(compound, "posY", 0);
-        this.posZ = NBTReader.readDoubleOr(compound, "posZ", 0);
+        compound.setDouble("posX", this.posX);
+        compound.setDouble("posY", this.posY);
+        compound.setDouble("posZ", this.posZ);
     }
 
     public interface IRideableShipReload {

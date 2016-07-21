@@ -10,7 +10,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class RideableShipReload {
     private boolean goUp = true; //always go Y+ only when holding the up key
-    private boolean goForw = true; //move horizontaly only when holding the horizontal keys 
+    private boolean goForw = false; //move horizontaly only when holding the horizontal keys 
 
     private Vector3d lookForw = new Vector3d();
     private Vector3d lookUp = new Vector3d();
@@ -29,10 +29,14 @@ public class RideableShipReload {
     }
 
     public void moveEntity(RideableShip thiz, EntityLivingBase entitylivingbase) {
+
         if (thiz.worldObj.isRemote) {
             double speed = 10 / 20d;
             double rotationXZ = entitylivingbase.rotationYaw * MathUtils.degToRadF;
             double rotationY = entitylivingbase.rotationPitch * MathUtils.degToRadF;
+
+            thiz.rotationYaw = entitylivingbase.rotationYaw;
+            thiz.rotationPitch = entitylivingbase.rotationPitch;
 
             fillLookVectors(rotationXZ, rotationY);
             fillMoveVectors(rotationXZ, rotationY);
