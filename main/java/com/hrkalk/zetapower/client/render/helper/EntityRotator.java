@@ -9,7 +9,7 @@ import com.hrkalk.zetapower.utils.MathUtils;
 import net.minecraft.client.renderer.BlockFluidRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 
-public class EntityRotator {
+public class EntityRotator extends TestHelper {
     private Vector3f forward = new Vector3f(1, 0, 0); //reference forward vector, stored at creation
     private Vector3f up = new Vector3f(0, 1, 0); //reference up vector, stored at creation
 

@@ -5,13 +5,17 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.hrkalk.zetapower.client.render.helper.EntityRotator;
 import com.hrkalk.zetapower.utils.L;
@@ -27,8 +31,9 @@ public class DynamicClassReloadPrepare {
     public String watchedPath;
 
     private Set<String> usedClasses = new HashSet<>();
-    //private Set<String> usedPackages = new HashSet<>();
     private PrintWriter[] writers = new PrintWriter[2];
+    private List<Field> exposedFields = new ArrayList<>();
+    private List<Method> exposedMethods = new ArrayList<>();
 
     public static void main(String[] args) {
         DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(EntityRotator.class);
@@ -43,7 +48,7 @@ public class DynamicClassReloadPrepare {
     public DynamicClassReloadPrepare(Class<?> watchedClass, int reloadTicks) {
         this.watchedClass = watchedClass;
         watchedPath = watchedClass.getCanonicalName().replace('.', '/');
-        reloadWhen.add(new ReloadOnChange(watchedClass));
+        reloadWhen.add(new ReloadOnChange(watchedClass, binFolder));
         reloadWhen.add(new ReloadEveryNTicks(reloadTicks));
     }
 
@@ -68,9 +73,12 @@ public class DynamicClassReloadPrepare {
     public void doWork() {
         try {
             makeCopy();
+            prepareExpose();
             loadUsedClasses();
             prepareSourceFiles();
-
+            prepareFields();
+            exposeProtected();
+            printMethods();
             finishSourceFiles();
         } catch (IOException ex) {
             System.out.println("Exception when working");
@@ -98,29 +106,67 @@ public class DynamicClassReloadPrepare {
         out.transferFrom(in, 0, in.size());
     }
 
+    private void prepareExpose() {
+
+        Class<?> clazz = watchedClass.getSuperclass();
+        while (!clazz.equals(Object.class)) {
+            for (Field f : clazz.getDeclaredFields()) {
+                if (Modifier.isProtected(f.getModifiers())) {
+                    exposedFields.add(f);
+                }
+            }
+            for (Method m : clazz.getDeclaredMethods()) {
+                if (Modifier.isProtected(m.getModifiers()) && m.getDeclaringClass().equals(clazz)) {
+                    exposedMethods.add(m);
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+    }
+
     private void loadUsedClasses() {
         usedClasses.add(watchedClass.getCanonicalName());
+        usedClasses.add(watchedClass.getSuperclass().getCanonicalName());
         for (Method m : targetedMethods) {
             for (Class<?> c : m.getParameterTypes()) {
-                //L.d(c + " " + (c.isPrimitive()));
                 if (!c.isPrimitive()) {
                     usedClasses.add(c.getCanonicalName());
-                    //usedPackages.add(c.getPackage().getName());
-                    //L.d("full: " + c.getCanonicalName());
-                    //L.d("package: " + c.getPackage().getName());
-                    //L.d("name: " + c.getSimpleName());
                 }
+            }
+            Class<?> c = m.getReturnType();
+            if (!c.isPrimitive()) {
+                usedClasses.add(c.getCanonicalName());
             }
         }
 
+        usedClasses.add(DynamicReloader.class.getCanonicalName());
         usedClasses.add(ReloadTrigger.class.getCanonicalName());
         for (ReloadTrigger r : reloadWhen) {
             usedClasses.add(r.getClass().getCanonicalName());
         }
+
+        for (Method m : exposedMethods) {
+            for (Class<?> c : m.getParameterTypes()) {
+                if (!c.isPrimitive()) {
+                    usedClasses.add(c.getCanonicalName());
+                }
+            }
+            Class<?> c = m.getReturnType();
+            if (!c.isPrimitive()) {
+                usedClasses.add(c.getCanonicalName());
+            }
+        }
+
+        for (Field f : exposedFields) {
+            Class<?> c = f.getType();
+            if (!c.isPrimitive()) {
+                usedClasses.add(c.getCanonicalName());
+            }
+        }
     }
 
     private void prepareSourceFiles() throws IOException {
-        writers[0] = new PrintWriter(srcFolder + '/' + watchedPath + "_TODO-remove-this.java");
+        writers[0] = new PrintWriter(srcFolder + '/' + watchedPath + "_TODO.java");
         writers[1] = new PrintWriter(srcFolder + '/' + watchedPath + "_Reload.java");
 
         for (PrintWriter pw : writers) {
@@ -133,11 +179,53 @@ public class DynamicClassReloadPrepare {
             pw.println();
         }
 
-        writers[0].println("public class " + watchedClass.getSimpleName() + " extends " + watchedClass.getSuperclass().getSimpleName() + " {");
+        writers[0].println("public class " + watchedClass.getSimpleName() + "_TODO extends " + watchedClass.getSuperclass().getSimpleName() + " {");
         writers[1].println("public class " + watchedClass.getSimpleName() + "_Reload {");
     }
 
-    private void prepareOrigFields() {
+    private void prepareFields() {
+        writers[0].println();
+        writers[0].println("private DynamicReloader reloader = new DynamicReloader(" + watchedClass.getSimpleName() + ".class, \"" + binFolder + "\");");
+        writers[0].println();
+        writers[0].println('{');
+        for (ReloadTrigger trigger : reloadWhen) {
+            writers[0].println("reloader.reloadWhen.add(" + trigger.reverseConstructor() + ");");
+        }
+        writers[0].println('}');
+
+        writers[1].println();
+        writers[1].println("public " + watchedClass.getSimpleName() + " thiz;");
+    }
+
+    private void exposeProtected() {
+        for (Field f : exposedFields) {
+            writers[0].println();
+            writers[0].println("public " + f.getType().getSimpleName() + " get_" + f.getName() + "() { return " + f.getName() + "; }");
+            writers[0].println();
+            writers[0].println("public void set_" + f.getName() + "(" + f.getType().getSimpleName() + " " + f.getName() + ") { this." + f.getName() + " = " + f.getName() + "; }");
+        }
+        for (Method m : exposedMethods) {
+            List<String> params = new ArrayList<>();
+            List<String> args = new ArrayList<>();
+
+            int counter = 0;
+            for (Parameter p : m.getParameters()) {
+                String name = p.isNamePresent() ? p.getName() : ("arg" + (++counter));
+                params.add(p.getType().getSimpleName() + " " + name);
+                args.add(name);
+            }
+
+            String paramsAll = StringUtils.join(params, ", ");
+            String argsAll = StringUtils.join(args, ", ");
+            String ret = m.getReturnType().getCanonicalName().equals("void") ? "" : "return ";
+
+            writers[0].println();
+            writers[0].println("public " + m.getReturnType().getSimpleName() + " call_" + m.getName() + "(" + paramsAll + ") { " + ret + m.getName() + "(" + argsAll + "); }");
+        }
+
+    }
+
+    private void printMethods() {
 
     }
 
@@ -167,12 +255,13 @@ public class DynamicClassReloadPrepare {
         public String reverseConstructor();
     }
 
-    public class ReloadOnChange implements ReloadTrigger {
+    public static class ReloadOnChange implements ReloadTrigger {
         private File watchedFile;
         private long lastLodaded = Long.MIN_VALUE;
         private Class<?> clazz;
+        private String binFolder;
 
-        public ReloadOnChange(Class<?> clazz) {
+        public ReloadOnChange(Class<?> clazz, String binFolder) {
             this.clazz = clazz;
             String filename = binFolder + '/' + clazz.getCanonicalName().replace('.', '/') + ".class";
             //L.d(filename);
@@ -192,12 +281,12 @@ public class DynamicClassReloadPrepare {
 
         @Override
         public String reverseConstructor() {
-            return "new ReloadonChange(" + clazz.getCanonicalName() + ".class)";
+            return "new ReloadOnChange(" + clazz.getCanonicalName() + ".class, \"" + binFolder + "\")";
         }
 
     }
 
-    public class ReloadEveryNTicks implements ReloadTrigger {
+    public static class ReloadEveryNTicks implements ReloadTrigger {
         private int cap;
         private int cur;
 
