@@ -11,7 +11,7 @@ public class InputHandler {
     public static KeyBinding ping;
     public static KeyBinding pong;
 
-    public static void init() {
+    public static void preInit() {
         // Define the "ping" binding, with (unlocalized) name "key.ping" and
         // the category with (unlocalized) name "key.categories.mymod" and
         // key code 24 ("O", LWJGL constant: Keyboard.KEY_O)

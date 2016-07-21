@@ -2,6 +2,7 @@ package com.hrkalk.zetapower.proxy;
 
 import com.hrkalk.zetapower.client.input.InputHandler;
 import com.hrkalk.zetapower.client.render.blocks.BlockRenderRegister;
+import com.hrkalk.zetapower.client.render.entities.EntitiesRegister;
 import com.hrkalk.zetapower.client.render.items.ItemRenderRegister;
 import com.hrkalk.zetapower.client.render.tileentities.TileEntitiesRegister;
 
@@ -19,7 +20,8 @@ public class ClientProxy extends CommonProxy {
         BlockRenderRegister.preInit();
         ItemRenderRegister.preInit();
         MinecraftForge.EVENT_BUS.register(new InputHandler());
-        InputHandler.init();
+        InputHandler.preInit();
+        EntitiesRegister.preInit();
     }
 
     @Override
