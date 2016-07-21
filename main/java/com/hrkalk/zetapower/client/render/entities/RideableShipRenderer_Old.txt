@@ -18,17 +18,7 @@ public class RideableShipRenderer extends Render {
         reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.client.render.entities.RideableShipRenderer.class, "../bin"));
         reloader.reloadWhen.add(new ReloadEveryNTicks(20));
 
-        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadTrigger");
-        reloader.addToBlacklist("net.minecraft.entity.Entity");
-        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadEveryNTicks");
-        reloader.addToBlacklist("net.minecraft.client.renderer.entity.RenderManager");
-        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadOnChange");
-        reloader.addToBlacklist("com.hrkalk.zetapower.client.render.entities.RideableShipRenderer");
-        reloader.addToBlacklist("net.minecraft.client.renderer.entity.Render");
-        reloader.addToBlacklist("net.minecraft.util.ResourceLocation");
-        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.ReflectUtil");
-        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.DynamicReloader");
-        reloader.addToBlacklist("java.lang.String");
+        reloader.addToBlacklist("poro");
     }
 
     public RideableShipRenderer(RenderManager arg1) {
@@ -75,16 +65,16 @@ public class RideableShipRenderer extends Render {
         renderLivingLabel(arg1, arg2, arg3, arg4, arg5, arg6);
     }
 
-    public boolean call_canRenderName(Entity arg1) {
-        return canRenderName(arg1);
+    public int call_getTeamColor(Entity arg1) {
+        return getTeamColor(arg1);
     }
 
     public void call_renderEntityName(Entity arg1, double arg2, double arg3, double arg4, String arg5, double arg6) {
         renderEntityName(arg1, arg2, arg3, arg4, arg5, arg6);
     }
 
-    public int call_getTeamColor(Entity arg1) {
-        return getTeamColor(arg1);
+    public boolean call_canRenderName(Entity arg1) {
+        return canRenderName(arg1);
     }
 
     public void call_renderName(Entity arg1, double arg2, double arg3, double arg4) {

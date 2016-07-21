@@ -38,6 +38,7 @@ public class RideableShipRendererReload {
 
         public MyModel(RideableShipRenderer thiz) {
             // TODO Auto-generated constructor stub
+            L.d("FFFFF");
         }
 
         @Override

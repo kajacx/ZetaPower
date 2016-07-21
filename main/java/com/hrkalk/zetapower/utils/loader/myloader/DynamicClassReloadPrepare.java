@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -80,6 +81,7 @@ public class DynamicClassReloadPrepare {
             loadUsedClasses();
             prepareSourceFiles();
             prepareFields();
+            prepareConstructors();
             exposeProtected();
             printMethods();
             finishSourceFiles();
@@ -194,18 +196,44 @@ public class DynamicClassReloadPrepare {
         for (ReloadTrigger trigger : reloadWhen) {
             writers[0].println("reloader.reloadWhen.add(" + trigger.reverseConstructor() + ");");
         }
+        writers[0].println();
+        for (String clazz : usedClasses) {
+            writers[0].println("reloader.addToBlacklist(\"" + clazz + "\");");
+        }
         writers[0].println('}');
 
         writers[1].println();
         writers[1].println("public " + watchedClass.getSimpleName() + " thiz;");
     }
 
+    private void prepareConstructors() {
+        for (Constructor<?> c : watchedClass.getSuperclass().getDeclaredConstructors()) {
+            List<String> params = new ArrayList<>();
+            List<String> args = new ArrayList<>();
+
+            int counter = 0;
+            for (Parameter p : c.getParameters()) {
+                String name = p.isNamePresent() ? p.getName() : ("arg" + (++counter));
+                params.add(p.getType().getSimpleName() + " " + name);
+                args.add(name);
+            }
+
+            String paramsAll = StringUtils.join(params, ", ");
+            String argsAll = StringUtils.join(args, ", ");
+
+            writers[0].println();
+            writers[0].println("public " + watchedClass.getSimpleName() + "(" + paramsAll + ") { super(" + argsAll + "); }");
+        }
+    }
+
     private void exposeProtected() {
         for (Field f : exposedFields) {
             writers[0].println();
             writers[0].println("public " + f.getType().getSimpleName() + " get_" + f.getName() + "() { return " + f.getName() + "; }");
-            writers[0].println();
-            writers[0].println("public void set_" + f.getName() + "(" + f.getType().getSimpleName() + " " + f.getName() + ") { this." + f.getName() + " = " + f.getName() + "; }");
+            if (!Modifier.isFinal(f.getModifiers())) {
+                writers[0].println();
+                writers[0].println("public void set_" + f.getName() + "(" + f.getType().getSimpleName() + " " + f.getName() + ") { this." + f.getName() + " = " + f.getName() + "; }");
+            }
         }
         for (Method m : exposedMethods) {
             List<String> params = new ArrayList<>();
@@ -244,7 +272,7 @@ public class DynamicClassReloadPrepare {
 
             String paramsAll = StringUtils.join(params, ", ");
             String argsAll = StringUtils.join(args, ", ");
-            String ret = m.getReturnType().getCanonicalName().equals("void") ? "" : "return ";
+            String ret = m.getReturnType().getCanonicalName().equals("void") ? "" : "return (" + m.getReturnType().getSimpleName() + ") ";
 
             writers[0].println();
             writers[0].println("public " + m.getReturnType().getSimpleName() + " " + m.getName() + "(" + paramsAll + ") {");
@@ -253,12 +281,13 @@ public class DynamicClassReloadPrepare {
             writers[0].println("    } catch(Throwable t) {");
             writers[0].println("        System.out.println(\"Exception while executing reloadable code.\");");
             writers[0].println("        t.printStackTrace(System.out);");
+            writers[0].println("        " + getDefaultReturn(m.getReturnType()));
             writers[0].println("    }");
             writers[0].println("}");
 
             writers[1].println();
             writers[1].println("public " + m.getReturnType().getSimpleName() + " " + m.getName() + "(" + paramsAll + ") {");
-            writers[1].println("    throw new RuntimeException(\"TODO: implement this method.\");");
+            writers[1].println("    " + getDefaultReturn(m.getReturnType()));
             writers[1].println("}");
         }
     }
@@ -272,6 +301,24 @@ public class DynamicClassReloadPrepare {
 
         writers[0].close();
         writers[1].close();
+    }
+
+    private String getDefaultReturn(Class<?> clazz) {
+        switch (clazz.getSimpleName()) {
+        case "void":
+            return "//Thanks for using the Zeta Power Reloadable class generator.";
+        case "byte":
+        case "short":
+        case "int":
+        case "long":
+        case "float":
+        case "double":
+            return "return 0;";
+        case "boolean":
+            return "return false;";
+        default:
+            return "return null;";
+        }
     }
 
     public static interface ReloadTrigger {
@@ -360,16 +407,16 @@ public class DynamicClassReloadPrepare {
         public List<ReloadTrigger> reloadWhen = new ArrayList<>();
         private List<String> blacklist = new ArrayList<>();
         private Object instance;
-        private Class<?> watchedclass;
+        private Class<?> watchedClass;
         private String binFolder;
 
         public DynamicReloader(Class<?> watchedClass, String binFolder) {
-            this.watchedclass = watchedClass;
+            this.watchedClass = watchedClass;
             this.binFolder = binFolder;
         }
 
         public void addToBlacklist(String className) {
-            if (!className.equals(watchedclass.getCanonicalName() + "_Reload")) {
+            if (!className.equals(watchedClass.getCanonicalName() + "_Reload")) {
                 blacklist.add(className);
             }
         }
@@ -379,10 +426,14 @@ public class DynamicClassReloadPrepare {
             for (ReloadTrigger trigger : reloadWhen) {
                 reload |= trigger.shouldReload();
             }
+            //L.d("Reload: " + reload);
             if (reload) {
                 FilteredClassLoader classLoader = new FilteredClassLoader(className -> !blacklist.contains(className), binFolder);
-                Class<?> contextClass = classLoader.load("com.hrkalk.zetapower.entities.RideableShipReload");
+                //L.d("Loader: " + classLoader);
+                Class<?> contextClass = classLoader.load(watchedClass.getCanonicalName() + "_Reload");
+                //L.d("Class: " + contextClass);
                 instance = contextClass.newInstance();
+                //L.d("Instance: " + instance);
                 contextClass.getField("thiz").set(instance, thiz);
             }
             return instance;
