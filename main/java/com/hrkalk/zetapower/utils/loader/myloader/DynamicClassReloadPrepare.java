@@ -17,9 +17,10 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.hrkalk.zetapower.client.render.helper.EntityRotator;
+import com.hrkalk.zetapower.client.render.entities.RideableShipRenderer;
 import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.loader.FilteredClassLoader;
+import com.hrkalk.zetapower.utils.loader.ReflectUtil;
 
 public class DynamicClassReloadPrepare {
     public List<ReloadTrigger> reloadWhen = new ArrayList<>();
@@ -36,8 +37,9 @@ public class DynamicClassReloadPrepare {
     private List<Method> exposedMethods = new ArrayList<>();
 
     public static void main(String[] args) {
-        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(EntityRotator.class);
-        loader.addMethods("testtest");
+        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(RideableShipRenderer.class);
+        loader.addMethods("getEntityTexture");
+        loader.addMethods("doRender");
         loader.doWork();
     }
 
@@ -50,6 +52,7 @@ public class DynamicClassReloadPrepare {
         watchedPath = watchedClass.getCanonicalName().replace('.', '/');
         reloadWhen.add(new ReloadOnChange(watchedClass, binFolder));
         reloadWhen.add(new ReloadEveryNTicks(reloadTicks));
+        usedClasses.add(ReflectUtil.class.getCanonicalName());
     }
 
     /**
@@ -166,7 +169,7 @@ public class DynamicClassReloadPrepare {
     }
 
     private void prepareSourceFiles() throws IOException {
-        writers[0] = new PrintWriter(srcFolder + '/' + watchedPath + "_TODO.java");
+        writers[0] = new PrintWriter(srcFolder + '/' + watchedPath + ".java");
         writers[1] = new PrintWriter(srcFolder + '/' + watchedPath + "_Reload.java");
 
         for (PrintWriter pw : writers) {
@@ -179,7 +182,7 @@ public class DynamicClassReloadPrepare {
             pw.println();
         }
 
-        writers[0].println("public class " + watchedClass.getSimpleName() + "_TODO extends " + watchedClass.getSuperclass().getSimpleName() + " {");
+        writers[0].println("public class " + watchedClass.getSimpleName() + " extends " + watchedClass.getSuperclass().getSimpleName() + " {");
         writers[1].println("public class " + watchedClass.getSimpleName() + "_Reload {");
     }
 
@@ -226,10 +229,44 @@ public class DynamicClassReloadPrepare {
     }
 
     private void printMethods() {
+        for (Method m : targetedMethods) {
+            List<String> params = new ArrayList<>();
+            List<String> args = new ArrayList<>();
+            args.add("\"" + m.getName() + "\"");
+            args.add("reloader.getInstance(this)");
 
+            int counter = 0;
+            for (Parameter p : m.getParameters()) {
+                String name = p.isNamePresent() ? p.getName() : ("arg" + (++counter));
+                params.add(p.getType().getSimpleName() + " " + name);
+                args.add(name);
+            }
+
+            String paramsAll = StringUtils.join(params, ", ");
+            String argsAll = StringUtils.join(args, ", ");
+            String ret = m.getReturnType().getCanonicalName().equals("void") ? "" : "return ";
+
+            writers[0].println();
+            writers[0].println("public " + m.getReturnType().getSimpleName() + " " + m.getName() + "(" + paramsAll + ") {");
+            writers[0].println("    try {");
+            writers[0].println("        " + ret + "ReflectUtil.invoke(" + argsAll + ");");
+            writers[0].println("    } catch(Throwable t) {");
+            writers[0].println("        System.out.println(\"Exception while executing reloadable code.\");");
+            writers[0].println("        t.printStackTrace(System.out);");
+            writers[0].println("    }");
+            writers[0].println("}");
+
+            writers[1].println();
+            writers[1].println("public " + m.getReturnType().getSimpleName() + " " + m.getName() + "(" + paramsAll + ") {");
+            writers[1].println("    throw new RuntimeException(\"TODO: implement this method.\");");
+            writers[1].println("}");
+        }
     }
 
     private void finishSourceFiles() {
+        writers[0].println();
+        writers[1].println();
+
         writers[0].println("}");
         writers[1].println("}");
 
@@ -263,6 +300,7 @@ public class DynamicClassReloadPrepare {
 
         public ReloadOnChange(Class<?> clazz, String binFolder) {
             this.clazz = clazz;
+            this.binFolder = binFolder;
             String filename = binFolder + '/' + clazz.getCanonicalName().replace('.', '/') + ".class";
             //L.d(filename);
             watchedFile = new File(filename);
