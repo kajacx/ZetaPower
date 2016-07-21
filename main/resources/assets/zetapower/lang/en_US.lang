@@ -15,6 +15,7 @@ item.spawn_ship.name=Spawn Ship
 tile.zeta_ore.name=Zeta Ore
 tile.zeta_ore_2.name=Rich Zeta Ore
 tile.zeta_ore_3.name=Richer Zeta Ore
+tile.test_teleporter.name=Test Teleporter
 
 tile.block_properties.and.name=And Block
 tile.block_properties.or.name=Or Block

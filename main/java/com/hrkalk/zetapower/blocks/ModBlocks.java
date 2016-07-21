@@ -13,6 +13,7 @@ public final class ModBlocks {
     public static Block zetaOre;
     public static Block zetaOre2;
     public static Block zetaOre3;
+    public static Block testTeleporter;
 
     public static void preInit() {
 
@@ -27,5 +28,8 @@ public final class ModBlocks {
 
         GameRegistry.register(zetaOre3 = new ModBlockOre("zeta_ore_3", Material.ROCK, ModItems.zetaIngot).setRegistryName("zeta_ore_3"));
         GameRegistry.register(new ItemBlock(zetaOre3).setRegistryName("zeta_ore_3"));
+
+        GameRegistry.register(testTeleporter = new BlockTestTeleporter("test_teleporter").setRegistryName("test_teleporter"));
+        GameRegistry.register(new ItemBlock(testTeleporter).setRegistryName("test_teleporter"));
     }
 }
