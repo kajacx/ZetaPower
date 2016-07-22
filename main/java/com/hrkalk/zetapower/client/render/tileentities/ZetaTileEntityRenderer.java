@@ -34,7 +34,7 @@ public class ZetaTileEntityRenderer extends TileEntitySpecialRenderer<ZetaChest>
             if (te.getEnumFacing() != null) {
                 ReflectUtil.invoke("renderTileEntityAt2", instance, x, y, z, partialTicks, destroyStage, te.getEnumFacing().getHorizontalIndex());
             } else {
-                L.e("Enum facing is null");
+                L.s("Enum facing is null");
             }
         } catch (Throwable e) {
             L.e("Error in rendering via dynamic classload");

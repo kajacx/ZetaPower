@@ -1,27 +1,132 @@
 package com.hrkalk.zetapower.tileentities;
 
 import com.hrkalk.zetapower.utils.L;
+import com.hrkalk.zetapower.utils.loader.ReflectUtil;
+import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.DynamicReloader;
+import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadEveryNTicks;
+import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadOnChange;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.World;
 
 public class ZetaChest extends TileEntity implements ITickable, IInventory {
-    private ItemStack[] inventory;
-    private String customName;
-    private EnumFacing facing;
-    private int[] limit; //limit of items in each inventory
-    private Item[] validItems; //certain item or null for any
+
+    private DynamicReloader reloader = new DynamicReloader(ZetaChest.class, "../bin");
+
+    {
+        reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.tileentities.ZetaChest.class, "../bin"));
+        reloader.reloadWhen.add(new ReloadEveryNTicks(20));
+
+        reloader.addToBlacklist("net.minecraft.nbt.NBTTagCompound");
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadTrigger");
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadEveryNTicks");
+        reloader.addToBlacklist("net.minecraft.block.Block");
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadOnChange");
+        reloader.addToBlacklist("net.minecraft.world.World");
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.ReflectUtil");
+        reloader.addToBlacklist("net.minecraft.tileentity.TileEntity");
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.DynamicReloader");
+        reloader.addToBlacklist("net.minecraft.util.math.BlockPos");
+        reloader.addToBlacklist("com.hrkalk.zetapower.tileentities.ZetaChest");
+    }
+
+    public World get_worldObj() {
+        return worldObj;
+    }
+
+    public void set_worldObj(World worldObj) {
+        this.worldObj = worldObj;
+    }
+
+    public BlockPos get_pos() {
+        return pos;
+    }
+
+    public void set_pos(BlockPos pos) {
+        this.pos = pos;
+    }
+
+    public boolean get_tileEntityInvalid() {
+        return tileEntityInvalid;
+    }
+
+    public void set_tileEntityInvalid(boolean tileEntityInvalid) {
+        this.tileEntityInvalid = tileEntityInvalid;
+    }
+
+    public Block get_blockType() {
+        return blockType;
+    }
+
+    public void set_blockType(Block blockType) {
+        this.blockType = blockType;
+    }
+
+    public void call_func_190201_b(World arg1) {
+        func_190201_b(arg1);
+    }
+
+    public NBTTagCompound super_writeToNBT(NBTTagCompound arg1) {
+        return super.writeToNBT(arg1);
+    }
+
+    public void super_readFromNBT(NBTTagCompound arg1) {
+        super.readFromNBT(arg1);
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound arg1) {
+        try {
+            return (NBTTagCompound) ReflectUtil.invoke("writeToNBT", reloader.getInstance(this), arg1);
+        } catch (Throwable t) {
+            System.out.println("Exception while executing reloadable code.");
+            t.printStackTrace(System.out);
+            return null;
+        }
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound arg1) {
+        try {
+            ReflectUtil.invoke("readFromNBT", reloader.getInstance(this), arg1);
+        } catch (Throwable t) {
+            System.out.println("Exception while executing reloadable code.");
+            t.printStackTrace(System.out);
+            //Thanks for using the Zeta Power Reloadable class generator.
+        }
+    }
+
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        NBTTagCompound syncData = writeToNBT(new NBTTagCompound());
+        return new SPacketUpdateTileEntity(pos, getBlockMetadata(), syncData);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        readFromNBT(pkt.getNbtCompound());
+    }
+
+    public ItemStack[] inventory;
+    public String customName;
+    public EnumFacing facing;
+    public int[] limit; //limit of items in each inventory
+    public Item[] validItems; //certain item or null for any
 
     public ZetaChest() {
         inventory = new ItemStack[getSizeInventory()];
@@ -53,65 +158,6 @@ public class ZetaChest extends TileEntity implements ITickable, IInventory {
 
         }
     }
-
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        super.writeToNBT(compound);
-
-        NBTTagList list = new NBTTagList();
-        for (int i = 0; i < this.getSizeInventory(); ++i) {
-            if (this.getStackInSlot(i) != null) {
-                NBTTagCompound stackTag = new NBTTagCompound();
-                stackTag.setByte("Slot", (byte) i);
-                this.getStackInSlot(i).writeToNBT(stackTag);
-                list.appendTag(stackTag);
-            }
-        }
-        compound.setTag("Items", list);
-
-        if (this.hasCustomName()) {
-            compound.setString("CustomName", this.getCustomName());
-        }
-
-        compound.setInteger("Facing", facing.getHorizontalIndex());
-
-        return compound;
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
-
-        NBTTagList list = compound.getTagList("Items", 10);
-        for (int i = 0; i < list.tagCount(); ++i) {
-            NBTTagCompound stackTag = list.getCompoundTagAt(i);
-            int slot = stackTag.getByte("Slot") & 255;
-            this.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(stackTag));
-        }
-
-        if (compound.hasKey("CustomName", 8)) {
-            this.setCustomName(compound.getString("CustomName"));
-        }
-
-        try {
-            facing = EnumFacing.getHorizontal(compound.getInteger("Facing"));
-        } catch (Exception ex) {
-            L.e(ex);
-        }
-    }
-
-    /*@Override
-    public Packet<?> getDescriptionPacket() {
-        NBTTagCompound nbttagcompound = new NBTTagCompound();
-        this.writeToNBT(nbttagcompound);
-        return new S35PacketUpdateTileEntity(this.pos, 0, nbttagcompound);
-    };
-    
-    @Override
-    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
-        readFromNBT(pkt.getNbtCompound());
-        Minecraft.getMinecraft().renderGlobal.markBlockForUpdate(pkt.getPos());
-    }*/
 
     public EnumFacing getEnumFacing() {
         return facing;
@@ -290,4 +336,5 @@ public class ZetaChest extends TileEntity implements ITickable, IInventory {
         for (int i = 0; i < this.getSizeInventory(); i++)
             this.setInventorySlotContents(i, null);
     }
+
 }

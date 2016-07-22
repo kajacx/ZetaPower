@@ -2,7 +2,6 @@ package com.hrkalk.zetapower.blocks;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -40,19 +39,25 @@ public class BlockTestTeleporter_Reload {
         IBlockState state = world.getBlockState(from);
 
         if (toTe != null) {
+            toTe.markDirty();
             world.removeTileEntity(to);
         }
         world.setBlockState(to, state);
 
         if (fromTe != null) {
+            fromTe.markDirty();
             toTe = world.getTileEntity(to);
             NBTTagCompound tag = fromTe.serializeNBT();
+            tag.setInteger("x", to.getX());
+            tag.setInteger("y", to.getY());
+            tag.setInteger("z", to.getZ());
             toTe.readFromNBT(tag);
-            toTe.setPos(to);
-            world.removeTileEntity(from);
+            toTe.markDirty();
+
+            //world.removeTileEntity(from);
         }
 
-        world.setBlockState(from, Blocks.AIR.getDefaultState());
+        //world.setBlockState(from, Blocks.AIR.getDefaultState());
 
         //fromTe.setPos(to);
         //world.setTileEntity(to, fromTe);

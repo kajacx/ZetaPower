@@ -4,6 +4,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.hrkalk.zetapower.client.render.helper.EntityRotator;
 import com.hrkalk.zetapower.tileentities.ZetaChest;
+import com.hrkalk.zetapower.utils.L;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelChest;
@@ -37,6 +38,7 @@ public class ZetaTileEntityRendererReload extends TileEntitySpecialRenderer<Zeta
     private Vector3f tmp = new Vector3f();
 
     public void renderTileEntityAt2(double x, double y, double z, float partialTicks, int destroyStage, int facing) {
+        L.s("Facing is: " + facing);
 
         rotator.cameraLeft(.002f);
         //rotator.cameraSpin(.02f);

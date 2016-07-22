@@ -13,6 +13,7 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -44,8 +45,10 @@ public class ZetaChestBlock extends BlockContainer {
 
     @Override
     public void breakBlock(World world, BlockPos pos, IBlockState blockstate) {
-        ZetaChest te = (ZetaChest) world.getTileEntity(pos);
-        InventoryHelper.dropInventoryItems(world, pos, te);
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof IInventory) {
+            InventoryHelper.dropInventoryItems(world, pos, (IInventory) te);
+        }
         super.breakBlock(world, pos, blockstate);
     }
 
@@ -74,8 +77,7 @@ public class ZetaChestBlock extends BlockContainer {
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
-            ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!world.isRemote) {
             player.openGui(Main.instance, ModGuiHandler.ZETA_CHEST_GUI, world, pos.getX(), pos.getY(), pos.getZ());
         }

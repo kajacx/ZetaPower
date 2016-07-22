@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.hrkalk.zetapower.blocks.BlockTestTeleporter;
+import com.hrkalk.zetapower.tileentities.ZetaChest;
 import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.loader.FilteredClassLoader;
 import com.hrkalk.zetapower.utils.loader.ReflectUtil;
@@ -28,7 +28,7 @@ public class DynamicClassReloadPrepare {
     public List<Method> targetedMethods = new ArrayList<>();
     public String binFolder = "../bin";
     public String srcFolder = "src/main/java";
-    public String extensionForCopy = ".txt";
+    public String extensionForCopy = ".java";
     public Class<?> watchedClass;
     public String watchedPath;
 
@@ -38,8 +38,9 @@ public class DynamicClassReloadPrepare {
     private List<Method> exposedMethods = new ArrayList<>();
 
     public static void main(String[] args) {
-        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(BlockTestTeleporter.class);
-        loader.addMethods("onBlockActivated");
+        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(ZetaChest.class);
+        loader.addMethods("writeToNBT");
+        loader.addMethods("readFromNBT");
         loader.doWork();
     }
 
@@ -82,6 +83,7 @@ public class DynamicClassReloadPrepare {
             prepareFields();
             prepareConstructors();
             exposeProtected();
+            exposeSuper();
             printMethods();
             finishSourceFiles();
         } catch (IOException ex) {
@@ -253,6 +255,39 @@ public class DynamicClassReloadPrepare {
             writers[0].println("public " + m.getReturnType().getSimpleName() + " call_" + m.getName() + "(" + paramsAll + ") { " + ret + m.getName() + "(" + argsAll + "); }");
         }
 
+    }
+
+    private void exposeSuper() {
+        for (Method m : targetedMethods) {
+            if (m.getDeclaringClass().equals(watchedClass)) {
+                //this method is not everriden, exposing the super method would acctually create an error
+                continue;
+            }
+
+            List<String> params = new ArrayList<>();
+            List<String> args = new ArrayList<>();
+
+            int counter = 0;
+            for (Parameter p : m.getParameters()) {
+                String name = p.isNamePresent() ? p.getName() : ("arg" + (++counter));
+                params.add(p.getType().getSimpleName() + " " + name);
+                args.add(name);
+            }
+
+            String paramsAll = StringUtils.join(params, ", ");
+            String argsAll = StringUtils.join(args, ", ");
+            String ret = m.getReturnType().getCanonicalName().equals("void") ? "" : "return (" + m.getReturnType().getSimpleName() + ") ";
+
+            writers[0].println();
+            writers[0].println("public " + m.getReturnType().getSimpleName() + " super_" + m.getName() + "(" + paramsAll + ") {");
+            writers[0].println("    " + ret + "super." + m.getName() + "(" + argsAll + ");");
+            writers[0].println("}");
+
+            writers[1].println();
+            writers[1].println("public " + m.getReturnType().getSimpleName() + " " + m.getName() + "(" + paramsAll + ") {");
+            writers[1].println("    " + getDefaultReturn(m.getReturnType()));
+            writers[1].println("}");
+        }
     }
 
     private void printMethods() {
