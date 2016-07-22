@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.hrkalk.zetapower.client.render.entities.RideableShipRenderer;
+import com.hrkalk.zetapower.blocks.BlockTestTeleporter;
 import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.loader.FilteredClassLoader;
 import com.hrkalk.zetapower.utils.loader.ReflectUtil;
@@ -38,9 +38,8 @@ public class DynamicClassReloadPrepare {
     private List<Method> exposedMethods = new ArrayList<>();
 
     public static void main(String[] args) {
-        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(RideableShipRenderer.class);
-        loader.addMethods("getEntityTexture");
-        loader.addMethods("doRender");
+        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(BlockTestTeleporter.class);
+        loader.addMethods("onBlockActivated");
         loader.doWork();
     }
 
@@ -348,7 +347,7 @@ public class DynamicClassReloadPrepare {
         public ReloadOnChange(Class<?> clazz, String binFolder) {
             this.clazz = clazz;
             this.binFolder = binFolder;
-            String filename = binFolder + '/' + clazz.getCanonicalName().replace('.', '/') + ".class";
+            String filename = binFolder + '/' + clazz.getCanonicalName().replace('.', '/') + "_Reload.class";
             //L.d(filename);
             watchedFile = new File(filename);
             //L.d(watchedFile.getAbsolutePath());
@@ -426,14 +425,14 @@ public class DynamicClassReloadPrepare {
             for (ReloadTrigger trigger : reloadWhen) {
                 reload |= trigger.shouldReload();
             }
-            //L.d("Reload: " + reload);
+            //L.s("Reload: " + reload);
             if (reload) {
                 FilteredClassLoader classLoader = new FilteredClassLoader(className -> !blacklist.contains(className), binFolder);
-                //L.d("Loader: " + classLoader);
+                // L.s("Loader: " + classLoader);
                 Class<?> contextClass = classLoader.load(watchedClass.getCanonicalName() + "_Reload");
-                //L.d("Class: " + contextClass);
+                //L.s("Class: " + contextClass);
                 instance = contextClass.newInstance();
-                //L.d("Instance: " + instance);
+                //L.s("Instance: " + instance);
                 contextClass.getField("thiz").set(instance, thiz);
             }
             return instance;
