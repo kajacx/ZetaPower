@@ -16,9 +16,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.lang3.StringUtils;
 
-import com.hrkalk.zetapower.network.MyMessageHandler;
+import com.hrkalk.zetapower.items.ItemModSpawnShip;
 import com.hrkalk.zetapower.utils.loader.F1;
 import com.hrkalk.zetapower.utils.loader.FilteredClassLoader;
 import com.hrkalk.zetapower.utils.loader.ReflectUtil;
@@ -39,8 +41,13 @@ public class DynamicClassReloadPrepare {
     private List<Method> exposedMethods = new ArrayList<>();
 
     public static void main(String[] args) {
-        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(MyMessageHandler.class);
-        loader.addMethods("onMessage");
+        int response = JOptionPane.showConfirmDialog(null, "You are abount to create an autoloading class. Are you sure?");
+        if (response != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(ItemModSpawnShip.class);
+        loader.addMethods("onItemUse");
         loader.doWork();
     }
 

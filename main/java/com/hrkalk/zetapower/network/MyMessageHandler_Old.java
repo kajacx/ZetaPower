@@ -8,7 +8,7 @@ import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.Relo
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class MyMessageHandler extends Object {
+public class MyMessageHandler_Old extends Object {
 
     private DynamicReloader reloader = new DynamicReloader(MyMessageHandler.class, "../bin");
 
@@ -29,10 +29,6 @@ public class MyMessageHandler extends Object {
 
         reloader.addToBlacklistPrefix("net.minecraft");
         reloader.addToBlacklistPrefix("net.minecraftforge");
-    }
-
-    public MyMessageHandler() {
-        super();
     }
 
     public IMessage onMessage(NbtNetworkMessage arg1, MessageContext arg2) {

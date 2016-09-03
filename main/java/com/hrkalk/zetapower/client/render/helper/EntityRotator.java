@@ -12,12 +12,13 @@ import net.minecraft.client.renderer.GlStateManager;
 public class EntityRotator extends TestHelper {
     private Vector3f forward = new Vector3f(1, 0, 0); //reference forward vector, stored at creation
     private Vector3f up = new Vector3f(0, 1, 0); //reference up vector, stored at creation
+    private Vector3f right = new Vector3f(0, 0, 1); //reference up vector, stored at creation
 
     //private Vector3f rotForward = new Vector3f(1, .01f, .01f); //actual forward vector for current rotation
     //private Vector3f rotUp = new Vector3f(.01f, -1, .01f); //actual up vector for current rotation
     private Vector3f rotForward = new Vector3f(1, 0, 0); //actual forward vector for current rotation
     private Vector3f rotUp = new Vector3f(0, 1, 0); //actual up vector for current rotation
-    private Vector3f rotRight = new Vector3f();
+    private Vector3f rotRight = new Vector3f(); //; 0,0,1
 
     private Vector3f tmp1 = new Vector3f(); //tmp vector to prevent needless memory allocation
     private Vector3f tmp2 = new Vector3f(); //tmp vector to prevent needless memory allocation
@@ -31,6 +32,7 @@ public class EntityRotator extends TestHelper {
         rotUp.normalise();
         Vector3f.cross(rotForward, rotUp, rotRight);
         rotRight.normalise();
+        //L.d(rotRight + "");
     }
 
     /**
@@ -155,5 +157,11 @@ public class EntityRotator extends TestHelper {
 
     public void testtest(int a, Integer b, String c, RideableShip p, BlockFluidRenderer r) {
 
+    }
+
+    public void reset() {
+        rotForward.set(forward);
+        rotUp.set(up);
+        rotRight.set(right);
     }
 }

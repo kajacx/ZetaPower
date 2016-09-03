@@ -4,6 +4,7 @@ import com.hrkalk.zetapower.Main;
 import com.hrkalk.zetapower.blocks.ModBlocks;
 import com.hrkalk.zetapower.blocks.ZetaWorldGen;
 import com.hrkalk.zetapower.crafting.ModCrafting;
+import com.hrkalk.zetapower.dimension.ZetaDimensionHandler;
 import com.hrkalk.zetapower.entities.ModEntities;
 import com.hrkalk.zetapower.event.EventHandlerCommon;
 import com.hrkalk.zetapower.event.EventHandlerTET;
@@ -35,6 +36,7 @@ public class CommonProxy {
         NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, new ModGuiHandler());
         MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
         MinecraftForge.EVENT_BUS.register(new EventHandlerTET());
+        ZetaDimensionHandler.initDimensions();
     }
 
     public void postInit(FMLPostInitializationEvent e) {

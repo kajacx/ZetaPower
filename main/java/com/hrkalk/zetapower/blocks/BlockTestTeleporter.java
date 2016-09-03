@@ -57,6 +57,10 @@ public class BlockTestTeleporter extends Block {
         reloader.addToBlacklist("net.minecraft.entity.player.EntityPlayer");
         reloader.addToBlacklist("com.hrkalk.zetapower.blocks.BlockTestTeleporter");
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.ReflectUtil");
+
+        reloader.addToBlacklistPrefix("net.minecraft");
+        reloader.addToBlacklistPrefix("net.minecraftforge");
+        reloader.addToBlacklistPrefix("com.hrkalk.zetapower.dimension");
     }
 
     protected BlockTestTeleporter(String unlocalizedName) {

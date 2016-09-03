@@ -39,15 +39,21 @@ public class ZetaTileEntityRenderer_Reload {
     public void renderTileEntityAt2(double x, double y, double z, int facing) {
         //L.s("Facing is: " + facing);
 
-        //rotator.cameraLeft(.002f);
+        // rotator.cameraLeft(.002f);
         //rotator.cameraSpin(.02f);
         //rotator.cameraUp(.003f);
 
         float time = (float) (System.currentTimeMillis() % 10000000 / 1000d);
 
+        rotator.reset();
+        rotator.cameraLeft(time / 10);
+        //rotator.cameraSpin(time);
+
         rotator.pushTransformMatrix();
+
         tmp.set((float) x, (float) (y + Math.sin(time) / 5 + .3f), (float) z);
         rotator.transform(tmp);
+
         renderTileEntityAt3(tmp.x, tmp.y, tmp.z, facing);
 
         rotator.popTransformMatrix();
