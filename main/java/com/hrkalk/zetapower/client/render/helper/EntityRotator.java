@@ -26,7 +26,7 @@ public class EntityRotator extends TestHelper {
     private Matrix4f tmpMatrix = new Matrix4f(); //temporal matrix to avoid memory allocation
 
     public EntityRotator() {
-        System.out.println("Initializer called");
+        //System.out.println("Initializer called");
         rotForward.normalise();
         rotUp.normalise();
         Vector3f.cross(rotForward, rotUp, rotRight);

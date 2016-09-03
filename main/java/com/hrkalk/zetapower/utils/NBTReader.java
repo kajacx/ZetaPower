@@ -25,7 +25,7 @@ public class NBTReader {
     public static int readIntOr(NBTTagCompound tag, String name, int orDefault) {
         if (tag == null)
             return orDefault;
-        if (!tag.hasKey(name, TYPE_DOUBLE))
+        if (!tag.hasKey(name, TYPE_INT))
             return orDefault;
         return tag.getInteger(name);
     }

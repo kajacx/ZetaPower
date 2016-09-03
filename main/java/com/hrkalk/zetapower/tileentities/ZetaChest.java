@@ -113,13 +113,24 @@ public class ZetaChest extends TileEntity implements ITickable, IInventory {
 
     @Override
     public SPacketUpdateTileEntity getUpdatePacket() {
-        NBTTagCompound syncData = writeToNBT(new NBTTagCompound());
-        return new SPacketUpdateTileEntity(pos, getBlockMetadata(), syncData);
+        try {
+            return (SPacketUpdateTileEntity) ReflectUtil.invoke("getUpdatePacket", reloader.getInstance(this));
+        } catch (Throwable t) {
+            System.out.println("Exception while executing reloadable code.");
+            t.printStackTrace(System.out);
+            return null;
+        }
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-        readFromNBT(pkt.getNbtCompound());
+        try {
+            ReflectUtil.invoke("onDataPacket", reloader.getInstance(this), net, pkt);
+        } catch (Throwable t) {
+            System.out.println("Exception while executing reloadable code.");
+            t.printStackTrace(System.out);
+            //Thanks for using the Zeta Power Reloadable class generator.
+        }
     }
 
     public ItemStack[] inventory;
@@ -132,6 +143,7 @@ public class ZetaChest extends TileEntity implements ITickable, IInventory {
         inventory = new ItemStack[getSizeInventory()];
         limit = new int[getSizeInventory()];
         validItems = new Item[getSizeInventory()];
+        facing = EnumFacing.getHorizontal(0);
 
         //test
         for (int i = 0; i < getSizeInventory(); i++) {
@@ -149,6 +161,12 @@ public class ZetaChest extends TileEntity implements ITickable, IInventory {
         }
 
         L.d("Testing trace...");
+    }
+
+    @Override
+    public NBTTagCompound getUpdateTag() {
+        L.d("Get update tag");
+        return this.writeToNBT(new NBTTagCompound());
     }
 
     @Override

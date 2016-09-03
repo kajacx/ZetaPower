@@ -1,9 +1,16 @@
 package com.hrkalk.zetapower.utils;
 
+import java.util.Random;
+
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 public class MathUtils {
+
+    /**
+     * Readily avaliable random generator
+     */
+    public static Random random = new Random();
 
     /**
      * Multiply by this to convert radians to degrees

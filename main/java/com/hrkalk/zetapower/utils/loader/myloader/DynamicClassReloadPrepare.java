@@ -18,8 +18,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.hrkalk.zetapower.tileentities.ZetaChest;
-import com.hrkalk.zetapower.utils.L;
+import com.hrkalk.zetapower.network.MyMessageHandler;
+import com.hrkalk.zetapower.utils.loader.F1;
 import com.hrkalk.zetapower.utils.loader.FilteredClassLoader;
 import com.hrkalk.zetapower.utils.loader.ReflectUtil;
 
@@ -31,6 +31,7 @@ public class DynamicClassReloadPrepare {
     public String extensionForCopy = ".java";
     public Class<?> watchedClass;
     public String watchedPath;
+    public List<String> blacklistPrefix = new ArrayList<>();
 
     private Set<String> usedClasses = new HashSet<>();
     private PrintWriter[] writers = new PrintWriter[2];
@@ -38,9 +39,8 @@ public class DynamicClassReloadPrepare {
     private List<Method> exposedMethods = new ArrayList<>();
 
     public static void main(String[] args) {
-        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(ZetaChest.class);
-        loader.addMethods("writeToNBT");
-        loader.addMethods("readFromNBT");
+        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(MyMessageHandler.class);
+        loader.addMethods("onMessage");
         loader.doWork();
     }
 
@@ -54,6 +54,8 @@ public class DynamicClassReloadPrepare {
         reloadWhen.add(new ReloadOnChange(watchedClass, binFolder));
         reloadWhen.add(new ReloadEveryNTicks(reloadTicks));
         usedClasses.add(ReflectUtil.class.getCanonicalName());
+        blacklistPrefix.add("net.minecraft");
+        blacklistPrefix.add("net.minecraftforge");
     }
 
     /**
@@ -100,7 +102,7 @@ public class DynamicClassReloadPrepare {
         File from = new File(filename + ".java");
         File to = new File(filename + "_Old" + extensionForCopy);
 
-        L.d(from.getAbsolutePath());
+        //L.d(from.getAbsolutePath());
 
         if (!to.exists()) {
             to.createNewFile();
@@ -200,6 +202,10 @@ public class DynamicClassReloadPrepare {
         writers[0].println();
         for (String clazz : usedClasses) {
             writers[0].println("reloader.addToBlacklist(\"" + clazz + "\");");
+        }
+        writers[0].println();
+        for (String prefix : blacklistPrefix) {
+            writers[0].println("reloader.addToBlacklistPrefix(\"" + prefix + "\");");
         }
         writers[0].println('}');
 
@@ -420,8 +426,6 @@ public class DynamicClassReloadPrepare {
 
         @Override
         public boolean shouldReload() {
-            if (cap <= 0)
-                return false;
             if (cur <= 0) {
                 cur = cap - 1;
                 return true;
@@ -440,6 +444,7 @@ public class DynamicClassReloadPrepare {
     public static class DynamicReloader {
         public List<ReloadTrigger> reloadWhen = new ArrayList<>();
         private List<String> blacklist = new ArrayList<>();
+        private List<String> blacklistPrefix = new ArrayList<>();
         private Object instance;
         private Class<?> watchedClass;
         private String binFolder;
@@ -455,6 +460,10 @@ public class DynamicClassReloadPrepare {
             }
         }
 
+        public void addToBlacklistPrefix(String prefix) {
+            blacklistPrefix.add(prefix);
+        }
+
         public Object getInstance(Object thiz) throws Exception {
             boolean reload = false;
             for (ReloadTrigger trigger : reloadWhen) {
@@ -462,7 +471,9 @@ public class DynamicClassReloadPrepare {
             }
             //L.s("Reload: " + reload);
             if (reload) {
-                FilteredClassLoader classLoader = new FilteredClassLoader(className -> !blacklist.contains(className), binFolder);
+                F1<String, Boolean> reloadWhat = className -> !blacklist.contains(className) && !blacklistPrefix.stream().anyMatch(prefix -> className.startsWith(prefix));
+
+                FilteredClassLoader classLoader = new FilteredClassLoader(reloadWhat, binFolder);
                 // L.s("Loader: " + classLoader);
                 Class<?> contextClass = classLoader.load(watchedClass.getCanonicalName() + "_Reload");
                 //L.s("Class: " + contextClass);
