@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.hrkalk.zetapower.items.ItemModSpawnShip;
+import com.hrkalk.zetapower.tileentities.ZetaChest;
 import com.hrkalk.zetapower.utils.loader.F1;
 import com.hrkalk.zetapower.utils.loader.FilteredClassLoader;
 import com.hrkalk.zetapower.utils.loader.ReflectUtil;
@@ -46,8 +46,10 @@ public class DynamicClassReloadPrepare {
             return;
         }
 
-        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(ItemModSpawnShip.class);
-        loader.addMethods("onItemUse");
+        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(ZetaChest.class);
+        loader.addMethods("writeToNBT");
+        loader.addMethods("readFromNBT");
+        loader.addMethods("getEnumFacing");
         loader.doWork();
     }
 
@@ -63,6 +65,7 @@ public class DynamicClassReloadPrepare {
         usedClasses.add(ReflectUtil.class.getCanonicalName());
         blacklistPrefix.add("net.minecraft");
         blacklistPrefix.add("net.minecraftforge");
+        blacklistPrefix.add("com.hrkalk.zetapower.dimension");
     }
 
     /**
@@ -272,8 +275,8 @@ public class DynamicClassReloadPrepare {
 
     private void exposeSuper() {
         for (Method m : targetedMethods) {
-            if (m.getDeclaringClass().equals(watchedClass)) {
-                //this method is not everriden, exposing the super method would acctually create an error
+            if (!isMethodOverridenInClass(m, watchedClass)) {
+                //this method is not everriden, exposing the non-existing super method would acctually create an error
                 continue;
             }
 
@@ -295,11 +298,6 @@ public class DynamicClassReloadPrepare {
             writers[0].println("public " + m.getReturnType().getSimpleName() + " super_" + m.getName() + "(" + paramsAll + ") {");
             writers[0].println("    " + ret + "super." + m.getName() + "(" + argsAll + ");");
             writers[0].println("}");
-
-            writers[1].println();
-            writers[1].println("public " + m.getReturnType().getSimpleName() + " " + m.getName() + "(" + paramsAll + ") {");
-            writers[1].println("    " + getDefaultReturn(m.getReturnType()));
-            writers[1].println("}");
         }
     }
 
@@ -491,5 +489,25 @@ public class DynamicClassReloadPrepare {
             return instance;
         }
 
+    }
+
+    private boolean isMethodOverridenInClass(Method m, Class<?> c) {
+        do {
+            c = c.getSuperclass();
+            try {
+                Method m1 = c.getDeclaredMethod(m.getName(), m.getParameterTypes());
+                if (!Modifier.isPrivate(m1.getModifiers())) {
+                    //overriden
+                    return true;
+                }
+            } catch (NoSuchMethodException e) {
+                // no method found
+            } catch (SecurityException e) {
+                // genuine exception
+                e.printStackTrace(System.out);
+            }
+        } while (c != Object.class);
+        //no overriden methods found
+        return false;
     }
 }

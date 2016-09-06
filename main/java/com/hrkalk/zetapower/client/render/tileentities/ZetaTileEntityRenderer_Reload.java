@@ -43,20 +43,22 @@ public class ZetaTileEntityRenderer_Reload {
         //rotator.cameraSpin(.02f);
         //rotator.cameraUp(.003f);
 
-        float time = (float) (System.currentTimeMillis() % 10000000 / 1000d);
+        renderTileEntityAt3(x, y, z, facing);
 
+        /*float time = (float) (System.currentTimeMillis() % 10000000 / 1000d);
+        
         rotator.reset();
         rotator.cameraLeft(time / 10);
         //rotator.cameraSpin(time);
-
+        
         rotator.pushTransformMatrix();
-
+        
         tmp.set((float) x, (float) (y + Math.sin(time) / 5 + .3f), (float) z);
         rotator.transform(tmp);
-
+        
         renderTileEntityAt3(tmp.x, tmp.y, tmp.z, facing);
-
-        rotator.popTransformMatrix();
+        
+        rotator.popTransformMatrix();*/
     }
 
     public void renderTileEntityAt3(double x, double y, double z, int facing) {

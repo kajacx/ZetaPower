@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.math.BlockPos;
 
 public class NBTReader {
     private static List<String> typesAsList = Arrays.asList(NBTBase.NBT_TYPES);
@@ -46,11 +47,33 @@ public class NBTReader {
         return tag.getString(name);
     }
 
+    public static NBTTagCompound readTagOr(NBTTagCompound tag, String name, NBTTagCompound orDefault) {
+        if (tag == null)
+            return orDefault;
+        if (!tag.hasKey(name, TYPE_COMPOUND))
+            return orDefault;
+        return tag.getCompoundTag(name);
+    }
+
     public static NBTTagList readListOr(NBTTagCompound tag, String name, NBTTagList orDefault, int listType) {
         if (tag == null)
             return orDefault;
         if (!tag.hasKey(name, TYPE_LIST))
             return orDefault;
         return tag.getTagList(name, listType);
+    }
+
+    public static NBTTagCompound writeBLockPosWithPrefix(NBTTagCompound tag, BlockPos pos, String prefix) {
+        tag.setInteger(prefix + "X", pos.getX());
+        tag.setInteger(prefix + "Y", pos.getY());
+        tag.setInteger(prefix + "Z", pos.getZ());
+        return tag;
+    }
+
+    public static BlockPos readBlockPosWithPrefix(NBTTagCompound tag, String prefix) {
+        int x = NBTReader.readIntOr(tag, prefix + "X", 0);
+        int y = NBTReader.readIntOr(tag, prefix + "Y", 0);
+        int z = NBTReader.readIntOr(tag, prefix + "Z", 0);
+        return new BlockPos(x, y, z);
     }
 }

@@ -27,6 +27,7 @@ public final class BlockRenderRegister {
         reg(ModBlocks.zetaOre2);
         reg(ModBlocks.zetaOre3);
         reg(ModBlocks.testTeleporter);
+        reg(ModBlocks.shipCoreTier1);
     }
 
     public static void reg(Block block) {

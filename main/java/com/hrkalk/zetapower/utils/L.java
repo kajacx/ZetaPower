@@ -7,8 +7,8 @@ public class L {
 
     public static void s(String spam) {
         if (spamC <= 0) {
-            System.out.println(spam);
-            spamC = 127;
+            System.out.println("Spam: " + spam);
+            spamC = 126;
         } else {
             spamC--;
         }

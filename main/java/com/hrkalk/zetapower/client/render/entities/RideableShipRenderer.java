@@ -29,6 +29,12 @@ public class RideableShipRenderer extends Render {
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.ReflectUtil");
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.DynamicReloader");
         reloader.addToBlacklist("java.lang.String");
+        reloader.addToBlacklist("com.hrkalk.zetapower.entities.RideableShip");
+
+        reloader.addToBlacklistPrefix("net.minecraft");
+        reloader.addToBlacklistPrefix("net.minecraftforge");
+        reloader.addToBlacklistPrefix("com.hrkalk.zetapower.dimension");
+        reloader.addToBlacklistPrefix("com.hrkalk.zetapower.vessel");
     }
 
     public RideableShipRenderer(RenderManager arg1) {

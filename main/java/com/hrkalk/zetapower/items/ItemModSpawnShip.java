@@ -46,10 +46,12 @@ public class ItemModSpawnShip extends BasicItem {
         reloader.addToBlacklist("net.minecraft.util.EnumActionResult");
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.ReflectUtil");
         reloader.addToBlacklist("com.hrkalk.zetapower.items.BasicItem");
+        reloader.addToBlacklist("com.hrkalk.zetapower.entities.RideableShip");
 
         reloader.addToBlacklistPrefix("net.minecraft");
         reloader.addToBlacklistPrefix("net.minecraftforge");
         reloader.addToBlacklistPrefix("com.hrkalk.zetapower.dimension");
+        reloader.addToBlacklistPrefix("com.hrkalk.zetapower.vessel");
     }
 
     public ItemModSpawnShip(String arg1) {

@@ -108,6 +108,22 @@ public class ChunksAllocator {
             return zSize * 16;
         }
 
+        public int getX14() {
+            return getX16() + 1;
+        }
+
+        public int getZ14() {
+            return getZ16() + 1;
+        }
+
+        public int getXSize14() {
+            return getXSize16() - 2;
+        }
+
+        public int getZSize14() {
+            return getZSize16() - 2;
+        }
+
         public boolean isUnloaded() {
             return unloaded;
         }

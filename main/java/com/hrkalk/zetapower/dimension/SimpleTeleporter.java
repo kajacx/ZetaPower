@@ -18,7 +18,7 @@ public class SimpleTeleporter extends Teleporter {
     @Override
     public void placeInPortal(Entity entityIn, float rotationYaw) {
         int x = (int) entityIn.posX;
-        int y = (int) entityIn.posY + 5;
+        int y = (int) entityIn.posY + 10;
         int z = (int) entityIn.posZ;
 
         world.setBlockState(new BlockPos(x, y, z), Blocks.DIRT.getDefaultState());

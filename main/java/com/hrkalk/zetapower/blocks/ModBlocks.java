@@ -14,6 +14,7 @@ public final class ModBlocks {
     public static Block zetaOre2;
     public static Block zetaOre3;
     public static Block testTeleporter;
+    public static Block shipCoreTier1;
 
     public static void preInit() {
 
@@ -31,5 +32,8 @@ public final class ModBlocks {
 
         GameRegistry.register(testTeleporter = new BlockTestTeleporter("test_teleporter").setRegistryName("test_teleporter"));
         GameRegistry.register(new ItemBlock(testTeleporter).setRegistryName("test_teleporter"));
+
+        GameRegistry.register(shipCoreTier1 = new ModBlockShipCoreTier1("ship_core_tier_1").setRegistryName("ship_core_tier_1"));
+        GameRegistry.register(new ItemBlock(shipCoreTier1).setRegistryName("ship_core_tier_1"));
     }
 }
