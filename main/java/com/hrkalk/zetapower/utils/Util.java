@@ -1,5 +1,7 @@
 package com.hrkalk.zetapower.utils;
 
+import java.lang.reflect.Field;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -79,5 +81,24 @@ public class Util {
         }
 
         worldFrom.setBlockState(from, Blocks.AIR.getDefaultState());
+    }
+
+    public static Object getField(Object instance, String field) {
+        Class<?> clazz = instance.getClass();
+        while (clazz != Object.class) {
+            try {
+                Field f = clazz.getDeclaredField(field);
+                f.setAccessible(true);
+                return f.get(instance);
+            } catch (NoSuchFieldException ex) {
+                //field not found, move on
+            } catch (Exception ex) {
+                //genuine exception
+                ex.printStackTrace(System.out);
+                return null;
+            }
+        }
+        L.w("Field " + field + " not found in object " + instance);
+        return null;
     }
 }
