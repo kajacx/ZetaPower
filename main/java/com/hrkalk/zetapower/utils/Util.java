@@ -1,6 +1,8 @@
 package com.hrkalk.zetapower.utils;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -83,13 +85,18 @@ public class Util {
         worldFrom.setBlockState(from, Blocks.AIR.getDefaultState());
     }
 
-    public static Object getField(Object instance, String field) {
+    @SuppressWarnings("unchecked")
+    public static <T> T getField(Object instance, String field) {
+        if (instance == null || field == null) {
+            L.w("Field " + field + " or instance" + instance + " is null");
+            return null;
+        }
         Class<?> clazz = instance.getClass();
         while (clazz != Object.class) {
             try {
                 Field f = clazz.getDeclaredField(field);
                 f.setAccessible(true);
-                return f.get(instance);
+                return (T) f.get(instance);
             } catch (NoSuchFieldException ex) {
                 //field not found, move on
             } catch (Exception ex) {
@@ -100,5 +107,64 @@ public class Util {
         }
         L.w("Field " + field + " not found in object " + instance);
         return null;
+    }
+
+    public static Class<?>[] getClasses(Object... params) {
+        Class<?>[] classes = new Class[params.length];
+        for (int i = 0; i < params.length; i++) {
+            classes[i] = params.getClass();
+        }
+        return classes;
+    }
+
+    public static Object callMethod1(Object instance, String method, Object... params) {
+        try {
+            return callMethod(instance, method, getClasses(params), params);
+        } catch (NullPointerException ex) {
+            ex.printStackTrace(System.out);
+            L.w("Some params are null");
+            return null;
+        }
+    }
+
+    public static Object callMethod(Object instance, String method, Class<?>[] paramTypes, Object[] params) {
+        if (instance == null || method == null || paramTypes == null || params == null) {
+            L.w("Method " + method + " or instance" + instance + " or params " + params + " is null");
+            return null;
+        }
+        Class<?> clazz = instance.getClass();
+        while (clazz != Object.class) {
+            try {
+                Method[] ms = clazz.getDeclaredMethods();
+                if (ms.length == 1) {
+                    ms[0].setAccessible(true);
+                    return ms[0].invoke(instance, params);
+                }
+
+                Method m = clazz.getDeclaredMethod(method, paramTypes);
+                m.setAccessible(true);
+                return m.invoke(instance, params);
+            } catch (NoSuchMethodException ex) {
+                //field not found, move on
+            } catch (Exception ex) {
+                //genuine exception
+                ex.printStackTrace(System.out);
+                return null;
+            }
+        }
+        L.w("Method " + method + " not found in object " + instance);
+        return null;
+    }
+
+    public static <T> T construct(Class<T> clazz, Object... params) {
+        try {
+            Constructor<T> con = clazz.getDeclaredConstructor(getClasses(params));
+            con.setAccessible(true);
+            return con.newInstance(params);
+        } catch (Exception ex) {
+            L.w("Failed to invoke constructor");
+            ex.printStackTrace(System.out);
+            return null;
+        }
     }
 }

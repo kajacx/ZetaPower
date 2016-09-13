@@ -1,35 +1,27 @@
 package com.hrkalk.zetapower.client.render.entities;
 
 import java.util.Iterator;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.Set;
 
+import com.hrkalk.zetapower.client.render.vessel.FakeRenderChunk;
 import com.hrkalk.zetapower.dimension.ZetaDimensionHandler;
 import com.hrkalk.zetapower.entities.RideableShip;
 import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.MathUtils;
 import com.hrkalk.zetapower.utils.Util;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.chunk.ChunkCompileTaskGenerator;
-import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
+import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.common.DimensionManager;
 
 public class RideableShipRenderer_Reload {
@@ -55,19 +47,13 @@ public class RideableShipRenderer_Reload {
         RideableShip ship = (RideableShip) entity;
         if (ship.iterSpace != null) {
             //L.s("new render");
-            Iterator<BlockPos> iter = ship.iterSpace.getIterator();
+            Iterator<BlockPos> iter = ship.iterSpace.iterator();
             World mallocWorld = DimensionManager.getWorld(ZetaDimensionHandler.mallocDimension.type.getId());
 
             //L.d("ff: " + iter.hasNext());
             BlockPos anchor = ship.iterSpace.getAnchorPoint();
 
             //L.d("Reprot");
-
-            boolean skipBlocks = true;
-
-            if (!skipBlocks) {
-
-            }
 
             while (iter.hasNext()) {
                 BlockPos pos = iter.next();
@@ -95,59 +81,49 @@ public class RideableShipRenderer_Reload {
                     }
                 }
 
-                if (skipBlocks) {
+                /*if (skipBlocks) {
                     continue;
-                }
+                }*/
 
                 // --- BLOCKS PREPARE ---
 
-                IBlockState state = mallocWorld.getBlockState(pos);
+                /*IBlockState state = mallocWorld.getBlockState(pos);
                 Block block = state.getBlock();
-
+                
                 BlockRendererDispatcher dispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-
-                RenderGlobal renderGlobal = Minecraft.getMinecraft().renderGlobal;
+                
                 ChunkRenderDispatcher crDispatcher = (ChunkRenderDispatcher) Util.getField(renderGlobal, "renderDispatcher");
-                PriorityBlockingQueue<ChunkCompileTaskGenerator> queue = (PriorityBlockingQueue<ChunkCompileTaskGenerator>) Util.getField(crDispatcher, "queueChunkUpdates");
-                ChunkCompileTaskGenerator generator = queue.poll();
-
-                if (block.getDefaultState().getRenderType() != EnumBlockRenderType.INVISIBLE && generator != null) {
-                    IBlockAccess region = (IBlockAccess) Util.getField(generator.getRenderChunk(), "region");
-                    try {
-                        generator.setRegionRenderCacheBuilder(crDispatcher.allocateRenderBuilder());
-                    } catch (InterruptedException e) {
-                        e.printStackTrace(System.out);
-                    }
-
-                    // --- BLOCKS RENDER ---
-
-                    BlockPos posNow = pos.subtract(anchor).add(x, y, z);
-                    //CompiledChunk compiledchunk = new CompiledChunk();
-                    for (BlockRenderLayer blockrenderlayer1 : BlockRenderLayer.values()) {
-                        if (!block.canRenderInLayer(state, blockrenderlayer1))
-                            continue;
-                        net.minecraftforge.client.ForgeHooksClient.setRenderLayer(blockrenderlayer1);
-                        int j = blockrenderlayer1.ordinal();
-
-                        if (block.getDefaultState().getRenderType() != EnumBlockRenderType.INVISIBLE) {
-                            VertexBuffer buffer = generator.getRegionRenderCacheBuilder().getWorldRendererByLayerId(j);
-
-                            //if (!compiledchunk.isLayerStarted(blockrenderlayer1)) {
-                            //    compiledchunk.setLayerStarted(blockrenderlayer1);
-                            //    this.preRenderBlocks(vertexbuffer, posNow);
-                            //}
-
-                            try {
-                                //dispatcher.renderBlock(state, posNow, region, buffer);
-                            } catch (Exception ex) {
-                                ex.printStackTrace(System.out);
-                            }
-                        }
-                    }
-                    ForgeHooksClient.setRenderLayer(null);
-                } //*/
+                ChunkRenderWorker crWorker = (ChunkRenderWorker) Util.getField(crDispatcher, "renderWorker");*/
+                //crWorker.getRe
 
 
+
+            }
+
+            // RENDER BLOCKS 
+
+            boolean skipBlocks = true;
+            FakeRenderChunk fakeRenderer = null;
+            RenderGlobal renderGlobal = null;
+
+            if (!skipBlocks) {
+                renderGlobal = Minecraft.getMinecraft().renderGlobal;
+                //fakeRenderer = new FakeRenderChunk(mallocWorld, renderGlobal, 0);
+                fakeRenderer = new FakeRenderChunk(entity.worldObj, renderGlobal, 0, ship.iterSpace);
+                fakeRenderer.setOrigin(0, 64, 0);
+
+                Set<RenderChunk> chunksToUpdate = Util.getField(renderGlobal, "chunksToUpdate");
+                chunksToUpdate.add(fakeRenderer);
+
+                //L.d("Chunks to update length: " + chunksToUpdate.size());
+
+                //BlockRendererDispatcher dispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+                /*ChunkRenderDispatcher crDispatcher = (ChunkRenderDispatcher) Util.getField(renderGlobal, "renderDispatcher");
+                try {
+                    fakeRenderer.rebuildChunk(0, 0, 0, iter, crDispatcher.getNextChunkUpdate());
+                } catch (InterruptedException e) {
+                    e.printStackTrace(System.out);
+                }*/
             }
 
 

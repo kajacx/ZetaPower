@@ -9,7 +9,7 @@ import com.hrkalk.zetapower.utils.NBTReader;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 
-public abstract class IterableSpace {
+public abstract class IterableSpace implements Iterable<BlockPos> {
     private static HashMap<String, Supplier<? extends IterableSpace>> spaces = new HashMap<>();
 
     static {
@@ -46,8 +46,6 @@ public abstract class IterableSpace {
     public abstract NBTTagCompound writeToNBT0(NBTTagCompound nbt);
 
     public abstract void readFromNBT0(NBTTagCompound nbt);
-
-    public abstract Iterator<BlockPos> getIterator();
 
     public abstract String getClassName(); //coulkd be done otherwise, but I think this is better
 
@@ -98,7 +96,7 @@ public abstract class IterableSpace {
         }
 
         @Override
-        public Iterator<BlockPos> getIterator() {
+        public Iterator<BlockPos> iterator() {
             index = 0;
             return this;
         }
