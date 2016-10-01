@@ -14,13 +14,21 @@ public class L {
         }
     }
 
+    public static void e(String msg, Throwable t) {
+        e(msg);
+        e(t);
+    }
+
     public static void e(String msg) {
         System.out.println("Error: " + msg);
         trace();
     }
 
-    public static void e(Exception ex) {
-        ex.printStackTrace(System.out);
+    public static void e(Throwable ex) {
+        if (ex == null)
+            e("Throwable null poassed into log error function");
+        else
+            ex.printStackTrace(System.out);
     }
 
     public static void w(String msg) {

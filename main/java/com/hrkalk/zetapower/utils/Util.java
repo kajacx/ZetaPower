@@ -87,6 +87,9 @@ public class Util {
 
     @SuppressWarnings("unchecked")
     public static <T> T getField(Object instance, String field) {
+        /*if ("position".equals(field)) {
+            L.i("getting position");
+        }*/
         if (instance == null || field == null) {
             L.w("Field " + field + " or instance" + instance + " is null");
             return null;
@@ -99,6 +102,7 @@ public class Util {
                 return (T) f.get(instance);
             } catch (NoSuchFieldException ex) {
                 //field not found, move on
+                clazz = clazz.getSuperclass();
             } catch (Exception ex) {
                 //genuine exception
                 ex.printStackTrace(System.out);
@@ -135,10 +139,21 @@ public class Util {
         Class<?> clazz = instance.getClass();
         while (clazz != Object.class) {
             try {
-                Method[] ms = clazz.getDeclaredMethods();
-                if (ms.length == 1) {
-                    ms[0].setAccessible(true);
-                    return ms[0].invoke(instance, params);
+                Method correct = null;
+                for (Method m : clazz.getDeclaredMethods()) {
+                    if (m.getName().equals(method)) {
+                        if (correct == null) {
+                            correct = m;
+                        } else {
+                            L.w("Multiple methods with name " + method + " in class " + clazz);
+                            correct = null;
+                            break;
+                        }
+                    }
+                }
+                if (correct != null) {
+                    correct.setAccessible(true);
+                    return correct.invoke(instance, params);
                 }
 
                 Method m = clazz.getDeclaredMethod(method, paramTypes);
@@ -146,6 +161,7 @@ public class Util {
                 return m.invoke(instance, params);
             } catch (NoSuchMethodException ex) {
                 //field not found, move on
+                clazz = clazz.getSuperclass();
             } catch (Exception ex) {
                 //genuine exception
                 ex.printStackTrace(System.out);

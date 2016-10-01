@@ -1,6 +1,5 @@
 package com.hrkalk.zetapower.tileentities;
 
-import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.MathUtils;
 import com.hrkalk.zetapower.utils.NBTReader;
 
@@ -19,7 +18,7 @@ public class ZetaChest_Reload {
         thiz.super_writeToNBT(compound);
 
         String location = thiz.getWorld().isRemote ? "Client" : "Server";
-        L.d(" -- " + location + " WRITE TO NBT -- ");
+        //L.d(" -- " + location + " WRITE TO NBT -- ");
 
         NBTTagList list = new NBTTagList();
         for (int i = 0; i < thiz.getSizeInventory(); ++i) {
@@ -46,11 +45,11 @@ public class ZetaChest_Reload {
             compound.setString("CustomName", thiz.getCustomName());
         }
 
-        L.d(location + " write facing: " + thiz.facing.getHorizontalIndex());
+        //L.d(location + " write facing: " + thiz.facing.getHorizontalIndex());
         compound.setInteger("Facing", thiz.facing.getHorizontalIndex());
 
         int rngCode = MathUtils.random.nextInt(1_000_000);
-        L.d(location + " write rng code to: " + rngCode);
+        //L.d(location + " write rng code to: " + rngCode);
         compound.setInteger("RandomInt", rngCode);
 
         /* try {
@@ -70,7 +69,7 @@ public class ZetaChest_Reload {
         thiz.super_readFromNBT(compound);
 
         String location = thiz.getWorld() == null ? "Unknown" : (thiz.getWorld().isRemote ? "Client" : "Server");
-        L.d(" -- " + location + " READ FROM NBT -- ");
+        //L.d(" -- " + location + " READ FROM NBT -- ");
 
         NBTTagList list = NBTReader.readListOr(compound, "Items", new NBTTagList(), NBTReader.TYPE_COMPOUND);//compound.getTagList("Items", 10);
         for (int i = 0; i < list.tagCount(); ++i) {
@@ -82,16 +81,16 @@ public class ZetaChest_Reload {
         thiz.setCustomName(NBTReader.readStringOr(compound, "CustomName", null));
 
         int facingInt = compound.getInteger("Facing");
-        L.d(location + " read Facing int: " + facingInt);
+        //L.d(location + " read Facing int: " + facingInt);
 
         EnumFacing facing = EnumFacing.getHorizontal(facingInt);
-        L.d(location + " read Facing: " + facing);
+        //L.d(location + " read Facing: " + facing);
 
         thiz.setEnumFacing(facing);
-        L.d(location + " read Facing thiz: " + thiz.getEnumFacing());
+        //L.d(location + " read Facing thiz: " + thiz.getEnumFacing());
 
-        L.d(location + " read Rng code: " + NBTReader.readIntOr(compound, "RandomInt", -42));
-        L.d(location + " read Raw rng: " + compound.getInteger("RandomInt"));
+        //L.d(location + " read Rng code: " + NBTReader.readIntOr(compound, "RandomInt", -42));
+        //L.d(location + " read Raw rng: " + compound.getInteger("RandomInt"));
 
         //thiz.facing = EnumFacing.getHorizontal(NBTReader.readIntOr(compound, "Facing", 0));
         //L.d("reading facing as: " + compound.getInteger("Facing"));
@@ -101,7 +100,7 @@ public class ZetaChest_Reload {
 
     public SPacketUpdateTileEntity getUpdatePacket() {
         String location = thiz.getWorld() == null ? "Unknown" : (thiz.getWorld().isRemote ? "Client" : "Server");
-        L.d(" -- " + location + " GET UPDATE PACKET -- ");
+        //L.d(" -- " + location + " GET UPDATE PACKET -- ");
 
         NBTTagCompound syncData = writeToNBT(new NBTTagCompound());
         return new SPacketUpdateTileEntity(thiz.get_pos(), thiz.getBlockMetadata(), syncData);
@@ -109,7 +108,7 @@ public class ZetaChest_Reload {
 
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         String location = thiz.getWorld() == null ? "Unknown" : (thiz.getWorld().isRemote ? "Client" : "Server");
-        L.d(" -- " + location + " ON DATA PACKET -- ");
+        //L.d(" -- " + location + " ON DATA PACKET -- ");
 
         readFromNBT(pkt.getNbtCompound());
     }

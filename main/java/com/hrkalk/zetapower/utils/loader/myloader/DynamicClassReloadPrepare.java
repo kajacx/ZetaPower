@@ -20,7 +20,8 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.hrkalk.zetapower.tileentities.ZetaChest;
+import com.hrkalk.zetapower.client.render.vessel.FakeRenderChunk;
+import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.loader.F1;
 import com.hrkalk.zetapower.utils.loader.FilteredClassLoader;
 import com.hrkalk.zetapower.utils.loader.ReflectUtil;
@@ -46,10 +47,8 @@ public class DynamicClassReloadPrepare {
             return;
         }
 
-        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(ZetaChest.class);
-        loader.addMethods("writeToNBT");
-        loader.addMethods("readFromNBT");
-        loader.addMethods("getEnumFacing");
+        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(FakeRenderChunk.class);
+        loader.addMethods("rebuildChunk");
         loader.doWork();
     }
 
@@ -482,7 +481,11 @@ public class DynamicClassReloadPrepare {
                 // L.s("Loader: " + classLoader);
                 Class<?> contextClass = classLoader.load(watchedClass.getCanonicalName() + "_Reload");
                 //L.s("Class: " + contextClass);
-                instance = contextClass.newInstance();
+                try {
+                    instance = contextClass.newInstance();
+                } catch (Throwable t) {
+                    L.e("Error in dynamic loading", t);
+                }
                 //L.s("Instance: " + instance);
                 contextClass.getField("thiz").set(instance, thiz);
             }

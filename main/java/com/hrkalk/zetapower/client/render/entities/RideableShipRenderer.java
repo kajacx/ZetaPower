@@ -108,15 +108,19 @@ public class RideableShipRenderer extends Render {
         }
     }
 
+    private RideableShipRenderer_Reload renderer = new RideableShipRenderer_Reload();
+
     @Override
     public void doRender(Entity arg1, double arg2, double arg3, double arg4, float arg5, float arg6) {
+        //renderer.thiz = this;
+        //renderer.doRender(arg1, arg2, arg3, arg4, arg5, arg6);
         try {
             ReflectUtil.invoke("doRender", reloader.getInstance(this), arg1, arg2, arg3, arg4, arg5, arg6);
         } catch (Throwable t) {
             System.out.println("Exception while executing reloadable code.");
             t.printStackTrace(System.out);
             //Thanks for using the Zeta Power Reloadable class generator.
-        }
+        } //*/
     }
 
 }

@@ -148,7 +148,7 @@ public class RideableShip_Reload {
     }
 
     public void writeEntityToNBT(NBTTagCompound compound) {
-        L.d("Ship save to NBT");
+        //L.d("Ship save to NBT");
 
         compound.setDouble("posX", thiz.posX);
         compound.setDouble("posY", thiz.posY);
@@ -160,7 +160,7 @@ public class RideableShip_Reload {
     }
 
     public void readEntityFromNBT(NBTTagCompound compound) {
-        L.d("Ship read from NBT");
+        //L.d("Ship read from NBT");
 
         //thiz.posX = NBTReader.readDoubleOr(compound, "posX", 0);
         //thiz.posY = NBTReader.readDoubleOr(compound, "posY", 0);
