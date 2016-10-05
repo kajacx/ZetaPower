@@ -475,7 +475,7 @@ public class DynamicClassReloadPrepare {
             }
             //L.s("Reload: " + reload);
             if (reload) {
-                F1<String, Boolean> reloadWhat = className -> !blacklist.contains(className) && !blacklistPrefix.stream().anyMatch(prefix -> className.startsWith(prefix));
+                F1<String, Boolean> reloadWhat = this::shouldReload;
 
                 FilteredClassLoader classLoader = new FilteredClassLoader(reloadWhat, binFolder);
                 // L.s("Loader: " + classLoader);
@@ -490,6 +490,19 @@ public class DynamicClassReloadPrepare {
                 contextClass.getField("thiz").set(instance, thiz);
             }
             return instance;
+        }
+
+        private boolean shouldReload(String className) {
+            if (className.endsWith("_Reload")) {
+                return true;
+            }
+            try {
+                Class.forName(className + "_Reload");
+                return false; //don't reload if _Reload class exists
+            } catch (Exception ex) {
+                //do nothing
+            }
+            return !blacklist.contains(className) && !blacklistPrefix.stream().anyMatch(prefix -> className.startsWith(prefix));
         }
 
     }

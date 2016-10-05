@@ -8,7 +8,7 @@ public class RideableShipModel extends ModelBase {
 
     ModelRenderer render = new ModelRenderer(this, 0, 0).setTextureSize(16, 16);
 
-    public RideableShipModel(RideableShipRenderer thiz) {
+    public RideableShipModel(VesselEntityRenderer thiz) {
         render.addBox(-8, 0, -8, 16, 16, 16);
     }
 

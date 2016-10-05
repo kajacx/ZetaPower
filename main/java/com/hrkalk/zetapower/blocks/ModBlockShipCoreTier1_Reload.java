@@ -2,10 +2,10 @@ package com.hrkalk.zetapower.blocks;
 
 import com.hrkalk.zetapower.dimension.ChunksAllocator.AllocatedSpace;
 import com.hrkalk.zetapower.dimension.ZetaDimensionHandler;
-import com.hrkalk.zetapower.entities.RideableShip;
+import com.hrkalk.zetapower.entities.vessel.VesselEntity;
 import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.Util;
-import com.hrkalk.zetapower.vessel.IterableSpace;
+import com.hrkalk.zetapower.vessel.BlockCluster;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
@@ -27,6 +28,7 @@ public class ModBlockShipCoreTier1_Reload {
         }
 
         int mallocDim = ZetaDimensionHandler.mallocDimension.type.getId();
+        World mallocWorld = DimensionManager.getWorld(mallocDim);
 
         if (playerIn.dimension == mallocDim) {
             //dont spawn ships from malloc dimension
@@ -36,17 +38,19 @@ public class ModBlockShipCoreTier1_Reload {
         // MEKA ACTIVATE!
         L.d("MEKA ACTIVATE!");
 
-        AllocatedSpace space = ZetaDimensionHandler.mallocDimension.allocator.allocate(1, 1);
+        AllocatedSpace space = ZetaDimensionHandler.mallocDimension.allocator.allocate12(5, 5);
 
-        BlockPos anchor = new BlockPos(space.getX14() + 1, pos.getY(), space.getZ14() + 1);
-        BlockPos from = anchor.add(-1, -1, -1);
-        BlockPos to = anchor.add(2, 2, 2);
-        IterableSpace iterSpace = IterableSpace.createCubeSpace(anchor, from, to);
+        BlockPos center = new BlockPos(space.getX12() + 2, pos.getY(), space.getZ12() + 2);
+        BlockPos from = center.add(-2, -2, -2);
+        BlockPos to = center.add(3, 3, 3);
+        Vec3d anchor = new Vec3d(center.getX() + .5, center.getY() + .5, center.getZ() + .5);
+        BlockCluster cluster = new BlockCluster(mallocWorld, from, to, anchor, space);
 
-        Util.teleportAll(worldIn, pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, DimensionManager.getWorld(mallocDim), space.getX14(), pos.getY() - 1, space.getZ14(), 3, 3, 3);
+        //Util.teleportAll(worldIn, pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, DimensionManager.getWorld(mallocDim), space.getX14(), pos.getY() - 1, space.getZ14(), 3, 3, 3);
+        Util.teleportAll(worldIn, from, cluster);
 
         L.d("Spawing ship...");
-        RideableShip ship = new RideableShip(worldIn, pos.getX(), pos.getY(), pos.getZ(), space, iterSpace);
+        VesselEntity ship = new VesselEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), cluster);
         worldIn.spawnEntityInWorld(ship);
         L.d("Ship spawned");
 

@@ -10,12 +10,12 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
-public class RideableShipRenderer extends Render {
+public class VesselEntityRenderer extends Render {
 
-    private DynamicReloader reloader = new DynamicReloader(RideableShipRenderer.class, "../bin");
+    private DynamicReloader reloader = new DynamicReloader(VesselEntityRenderer.class, "../bin");
 
     {
-        reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.client.render.entities.RideableShipRenderer.class, "../bin"));
+        reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.client.render.entities.VesselEntityRenderer.class, "../bin"));
         reloader.reloadWhen.add(new ReloadEveryNTicks(20));
 
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadTrigger");
@@ -28,16 +28,17 @@ public class RideableShipRenderer extends Render {
         reloader.addToBlacklist("net.minecraft.util.ResourceLocation");
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.ReflectUtil");
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.DynamicReloader");
-        reloader.addToBlacklist("java.lang.String");
-        reloader.addToBlacklist("com.hrkalk.zetapower.entities.RideableShip");
+        reloader.addToBlacklist("com.hrkalk.zetapower.client.render.entities.VesselEntityRenderer");
+        reloader.addToBlacklist("com.hrkalk.zetapower.entities.VesselEntity");
 
+        reloader.addToBlacklistPrefix("java");
         reloader.addToBlacklistPrefix("net.minecraft");
         reloader.addToBlacklistPrefix("net.minecraftforge");
         reloader.addToBlacklistPrefix("com.hrkalk.zetapower.dimension");
         reloader.addToBlacklistPrefix("com.hrkalk.zetapower.vessel");
     }
 
-    public RideableShipRenderer(RenderManager arg1) {
+    public VesselEntityRenderer(RenderManager arg1) {
         super(arg1);
     }
 
@@ -108,7 +109,7 @@ public class RideableShipRenderer extends Render {
         }
     }
 
-    private RideableShipRenderer_Reload renderer = new RideableShipRenderer_Reload();
+    private VesselEntityRenderer_Reload renderer = new VesselEntityRenderer_Reload();
 
     @Override
     public void doRender(Entity arg1, double arg2, double arg3, double arg4, float arg5, float arg6) {

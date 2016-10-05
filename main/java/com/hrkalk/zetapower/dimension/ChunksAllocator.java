@@ -16,7 +16,19 @@ public class ChunksAllocator {
     }
 
     public AllocatedSpace allocate(int xSize, int zSize) {
+        if (xSize <= 0) {
+            L.w("Allocating xSize 1 instead of " + xSize);
+            xSize = 1;
+        }
+        if (zSize <= 0) {
+            L.w("Allocating xSize 1 instead of " + zSize);
+            zSize = 1;
+        }
         return getRowAllocator(zSize).allocate(xSize);
+    }
+
+    public AllocatedSpace allocate12(int xSize, int zSize) {
+        return allocate((xSize + 4 + 15) / 16, (xSize + 4 + 15) / 16); // don't ask...
     }
 
     public boolean unallocate(AllocatedSpace space) {
@@ -26,6 +38,21 @@ public class ChunksAllocator {
             getRowAllocator(space.zSize).unallocate(space);
             return true;
         }
+    }
+
+    /**
+     * call this when reconstructing saved space in NBT, DON'T allocate new space instead!
+     * @param xs x coordinate of the desired chunk
+     * @param zs z coordinate of the desired chunk
+     * @return AllocatedSpace
+     */
+    public AllocatedSpace getSavedSpace(int xPos, int zSize) {
+        AllocatedSpace ret = getRowAllocator(zSize).getAllocatedAt(xPos);
+        if (ret == null) {
+            //either the params are wrong or I was lazy to program this
+            return allocate(zSize, zSize);
+        }
+        return ret;
     }
 
     private static class RowAllocator {
@@ -48,6 +75,16 @@ public class ChunksAllocator {
                 }
             }
             L.e("Allocation failed where it shouldn't");
+            return null;
+        }
+
+        public AllocatedSpace getAllocatedAt(int xs) {
+            for (int i = 0; i < allocated.size(); i++) {
+                if (allocated.get(i).x == xs) {
+                    return allocated.get(i);
+                }
+            }
+            L.w("Trying to get allocated space that doesn't exist!");
             return null;
         }
 
@@ -108,20 +145,20 @@ public class ChunksAllocator {
             return zSize * 16;
         }
 
-        public int getX14() {
-            return getX16() + 1;
+        public int getX12() {
+            return getX16() + 2;
         }
 
-        public int getZ14() {
-            return getZ16() + 1;
+        public int getZ12() {
+            return getZ16() + 2;
         }
 
-        public int getXSize14() {
-            return getXSize16() - 2;
+        public int getXSize12() {
+            return getXSize16() - 4;
         }
 
-        public int getZSize14() {
-            return getZSize16() - 2;
+        public int getZSize12() {
+            return getZSize16() - 4;
         }
 
         public boolean isUnloaded() {

@@ -3,13 +3,11 @@ package com.hrkalk.zetapower.client.render.helper;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.hrkalk.zetapower.entities.RideableShip;
 import com.hrkalk.zetapower.utils.MathUtils;
 
-import net.minecraft.client.renderer.BlockFluidRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 
-public class EntityRotator extends TestHelper {
+public class EntityRotator {
     private Vector3f forward = new Vector3f(1, 0, 0); //reference forward vector, stored at creation
     private Vector3f up = new Vector3f(0, 1, 0); //reference up vector, stored at creation
     private Vector3f right = new Vector3f(0, 0, 1); //reference up vector, stored at creation
@@ -153,10 +151,6 @@ public class EntityRotator extends TestHelper {
         tmpMatrix.rotate(angle, rotForward);
         MathUtils.multiplyPos(tmpMatrix, rotUp);
         MathUtils.multiplyPos(tmpMatrix, rotRight);
-    }
-
-    public void testtest(int a, Integer b, String c, RideableShip p, BlockFluidRenderer r) {
-
     }
 
     public void reset() {

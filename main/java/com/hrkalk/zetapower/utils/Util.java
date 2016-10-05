@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import com.hrkalk.zetapower.vessel.BlockCluster;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -42,10 +44,17 @@ public class Util {
         L.i("sync packet successfully sent");
     }
 
+    public static void teleportAll(World worldFrom, BlockPos posFrom, BlockCluster clusterTo) {
+        BlockPos clusterStart = clusterTo.getFrom();
+        BlockPos clusterSize = clusterTo.getTo().subtract(clusterStart);
+        teleportAll(worldFrom, posFrom.getX(), posFrom.getY(), posFrom.getZ(), clusterTo.getWorld(), clusterStart.getX(), clusterStart.getY(), clusterStart.getZ(), clusterSize.getX(), clusterSize.getY(), clusterSize.getZ());
+    }
+
     public static void teleportAll(World worldFrom, int fromX, int fromY, int fromZ, World worldTo, int toX, int toY, int toZ, int xSize, int ySize, int zSize) {
+        L.d(String.format("Teleporting %d %d %d %d %d %d %d %d %d", fromX, fromY, fromZ, toX, toY, toZ, xSize, ySize, zSize));
         for (int x = 0; x < xSize; x++) {
             for (int y = 0; y < ySize; y++) {
-                for (int z = 0; z < xSize; z++) {
+                for (int z = 0; z < zSize; z++) {
                     teleportBlock(worldFrom, fromX + x, fromY + y, fromZ + z, worldTo, toX + x, toY + y, toZ + z);
                 }
             }
