@@ -14,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
@@ -38,17 +37,18 @@ public class ModBlockShipCoreTier1_Reload {
         // MEKA ACTIVATE!
         L.d("MEKA ACTIVATE!");
 
-        AllocatedSpace space = ZetaDimensionHandler.mallocDimension.allocator.allocate12(5, 5);
+        AllocatedSpace space = ZetaDimensionHandler.mallocDimension.allocator.allocate12(11, 11);
 
-        BlockPos center = new BlockPos(space.getX12() + 2, pos.getY(), space.getZ12() + 2);
-        BlockPos from = center.add(-2, -2, -2);
-        BlockPos to = center.add(3, 3, 3);
-        Vec3d anchor = new Vec3d(center.getX() + .5, center.getY() + .5, center.getZ() + .5);
-        BlockCluster cluster = new BlockCluster(mallocWorld, from, to, anchor, space);
+        BlockPos center = new BlockPos(space.getX12() + 5, pos.getY(), space.getZ12() + 5);
+        BlockPos from = center.add(-5, -5, -5);
+        BlockPos to = center.add(6, 6, 6);
+        //Vec3d anchor = new Vec3d(center.getX() + .5, center.getY() + .5, center.getZ() + .5);
+        BlockCluster cluster = new BlockCluster(mallocWorld, from, to, space);//, anchor, space);
+        //cluster.setSpace(space);
 
         //Util.teleportAll(worldIn, pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, DimensionManager.getWorld(mallocDim), space.getX14(), pos.getY() - 1, space.getZ14(), 3, 3, 3);
         L.d("teleporting");
-        Util.teleportAll(worldIn, pos.add(-2, -2, -2), cluster);
+        Util.teleportAll(worldIn, pos.add(-5, -5, -5), cluster);
 
         L.d("Spawing ship...");
         VesselEntity ship = new VesselEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), cluster);

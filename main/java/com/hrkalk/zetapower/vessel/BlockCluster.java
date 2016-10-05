@@ -26,6 +26,14 @@ public class BlockCluster implements Iterable<BlockPos> {
         iterator = new BlockIterator(from, to);
     }
 
+    public BlockCluster(World world, BlockPos from, BlockPos to) {
+        this(world, from, to, null, null);
+    }
+
+    public BlockCluster(World world, BlockPos from, BlockPos to, AllocatedSpace space) {
+        this(world, from, to, null, space);
+    }
+
     public BlockCluster(World world, BlockPos from, BlockPos to, Vec3d anchor) {
         this(world, from, to, anchor, null);
     }
@@ -34,7 +42,7 @@ public class BlockCluster implements Iterable<BlockPos> {
         this.world = world;
         this.from = from;
         this.to = to;
-        this.anchor = anchor;
+        setAnchor(anchor);
         this.space = space;
         iterator = new BlockIterator(from, to);
     }
@@ -68,7 +76,14 @@ public class BlockCluster implements Iterable<BlockPos> {
     }
 
     public void setAnchor(Vec3d anchor) {
-        this.anchor = anchor;
+        if (anchor == null) {
+            double x = (from.getX() + to.getX()) / 2d;
+            double y = (from.getY() + to.getY()) / 2d;
+            double z = (from.getZ() + to.getZ()) / 2d;
+            this.anchor = new Vec3d(x, y, z);
+        } else {
+            this.anchor = anchor;
+        }
     }
 
     public AllocatedSpace getSpace() {
