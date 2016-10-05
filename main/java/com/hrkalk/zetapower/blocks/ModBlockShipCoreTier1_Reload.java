@@ -47,7 +47,8 @@ public class ModBlockShipCoreTier1_Reload {
         BlockCluster cluster = new BlockCluster(mallocWorld, from, to, anchor, space);
 
         //Util.teleportAll(worldIn, pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, DimensionManager.getWorld(mallocDim), space.getX14(), pos.getY() - 1, space.getZ14(), 3, 3, 3);
-        Util.teleportAll(worldIn, from, cluster);
+        L.d("teleporting");
+        Util.teleportAll(worldIn, pos.add(-2, -2, -2), cluster);
 
         L.d("Spawing ship...");
         VesselEntity ship = new VesselEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), cluster);

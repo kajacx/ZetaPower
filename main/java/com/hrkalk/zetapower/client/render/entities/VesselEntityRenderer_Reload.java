@@ -1,5 +1,7 @@
 package com.hrkalk.zetapower.client.render.entities;
 
+import java.util.HashMap;
+
 import org.lwjgl.opengl.GL11;
 
 import com.hrkalk.zetapower.client.render.vessel.ClusterAccess;
@@ -56,6 +58,8 @@ public class VesselEntityRenderer_Reload {
     private int glRenderList = 0;
 
     double lastX;
+
+    private HashMap<Entity, Integer> glListMap = new HashMap<>();
 
     public void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
         //L.s("kappa");
@@ -164,9 +168,10 @@ public class VesselEntityRenderer_Reload {
 
                 //L.d("Use vbo: " + OpenGlHelper.useVbo());
                 //player.getEntityWorld().setWorldTime(0);
+                int glRenderList = 0;
 
                 try {
-                    if (glRenderList == 0) {
+                    if (!glListMap.containsKey(entity) || glListMap.get(entity) != 1) {
 
                         solidVertexBuffer.begin(7, DefaultVertexFormats.BLOCK);
                         boolean success = false;
@@ -195,6 +200,7 @@ public class VesselEntityRenderer_Reload {
                         if (!success) {
                             L.d("Success: " + success);
                         }
+                        glListMap.put(entity, glRenderList);
 
                         //TEST
                         /*ViewFrustum viewFrustum = Util.getField(renderGlobal, "viewFrustum");
@@ -210,6 +216,8 @@ public class VesselEntityRenderer_Reload {
                                 //L.d("Picked list id: " + glRenderList2);
                             }
                         }*/
+                    } else {
+                        glRenderList = glListMap.get(entity);
                     }
 
                     GlStateManager.pushMatrix();
@@ -217,16 +225,26 @@ public class VesselEntityRenderer_Reload {
                     double viewY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
                     double viewZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
 
-                    GlStateManager.translate(entity.posX - viewX, entity.posY - viewY, entity.posZ - viewZ);
+                    double posX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
+                    double posY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
+                    double posZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
+
+                    GlStateManager.translate(posX - viewX, posY - viewY, posZ - viewZ);
 
                     float time = System.currentTimeMillis() % 1000000;
 
-                    float f = 1.000001F;
-                    float move = -.5f;
-                    GL11.glTranslatef(-move, -move, -move);
-                    GL11.glScalef(f, f, f);
-                    //GL11.glRotatef(time / 10, 0, 1, 0);
-                    GL11.glTranslatef(move, move, move);
+                    float rotationYaw;
+                    float rotationPitch;
+                    if (entity.getControllingPassenger() == player) {
+                        rotationYaw = player.rotationYaw;
+                        rotationPitch = player.rotationPitch;
+                    } else {
+                        rotationYaw = entity.rotationYaw;
+                        rotationPitch = entity.rotationPitch;
+                    }
+                    float rotXY = rotationYaw * MathUtils.degToRadF;
+                    GlStateManager.rotate(-rotationPitch, (float) -Math.cos(rotXY), 0, (float) -Math.sin(rotXY));
+                    GlStateManager.rotate(-rotationYaw + 180, 0, 1, 0);
 
                     Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                     Minecraft.getMinecraft().entityRenderer.enableLightmap();
