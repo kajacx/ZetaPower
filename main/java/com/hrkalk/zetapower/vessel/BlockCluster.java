@@ -2,6 +2,7 @@ package com.hrkalk.zetapower.vessel;
 
 import java.util.Iterator;
 
+import com.hrkalk.zetapower.client.render.vessel.ScaledRotator;
 import com.hrkalk.zetapower.dimension.ChunksAllocator.AllocatedSpace;
 import com.hrkalk.zetapower.dimension.ZetaDimensionHandler;
 import com.hrkalk.zetapower.utils.L;
@@ -17,8 +18,9 @@ public class BlockCluster implements Iterable<BlockPos> {
     private World world;
     private BlockPos from;
     private BlockPos to;
-    private Vec3d anchor;
-    private AllocatedSpace space;
+    private Vec3d anchor; //optional in constructor
+    private AllocatedSpace space; //optional
+    private ScaledRotator rotator; //optional
 
     public BlockCluster(World world, NBTTagCompound tag) {
         this.world = world;
@@ -27,23 +29,14 @@ public class BlockCluster implements Iterable<BlockPos> {
     }
 
     public BlockCluster(World world, BlockPos from, BlockPos to) {
-        this(world, from, to, null, null);
-    }
-
-    public BlockCluster(World world, BlockPos from, BlockPos to, AllocatedSpace space) {
-        this(world, from, to, null, space);
+        this(world, from, to, null);
     }
 
     public BlockCluster(World world, BlockPos from, BlockPos to, Vec3d anchor) {
-        this(world, from, to, anchor, null);
-    }
-
-    public BlockCluster(World world, BlockPos from, BlockPos to, Vec3d anchor, AllocatedSpace space) {
         this.world = world;
         this.from = from;
         this.to = to;
         setAnchor(anchor);
-        this.space = space;
         iterator = new BlockIterator(from, to);
     }
 
@@ -90,8 +83,18 @@ public class BlockCluster implements Iterable<BlockPos> {
         return space;
     }
 
-    public void setSpace(AllocatedSpace space) {
+    public BlockCluster setSpace(AllocatedSpace space) {
         this.space = space;
+        return this;
+    }
+
+    public ScaledRotator getRotator() {
+        return rotator;
+    }
+
+    public BlockCluster setRotator(ScaledRotator scaledRotator) {
+        this.rotator = scaledRotator;
+        return this;
     }
 
     private BlockIterator iterator;

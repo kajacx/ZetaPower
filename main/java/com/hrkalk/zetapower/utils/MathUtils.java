@@ -101,7 +101,9 @@ public class MathUtils {
     }
 
     /**
-     * Returns the left cross product of 2 vectors or any ortogonal vector is they are lineary dependent
+     * Returns the left cross product of 2 vectors, or any orthogonal vector if they are linearly dependent.
+     * Uses left-hand rule: if the first vector is pointing as your fingers and up vector as your thumb,
+     * then the result vector will go from the palm of your left hand.
      * @param v1
      * @param v2
      * @param result

@@ -1,5 +1,8 @@
 package com.hrkalk.zetapower.blocks;
 
+import org.lwjgl.util.vector.Vector3f;
+
+import com.hrkalk.zetapower.client.render.vessel.ScaledRotator;
 import com.hrkalk.zetapower.dimension.ChunksAllocator.AllocatedSpace;
 import com.hrkalk.zetapower.dimension.ZetaDimensionHandler;
 import com.hrkalk.zetapower.entities.vessel.VesselEntity;
@@ -43,8 +46,8 @@ public class ModBlockShipCoreTier1_Reload {
         BlockPos from = center.add(-5, -5, -5);
         BlockPos to = center.add(6, 6, 6);
         //Vec3d anchor = new Vec3d(center.getX() + .5, center.getY() + .5, center.getZ() + .5);
-        BlockCluster cluster = new BlockCluster(mallocWorld, from, to, space);//, anchor, space);
-        //cluster.setSpace(space);
+        BlockCluster cluster = new BlockCluster(mallocWorld, from, to);//, anchor, space);
+        cluster.setSpace(space).setSpace(space).setRotator(new ScaledRotator(new Vector3f(1, 0, 0)));
 
         //Util.teleportAll(worldIn, pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, DimensionManager.getWorld(mallocDim), space.getX14(), pos.getY() - 1, space.getZ14(), 3, 3, 3);
         L.d("teleporting");
