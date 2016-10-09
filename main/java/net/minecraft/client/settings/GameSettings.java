@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,8 @@ import com.google.gson.Gson;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
+import net.minecraft.client.renderer.DefaultPlayerCamera;
+import net.minecraft.client.renderer.IPlayerCamera;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -147,7 +150,8 @@ public class GameSettings {
     private File optionsFile;
     public EnumDifficulty difficulty;
     public boolean hideGUI;
-    public int thirdPersonView;
+    public List<IPlayerCamera> cameras = new ArrayList<IPlayerCamera>();
+    public int selectedCameraIndex = 0;
     /** true if debug info should be displayed instead of version */
     public boolean showDebugInfo;
     public boolean showDebugProfilerChart;
@@ -169,8 +173,6 @@ public class GameSettings {
     public boolean forceUnicodeFont;
 
     public GameSettings(Minecraft mcIn, File optionsFileIn) {
-        System.out.println("My game settings is being used");
-
         setForgeKeybindProperties();
         this.keyBindings = (KeyBinding[]) ArrayUtils.addAll(new KeyBinding[] { this.keyBindAttack, this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindSprint, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot, this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindFullscreen, this.keyBindSpectatorOutlines, this.keyBindSwapHands }, this.keyBindsHotbar);
         this.difficulty = EnumDifficulty.NORMAL;
@@ -185,6 +187,11 @@ public class GameSettings {
         } else {
             GameSettings.Options.RENDER_DISTANCE.setValueMax(16.0F);
         }
+
+        cameras.add(new DefaultPlayerCamera(DefaultPlayerCamera.MODE_FIRST_PERSON));
+        cameras.add(new DefaultPlayerCamera(DefaultPlayerCamera.MODE_3RD_PERSON_BEHIND));
+        cameras.add(new DefaultPlayerCamera(DefaultPlayerCamera.MODE_3RD_PERSON_FRONT));
+        getCamera().onSelected();
 
         this.renderDistanceChunks = mcIn.isJava64bit() ? 12 : 8;
         this.loadOptions();
@@ -1071,6 +1078,13 @@ public class GameSettings {
     }
 
     /******* Forge Start ***********/
+    public IPlayerCamera getCamera() {
+        if (selectedCameraIndex < 0 || selectedCameraIndex > cameras.size()) {
+            return cameras.get(0);
+        }
+        return cameras.get(selectedCameraIndex);
+    }
+
     private void setForgeKeybindProperties() {
         net.minecraftforge.client.settings.KeyConflictContext inGame = net.minecraftforge.client.settings.KeyConflictContext.IN_GAME;
         keyBindForward.setKeyConflictContext(inGame);
