@@ -1,14 +1,15 @@
-package com.hrkalk.zetapower.entities;
+package com.hrkalk.zetapower.entities.vessel;
 
 import java.io.IOException;
 
 import javax.annotation.Nullable;
 
+import com.hrkalk.zetapower.dimension.ZetaDimensionHandler;
 import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.MathUtils;
 import com.hrkalk.zetapower.utils.NBTReader;
 import com.hrkalk.zetapower.utils.Vector3d;
-import com.hrkalk.zetapower.vessel.IterableSpace;
+import com.hrkalk.zetapower.vessel.BlockCluster;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -22,7 +23,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
-public class RideableShip_Reload {
+public class VesselEntity_Reload {
 
     private boolean goUp = true; //always go Y+ only when holding the up key
     private boolean goForw = false; //move horizontaly only when holding the horizontal keys 
@@ -39,15 +40,19 @@ public class RideableShip_Reload {
 
     private Vector3d tmp = new Vector3d();
 
-    public RideableShip thiz;
+    public VesselEntity thiz;
 
-    public RideableShip_Reload() {
+    public VesselEntity_Reload() {
         goUp |= goForw;
     }
 
     public void onUpdate() {
         //L.d("On update");
         //this.super_onUpdate();
+        if (thiz == null) {
+            L.d("thiz cannot be null");
+            return;
+        }
         if (thiz.isBeingRidden()) {
             EntityLivingBase entityLivingBase = (EntityLivingBase) thiz.getControllingPassenger();
 
@@ -154,8 +159,10 @@ public class RideableShip_Reload {
         compound.setDouble("posY", thiz.posY);
         compound.setDouble("posZ", thiz.posZ);
 
-        if (thiz.iterSpace != null) {
-            compound.setTag("iterSpace", thiz.iterSpace.writeToNBT(new NBTTagCompound()));
+        if (thiz.cluster != null) {
+            compound.setTag("cluster", thiz.cluster.saveToNBT(new NBTTagCompound()));
+        } else {
+            L.w("Cluster is null when writing, this shouldn't happen");
         }
     }
 
@@ -166,10 +173,11 @@ public class RideableShip_Reload {
         //thiz.posY = NBTReader.readDoubleOr(compound, "posY", 0);
         //thiz.posZ = NBTReader.readDoubleOr(compound, "posZ", 0);
 
-        NBTTagCompound iterSpaceTag = NBTReader.readTagOr(compound, "iterSpace", null);
-        L.d("iter: " + iterSpaceTag);
-        if (iterSpaceTag != null) {
-            thiz.iterSpace = IterableSpace.readFromNBT(iterSpaceTag);
+        NBTTagCompound clusterTag = NBTReader.readTagOr(compound, "cluster", null);
+        if (clusterTag != null) {
+            thiz.cluster = new BlockCluster(ZetaDimensionHandler.getMallocWorld(), clusterTag);
+        } else {
+            L.w("Cluster is null when reading. This shouldn't happen");
         }
     }
 
@@ -183,14 +191,18 @@ public class RideableShip_Reload {
 
     public void readSpawnData(ByteBuf additionalData) {
         L.d("readSpawnData");
-
-        NBTTagCompound tag = new NBTTagCompound();
         try {
-            tag = new PacketBuffer(additionalData).readNBTTagCompoundFromBuffer();
-        } catch (IOException e) {
-            e.printStackTrace(System.out);
+
+            NBTTagCompound tag = new NBTTagCompound();
+            try {
+                tag = new PacketBuffer(additionalData).readNBTTagCompoundFromBuffer();
+            } catch (IOException e) {
+                e.printStackTrace(System.out);
+            }
+            readEntityFromNBT(tag);
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            L.e("Error when reading dpawn data: " + ex.getMessage());
         }
-        readEntityFromNBT(tag);
     }
 
     public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand) {

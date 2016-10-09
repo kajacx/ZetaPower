@@ -1,4 +1,4 @@
-package com.hrkalk.zetapower.entities;
+package com.hrkalk.zetapower.entities.vessel;
 
 import java.util.List;
 import java.util.Random;
@@ -6,13 +6,12 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import com.hrkalk.zetapower.dimension.ChunksAllocator.AllocatedSpace;
 import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.loader.ReflectUtil;
 import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.DynamicReloader;
 import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadEveryNTicks;
 import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadOnChange;
-import com.hrkalk.zetapower.vessel.IterableSpace;
+import com.hrkalk.zetapower.vessel.BlockCluster;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
@@ -35,15 +34,14 @@ import net.minecraft.util.text.event.HoverEvent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
-public class RideableShip extends Entity implements IEntityAdditionalSpawnData {
+public class VesselEntity extends Entity implements IEntityAdditionalSpawnData {
 
-    public AllocatedSpace allocSpace;
-    public IterableSpace iterSpace;
+    public BlockCluster cluster;
 
-    private DynamicReloader reloader = new DynamicReloader(RideableShip.class, "../bin");
+    private DynamicReloader reloader = new DynamicReloader(VesselEntity.class, "../bin");
 
     {
-        reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.entities.RideableShip.class, "../bin"));
+        reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.entities.vessel.VesselEntity.class, "../bin"));
         reloader.reloadWhen.add(new ReloadEveryNTicks(20));
 
         reloader.addToBlacklist("net.minecraft.nbt.NBTTagCompound");
@@ -69,7 +67,7 @@ public class RideableShip extends Entity implements IEntityAdditionalSpawnData {
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.ReflectUtil");
         reloader.addToBlacklist("com.hrkalk.zetapower.entities.RideableShip");
         reloader.addToBlacklist("java.lang.String");
-        reloader.addToBlacklist("net.minecraft.util.SoundEvent");
+        reloader.addToBlacklist("com.hrkalk.zetapower.entities.vessel.VesselEntity");
 
         reloader.addToBlacklistPrefix("net.minecraft");
         reloader.addToBlacklistPrefix("net.minecraftforge");
@@ -77,11 +75,11 @@ public class RideableShip extends Entity implements IEntityAdditionalSpawnData {
         reloader.addToBlacklistPrefix("com.hrkalk.zetapower.vessel");
     }
 
-    public RideableShip(World worldIn) {
-        this(worldIn, 0, 0, 0, null, null);
+    public VesselEntity(World worldIn) {
+        this(worldIn, 0, 0, 0, null);
     }
 
-    public RideableShip(World worldIn, double x, double y, double z, AllocatedSpace allocSpace, IterableSpace iterSpace) {
+    public VesselEntity(World worldIn, double x, double y, double z, BlockCluster cluster) {
         super(worldIn);
         this.setPosition(x, y, z);
         this.motionX = 0.0D;
@@ -91,8 +89,7 @@ public class RideableShip extends Entity implements IEntityAdditionalSpawnData {
         this.prevPosY = y;
         this.prevPosZ = z;
         this.setSize(0.9F, 0.9F);
-        this.allocSpace = allocSpace;
-        this.iterSpace = iterSpace;
+        this.cluster = cluster;
     }
 
     public int get_rideCooldown() {
@@ -400,8 +397,8 @@ public class RideableShip extends Entity implements IEntityAdditionalSpawnData {
         try {
             ReflectUtil.invoke("readSpawnData", reloader.getInstance(this), additionalData);
         } catch (Throwable t) {
-            System.out.println("Exception while executing reloadable code.");
-            t.printStackTrace(System.out);
+            L.e("Exception while executing reloadable code.", t);
+            L.e(t.getCause());
             //Thanks for using the Zeta Power Reloadable class generator.
         }
     }

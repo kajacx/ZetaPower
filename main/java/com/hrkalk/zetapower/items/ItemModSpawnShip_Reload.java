@@ -3,7 +3,7 @@ package com.hrkalk.zetapower.items;
 import com.hrkalk.zetapower.dimension.MallocDimension;
 import com.hrkalk.zetapower.dimension.SimpleTeleporter;
 import com.hrkalk.zetapower.dimension.ZetaDimensionHandler;
-import com.hrkalk.zetapower.entities.RideableShip;
+import com.hrkalk.zetapower.entities.vessel.VesselEntity;
 import com.hrkalk.zetapower.utils.L;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,7 +31,7 @@ public class ItemModSpawnShip_Reload {
         }
 
         if (playerIn.isSneaking()) {
-            RideableShip ship = new RideableShip(worldIn, playerIn.posX, playerIn.posY + 2, playerIn.posZ, null, null);
+            VesselEntity ship = new VesselEntity(worldIn, playerIn.posX, playerIn.posY + 2, playerIn.posZ, null);
             worldIn.spawnEntityInWorld(ship);
         } else {
 

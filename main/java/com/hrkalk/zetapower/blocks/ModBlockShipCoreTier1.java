@@ -57,7 +57,7 @@ public class ModBlockShipCoreTier1 extends BasicBlock {
         reloader.addToBlacklist("java.util.List");
         reloader.addToBlacklist("net.minecraft.block.material.Material");
         reloader.addToBlacklist("net.minecraft.entity.player.EntityPlayer");
-        reloader.addToBlacklist("com.hrkalk.zetapower.entities.RideableShip");
+        reloader.addToBlacklist("com.hrkalk.zetapower.entities.vessel.VesselEntity");
 
         reloader.addToBlacklistPrefix("net.minecraft");
         reloader.addToBlacklistPrefix("net.minecraftforge");

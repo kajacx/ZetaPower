@@ -1,51 +1,43 @@
 package com.hrkalk.zetapower.client.render.entities;
 
-import java.util.Iterator;
+import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
 
+import com.hrkalk.zetapower.client.render.vessel.ClusterAccess;
 import com.hrkalk.zetapower.client.render.vessel.FakeRenderChunk;
 import com.hrkalk.zetapower.dimension.ZetaDimensionHandler;
-import com.hrkalk.zetapower.entities.RideableShip;
+import com.hrkalk.zetapower.entities.vessel.VesselEntity;
 import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.MathUtils;
 import com.hrkalk.zetapower.utils.Util;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.ViewFrustum;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
-import net.minecraft.client.renderer.chunk.CompiledChunk;
-import net.minecraft.client.renderer.chunk.ListedRenderChunk;
-import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.DimensionManager;
 
-public class RideableShipRenderer_Reload {
+public class VesselEntityRenderer_Reload {
 
-    public RideableShipRenderer thiz;
+    public VesselEntityRenderer thiz;
 
     private RideableShipModel model;
     private ResourceLocation texture = new ResourceLocation("zetapower", "textures/entities/rideable_ship_plate.png");
@@ -67,21 +59,24 @@ public class RideableShipRenderer_Reload {
 
     double lastX;
 
+    private HashMap<Entity, Integer> glListMap = new HashMap<>();
+
     public void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
         //L.s("kappa");
-        RideableShip ship = (RideableShip) entity;
-        if (ship.iterSpace != null) {
+        VesselEntity ship = (VesselEntity) entity;
+        //L.d("Cluster from: " + ship.cluster.getFrom());
+        //L.d("Cluster to: " + ship.cluster.getTo());
+        //L.d("Cluster anchor: " + ship.cluster.getAnchor());
+        if (ship.cluster != null) {
             //L.s("new render");
-            Iterator<BlockPos> iter = ship.iterSpace.iterator();
             World mallocWorld = DimensionManager.getWorld(ZetaDimensionHandler.mallocDimension.type.getId());
 
             //L.d("ff: " + iter.hasNext());
-            BlockPos anchor = ship.iterSpace.getAnchorPoint();
+            Vec3d anchor = ship.cluster.getAnchor();
 
             //L.d("Reprot");
 
-            while (iter.hasNext()) {
-                BlockPos pos = iter.next();
+            for (BlockPos pos : ship.cluster) {
                 TileEntity te = mallocWorld.getTileEntity(pos);
                 //L.d("Pos: " + pos + " kappa: " + mallocWorld.getBlockState(pos) + " te: " + te);
                 //IBlockState state = mallocWorld.getBlockState(pos);
@@ -91,13 +86,13 @@ public class RideableShipRenderer_Reload {
                 // --- TILE ENTITY ---
 
                 if (te != null) {
-                    TileEntitySpecialRenderer<TileEntity> renderer = TileEntityRendererDispatcher.instance.<TileEntity>getSpecialRenderer(te);
+                    TileEntitySpecialRenderer<TileEntity> renderer = TileEntityRendererDispatcher.instance.<TileEntity> getSpecialRenderer(te);
                     //L.d("Found tile entity, renderer: " + renderer);
                     if (renderer != null) {
                         // L.s("Found renderer");
-                        int xOff = pos.getX() - anchor.getX();
-                        int yOff = pos.getY() - anchor.getY();
-                        int zOff = pos.getZ() - anchor.getZ();
+                        double xOff = pos.getX() - anchor.xCoord;
+                        double yOff = pos.getY() - anchor.yCoord;
+                        double zOff = pos.getZ() - anchor.zCoord;
                         //L.d("xoff: " + xOff + ", yoff: " + yOff + ", zoff: " + zOff);
                         //renderer.renderTileEntityAt(te, x + xOff - .5, y + yOff, z + zOff - .5, partialTicks, 0);
 
@@ -120,8 +115,6 @@ public class RideableShipRenderer_Reload {
                 ChunkRenderDispatcher crDispatcher = (ChunkRenderDispatcher) Util.getField(renderGlobal, "renderDispatcher");
                 ChunkRenderWorker crWorker = (ChunkRenderWorker) Util.getField(crDispatcher, "renderWorker");*/
                 //crWorker.getRe
-
-
 
             }
 
@@ -155,9 +148,7 @@ public class RideableShipRenderer_Reload {
                     L.d("Position: " + chunk.getPosition());
                 }*/
 
-                IBlockState state = Blocks.WOOL.getDefaultState();
                 //state = ModBlocks.testTeleporter.getDefaultState();
-                BlockPos pos = new BlockPos(0, 80, 0);
                 final boolean logEverything = false;
                 Entity player = Minecraft.getMinecraft().thePlayer;
                 Vec3d playerPos = player.getPositionVector();
@@ -169,115 +160,50 @@ public class RideableShipRenderer_Reload {
                 //lastX = playerPos.xCoord;
 
                 World world = player.worldObj;
-                Block test = world.getBlockState(new BlockPos(0, 67, 0)).getBlock();
-                state = world.getBlockState(new BlockPos(0, 67, 0));
+                //Block test = world.getBlockState(new BlockPos(0, 67, 0)).getBlock();
+                //state = world.getBlockState(new BlockPos(0, 67, 0));
                 //L.d("Block: " + test);
 
-                IBlockAccess myBlockAccess = new IBlockAccess() {
-
-                    @Override
-                    public TileEntity getTileEntity(BlockPos pos) {
-                        if (logEverything)
-                            L.d("TileEntity getTileEntity(BlockPos pos) called");
-                        return null;
-                    }
-
-                    @Override
-                    public int getCombinedLight(BlockPos pos, int lightValue) {
-                        if (logEverything)
-                            L.d("int getCombinedLight(BlockPos pos, int lightValue) called, pos: " + pos + ", value " + lightValue);
-                        return 200;
-                    }
-
-                    @Override
-                    public IBlockState getBlockState(BlockPos pos) {
-                        if (logEverything)
-                            L.d("IBlockState getBlockState(BlockPos pos) called, pos: " + pos);
-                        //return null;
-                        if (pos.getX() == 0 && pos.getY() == 80 && pos.getZ() == 0) {
-                            return Blocks.WOOL.getDefaultState();
-                        } else {
-                            return Blocks.AIR.getDefaultState();
-                        }
-                    }
-
-                    @Override
-                    public boolean isAirBlock(BlockPos pos) {
-                        if (logEverything)
-                            L.d("boolean isAirBlock(BlockPos pos) called, pos: " + pos);
-                        if (pos.getX() == 0 && pos.getY() == 80 && pos.getZ() == 0) {
-                            return false;
-                        } else {
-                            return true;
-                        }
-                    }
-
-                    @Override
-                    public Biome getBiomeGenForCoords(BlockPos pos) {
-                        if (logEverything)
-                            L.d("Biome getBiomeGenForCoords(BlockPos pos) called");
-                        //BiomeGenBase biomegenbase = par2World.getWorldChunkManager().getBiomeGenAt(x, z);
-
-                        return Biome.getBiome(1); //BiomePlains.getBiomeForId(0);
-                    }
-
-                    @Override
-                    public int getStrongPower(BlockPos pos, EnumFacing direction) {
-                        if (logEverything)
-                            L.d("int getStrongPower(BlockPos pos, EnumFacing direction) called");
-                        return 0;
-                    }
-
-                    @Override
-                    public WorldType getWorldType() {
-                        if (logEverything)
-                            L.d("WorldType getWorldType() called");
-                        return WorldType.DEFAULT;
-                    }
-
-                    @Override
-                    public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
-                        if (logEverything)
-                            L.d("boolean isSideSolid(BlockPos pos) called, pos: " + pos);
-                        if (pos.getX() == 0 && pos.getY() == 80 && pos.getZ() == 0) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                };
+                IBlockAccess myBlockAccess = new ClusterAccess(ship.cluster);
 
                 //L.d("Use vbo: " + OpenGlHelper.useVbo());
                 //player.getEntityWorld().setWorldTime(0);
+                int glRenderList = 0;
 
                 try {
-                    if (glRenderList == 0) {
+                    if (!glListMap.containsKey(entity) || glListMap.get(entity) != 1) {
 
-                        /*solidVertexBuffer.begin(7, DefaultVertexFormats.BLOCK);
-                        solidVertexBuffer.setTranslation((double) (-pos.getX()), (double) (-pos.getY()), (double) (-pos.getZ()));
-                        boolean success = dispatcher.renderBlock(state, pos, myBlockAccess, solidVertexBuffer);
+                        solidVertexBuffer.begin(7, DefaultVertexFormats.BLOCK);
+                        boolean success = false;
+                        solidVertexBuffer.setTranslation(-anchor.xCoord, -anchor.yCoord, -anchor.zCoord);
+                        //solidVertexBuffer.setTranslation((-pos.getX()), (-pos.getY()), (-pos.getZ()));
+                        for (BlockPos b : ship.cluster) {
+                            IBlockState state2 = mallocWorld.getBlockState(b);
+                            success |= dispatcher.renderBlock(state2, b, myBlockAccess, solidVertexBuffer);
+                        }
                         solidVertexBuffer.finishDrawing();
                         solidVertexBuffer.setTranslation(0, 0, 0);
-                        
+
                         //L.d("vertex count: " + solidVertexBuffer.getVertexCount()); //24
                         //L.d("is main thread: " + Minecraft.getMinecraft().isCallingFromMinecraftThread()); //true
-                        
+
                         //Tessellator.getInstance().draw();
                         glRenderList = GLAllocation.generateDisplayLists(1);
                         GlStateManager.glNewList(glRenderList, GL11.GL_COMPILE);
-                        
+
                         uploader.draw(solidVertexBuffer);
-                        
+
                         GlStateManager.glEndList();
-                        
+
                         //GlStateManager.
-                        
+
                         if (!success) {
                             L.d("Success: " + success);
-                        }*/
+                        }
+                        glListMap.put(entity, glRenderList);
 
                         //TEST
-                        ViewFrustum viewFrustum = Util.getField(renderGlobal, "viewFrustum");
+                        /*ViewFrustum viewFrustum = Util.getField(renderGlobal, "viewFrustum");
                         RenderChunk[] chunks = viewFrustum.renderChunks;
                         for (RenderChunk chunk : chunks) {
                             if (chunk.getPosition().equals(new BlockPos(0, 64, 0))) {
@@ -289,7 +215,9 @@ public class RideableShipRenderer_Reload {
                                 glRenderList = listed.getDisplayList(BlockRenderLayer.SOLID, compiledChunk);
                                 //L.d("Picked list id: " + glRenderList2);
                             }
-                        }
+                        }*/
+                    } else {
+                        glRenderList = glListMap.get(entity);
                     }
 
                     GlStateManager.pushMatrix();
@@ -297,16 +225,26 @@ public class RideableShipRenderer_Reload {
                     double viewY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
                     double viewZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
 
-                    GlStateManager.translate(pos.getX() - viewX, pos.getY() - viewY, pos.getZ() - viewZ);
+                    double posX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
+                    double posY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
+                    double posZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
+
+                    GlStateManager.translate(posX - viewX, posY - viewY, posZ - viewZ);
 
                     float time = System.currentTimeMillis() % 1000000;
 
-                    float f = 1.000001F;
-                    float move = -.5f;
-                    GL11.glTranslatef(-move, -move, -move);
-                    GL11.glScalef(f, f, f);
-                    //GL11.glRotatef(time / 10, 0, 1, 0);
-                    GL11.glTranslatef(move, move, move);
+                    float rotationYaw;
+                    float rotationPitch;
+                    if (entity.getControllingPassenger() == player) {
+                        rotationYaw = player.rotationYaw;
+                        rotationPitch = player.rotationPitch;
+                    } else {
+                        rotationYaw = entity.rotationYaw;
+                        rotationPitch = entity.rotationPitch;
+                    }
+                    float rotXY = rotationYaw * MathUtils.degToRadF;
+                    GlStateManager.rotate(-rotationPitch, (float) -Math.cos(rotXY), 0, (float) -Math.sin(rotXY));
+                    GlStateManager.rotate(-rotationYaw + 180, 0, 1, 0);
 
                     Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                     Minecraft.getMinecraft().entityRenderer.enableLightmap();
@@ -339,7 +277,6 @@ public class RideableShipRenderer_Reload {
                     e.printStackTrace(System.out);
                 }*/
             }
-
 
         } else {
             renderOld(entity, x, y, z, entityYaw, partialTicks);
