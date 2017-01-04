@@ -1,4 +1,4 @@
-package net.minecraft.client.renderer;
+package net.minecraft.client.renderer.ccc;
 
 import org.lwjgl.util.vector.Vector3f;
 
