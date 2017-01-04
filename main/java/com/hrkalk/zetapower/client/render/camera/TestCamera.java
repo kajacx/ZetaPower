@@ -18,15 +18,19 @@ public class TestCamera implements IPlayerCamera {
 
     @Override
     public void update(Entity entity, float partialTicks) {
+        //time measurement
+        float time = System.currentTimeMillis() - milisAtStart;
+        time /= 1000;
+
         //entity position
         double entityX = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
         double entityY = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
         double entityZ = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
 
-        position.set((float) (entityX + 2), (float) entityY + entity.getEyeHeight(), (float) entityZ);
+        float dx = (float) Math.cos(time) * -4;
+        float dz = (float) Math.sin(time) * -4;
 
-        float time = System.currentTimeMillis() - milisAtStart;
-        time /= 1000;
+        position.set((float) entityX + dx, (float) entityY + entity.getEyeHeight(), (float) entityZ + dz);
 
         look.x = (float) Math.cos(time);
         look.z = (float) Math.sin(time);

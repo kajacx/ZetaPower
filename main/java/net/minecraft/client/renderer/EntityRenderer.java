@@ -621,11 +621,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             double entityY = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
             double entityZ = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
 
-            //start by simply moving the camera to a correct spot
-            GlStateManager.translate(entityX - cameraX, entityY - cameraY, entityZ - cameraZ);
-
             //look vectors
-            Vector3f forward = MathUtils.vectorX; //reference look forward vector
+            Vector3f forward = MathUtils.vectorZNeg; //reference look forward vector
             Vector3f lookForw = camera.getLookVector(); //camera look forward vector
             Vector3f up = MathUtils.vectorY; //reference look up vector
             Vector3f lookUp = camera.getLookVector(); //camera look up vector
@@ -635,21 +632,14 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             Vector3f tmpVector2 = new Vector3f();
             Matrix4f tmpMatrix = new Matrix4f();
 
-            //MathUtils.cross(lookForward, MathUtils.vectorX, axis);
-
-            //GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, -1.0F, 0.0F);
-            //GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
-
-            //GlStateManager.rotate(Vector3f.angle(lookForward, MathUtils.vectorX), axis.x, axis.y, axis.z);
-
             // -- Rotate by using MAD SCIENCE!
 
             //First, rotate up
-            /*float angle1 = Vector3f.angle(forward, lookForw);
+            float angle1 = Vector3f.angle(forward, lookForw);
             MathUtils.cross(forward, lookForw, tmpVector);
-            
+
             //then, rotate up according to first rotation
-            tmpMatrix.setIdentity();
+            /*tmpMatrix.setIdentity();
             tmpMatrix.rotate(angle1, tmpVector);
             MathUtils.multiplyVec(tmpMatrix, up, tmpVector2);
             
@@ -663,9 +653,13 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             }
             
             //Lastly, apply those rotations
-            GlStateManager.rotate(angle2 * MathUtils.radToDegF, tmpVector2.x, tmpVector2.y, tmpVector2.z);
-            
-            GlStateManager.rotate(angle1 * MathUtils.radToDegF, tmpVector.x, tmpVector.y, tmpVector.z);*/
+            GlStateManager.rotate(angle2 * MathUtils.radToDegF, tmpVector2.x, tmpVector2.y, tmpVector2.z);*/
+
+            //2nd transformation: align look forward vector
+            GlStateManager.rotate(-angle1 * MathUtils.radToDegF, tmpVector.x, tmpVector.y, tmpVector.z);
+
+            //1st transformation: simply move the camera to a correct spot
+            GlStateManager.translate(entityX - cameraX, entityY - cameraY, entityZ - cameraZ);
 
             //GlStateManager.translate(0.0F, -entity.getEyeHeight(), 0.0F);
 

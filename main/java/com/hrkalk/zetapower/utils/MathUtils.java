@@ -11,6 +11,9 @@ public class MathUtils {
     public static Vector3f vectorX = new Vector3f(1, 0, 0);
     public static Vector3f vectorY = new Vector3f(0, 1, 0);
     public static Vector3f vectorZ = new Vector3f(0, 0, 1);
+    public static Vector3f vectorXNeg = new Vector3f(-1, 0, 0);
+    public static Vector3f vectorYNeg = new Vector3f(0, -1, 0);
+    public static Vector3f vectorZNeg = new Vector3f(0, 0, -1);
 
     /**
      * Readily avaliable random generator
