@@ -6,6 +6,11 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 public class MathUtils {
+    public static final double EPSILON = 1e-6;
+
+    public static Vector3f vectorX = new Vector3f(1, 0, 0);
+    public static Vector3f vectorY = new Vector3f(0, 1, 0);
+    public static Vector3f vectorZ = new Vector3f(0, 0, 1);
 
     /**
      * Readily avaliable random generator
@@ -116,7 +121,7 @@ public class MathUtils {
         float z = v1.z;
 
         Vector3f.cross(v1, v2, result);
-        if (result.lengthSquared() > 0)
+        if (result.lengthSquared() > MathUtils.EPSILON)
             return result;
 
         result.x = 0;

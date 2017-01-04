@@ -26,6 +26,8 @@ public class VanillaPlayerCamera implements IPlayerCamera {
      */
     public static int MODE_3RD_PERSON_FRONT = 1;
 
+    private static float thirdPersonDist = 4;
+
     private Vector3f lookForward = new Vector3f(1, 0, 0);
     private Vector3f lookUp = new Vector3f(0, 1, 0);
     private Vector3f cameraPosition = new Vector3f(0, 80, 0);
@@ -40,15 +42,14 @@ public class VanillaPlayerCamera implements IPlayerCamera {
     public void update(Entity player, float partialTicks) {
         //first, interpolate player postition and look atributes using partial ticks
         double posX = player.prevPosX + (player.posX - player.prevPosX) * partialTicks;
-        double posY = player.prevPosY + (player.posY - player.prevPosY) * partialTicks;
+        double posY = player.prevPosY + (player.posY - player.prevPosY) * partialTicks + player.getEyeHeight();
         double posZ = player.prevPosZ + (player.posZ - player.prevPosZ) * partialTicks;
 
         double yaw = player.prevRotationYaw + (player.rotationYaw - player.prevRotationYaw) * partialTicks;
         double pitch = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * partialTicks;
 
         //then, set "flags" ready to simulate all 3 vanilla cameras
-        double thirdPersonDistance = 4;
-        double addDistance = Math.abs(mode) * thirdPersonDistance;
+        double addDistance = Math.abs(mode) * thirdPersonDist;
         double swapDirections = (mode == MODE_3RD_PERSON_FRONT) ? -1 : 1;
 
         //convert 2d spehere coords (like GPS) to 3d vectors

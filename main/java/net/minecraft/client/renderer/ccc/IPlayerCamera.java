@@ -53,7 +53,6 @@ public interface IPlayerCamera {
      */
     public void onSelected();
 
-
     /**
      * A handly handler called when this camera is deselected and stops being the active camera.
      * This is called before the <code>onSelected()</code> function is called on the newly selected camera.

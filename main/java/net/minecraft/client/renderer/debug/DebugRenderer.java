@@ -57,6 +57,7 @@ public class DebugRenderer {
         Minecraft minecraft = Minecraft.getMinecraft();
 
         if (minecraft.thePlayer != null && minecraft.getRenderManager() != null && minecraft.getRenderManager().options != null) {
+
             FontRenderer fontrenderer = minecraft.fontRendererObj;
             EntityPlayer entityplayer = minecraft.thePlayer;
             double d0 = entityplayer.lastTickPosX + (entityplayer.posX - entityplayer.lastTickPosX) * p_190076_7_;

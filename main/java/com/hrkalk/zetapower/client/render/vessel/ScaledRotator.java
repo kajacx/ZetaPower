@@ -125,8 +125,6 @@ public class ScaledRotator {
         rotateXYZAxis(tmpVector, angle);
     }
 
-    private static final double EPSILON = 1e-6;
-
     public void pushMatrixToGlStack() {
         // -- Last, scale after
         GlStateManager.scale(scaleAfter.x, scaleAfter.y, scaleAfter.z);
@@ -145,7 +143,7 @@ public class ScaledRotator {
         //after we have rotated up in tmp2, we need to rotate again, to move it to lookUp
         float angle2 = Vector3f.angle(tmpVector2, lookUp);
         //L.s("Angle2: " + angle2);
-        if (Math.abs(angle2) < Math.PI - EPSILON) {
+        if (Math.abs(angle2) < Math.PI - MathUtils.EPSILON) {
             MathUtils.cross(tmpVector2, lookUp, tmpVector2);
         } else {
             //full 180 degree rotation, use rotForward instead
