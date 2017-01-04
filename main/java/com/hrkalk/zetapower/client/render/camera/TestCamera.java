@@ -2,6 +2,9 @@ package com.hrkalk.zetapower.client.render.camera;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import com.hrkalk.zetapower.client.render.vessel.ScaledRotator;
+import com.hrkalk.zetapower.utils.MathUtils;
+
 import net.minecraft.client.renderer.ccc.IPlayerCamera;
 import net.minecraft.entity.Entity;
 
@@ -12,6 +15,8 @@ public class TestCamera implements IPlayerCamera {
 
     private long milisAtStart;
 
+    ScaledRotator rotator = new ScaledRotator(MathUtils.vectorZNeg);
+
     public TestCamera() {
         milisAtStart = System.currentTimeMillis();
     }
@@ -21,19 +26,21 @@ public class TestCamera implements IPlayerCamera {
         //time measurement
         float time = System.currentTimeMillis() - milisAtStart;
         time /= 1000;
+        time /= 2; //more slow down
 
         //entity position
         double entityX = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
         double entityY = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
         double entityZ = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
 
-        float dx = (float) Math.cos(time) * -4;
-        float dz = (float) Math.sin(time) * -4;
+        rotator.resetRotation();
+        rotator.rotateLookUp(time);
+        rotator.rotateLookRight(-30 * MathUtils.degToRadF);
 
-        position.set((float) entityX + dx, (float) entityY + entity.getEyeHeight(), (float) entityZ + dz);
+        look.set(rotator.getLookForw());
+        lookUp.set(rotator.getLookUp());
 
-        look.x = (float) Math.cos(time);
-        look.z = (float) Math.sin(time);
+        position.set((float) entityX - 4 * look.x, (float) entityY + entity.getEyeHeight() - 4 * look.y, (float) entityZ - 4 * look.z);
     }
 
     @Override

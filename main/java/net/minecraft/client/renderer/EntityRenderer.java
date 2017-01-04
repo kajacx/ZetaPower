@@ -639,10 +639,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             MathUtils.cross(forward, lookForw, tmpVector);
 
             //then, rotate up according to first rotation
-            /*tmpMatrix.setIdentity();
+            tmpMatrix.setIdentity();
             tmpMatrix.rotate(angle1, tmpVector);
             MathUtils.multiplyVec(tmpMatrix, up, tmpVector2);
-            
+
             //after we have rotated up in tmp2, we need to rotate again, to move it to lookUp
             float angle2 = Vector3f.angle(tmpVector2, lookUp);
             if (Math.abs(angle2) < Math.PI - MathUtils.EPSILON) {
@@ -651,9 +651,9 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 //full 180 degree rotation, use rotForward instead
                 tmpVector2.set(lookForw);
             }
-            
-            //Lastly, apply those rotations
-            GlStateManager.rotate(angle2 * MathUtils.radToDegF, tmpVector2.x, tmpVector2.y, tmpVector2.z);*/
+
+            //3rd transformation: align look up vector
+            //GlStateManager.rotate(angle2 * MathUtils.radToDegF, tmpVector2.x, tmpVector2.y, tmpVector2.z);//*/
 
             //2nd transformation: align look forward vector
             GlStateManager.rotate(-angle1 * MathUtils.radToDegF, tmpVector.x, tmpVector.y, tmpVector.z);

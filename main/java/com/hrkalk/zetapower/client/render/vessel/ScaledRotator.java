@@ -96,6 +96,12 @@ public class ScaledRotator {
         lookRight.normalise();
     }
 
+    public void resetRotation() {
+        lookForw.set(forward);
+        lookUp.set(up);
+        MathUtils.cross(lookForw, lookUp, lookRight);
+    }
+
     public void rotateXYZAxis(Vector3f axis, float angle) {
         tmpMatrix.setIdentity();
         tmpMatrix.rotate(angle, axis);
