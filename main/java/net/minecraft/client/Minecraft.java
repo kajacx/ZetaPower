@@ -93,6 +93,7 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.block.model.ModelManager;
+import net.minecraft.client.renderer.ccc.CustomCameraControl;
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
@@ -1804,15 +1805,30 @@ public class Minecraft implements IThreadListener, ISnooperInfo {
 
     private void processKeyBinds() {
         for (; this.gameSettings.keyBindTogglePerspective.isPressed(); this.renderGlobal.setDisplayListEntitiesDirty()) {
+            /* CCC_EDITED
             ++this.gameSettings.thirdPersonView;
-
+            
             if (this.gameSettings.thirdPersonView > 2) {
                 this.gameSettings.thirdPersonView = 0;
             }
-
+            
             if (this.gameSettings.thirdPersonView == 0) {
                 this.entityRenderer.loadEntityShader(this.getRenderViewEntity());
             } else if (this.gameSettings.thirdPersonView == 1) {
+                this.entityRenderer.loadEntityShader((Entity) null);
+            }*/
+
+            int cameraIndex = this.gameSettings.thirdPersonView + 1;
+
+            if (cameraIndex >= CustomCameraControl.cameras.size()) {
+                cameraIndex = 0;
+            }
+
+            CustomCameraControl.changeCameraTo(this.gameSettings, cameraIndex);
+
+            if (CustomCameraControl.getCamera(this.gameSettings).isFirstPerson()) {
+                this.entityRenderer.loadEntityShader(this.getRenderViewEntity());
+            } else {
                 this.entityRenderer.loadEntityShader((Entity) null);
             }
         }
