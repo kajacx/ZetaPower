@@ -105,9 +105,9 @@ public class ScaledRotator {
     public void rotateXYZAxis(Vector3f axis, float angle) {
         tmpMatrix.setIdentity();
         tmpMatrix.rotate(angle, axis);
-        MathUtils.multiplyPos(tmpMatrix, lookForw);
-        MathUtils.multiplyPos(tmpMatrix, lookUp);
-        MathUtils.multiplyPos(tmpMatrix, lookRight);
+        MathUtils.multiplyVec(tmpMatrix, lookForw);
+        MathUtils.multiplyVec(tmpMatrix, lookUp);
+        MathUtils.multiplyVec(tmpMatrix, lookRight);
         pollute();
     }
 
@@ -132,6 +132,8 @@ public class ScaledRotator {
     }
 
     public void pushMatrixToGlStack() {
+        GlStateManager.pushMatrix();
+
         // -- Last, scale after
         GlStateManager.scale(scaleAfter.x, scaleAfter.y, scaleAfter.z);
 
@@ -140,11 +142,13 @@ public class ScaledRotator {
         //First, rotate up
         float angle1 = Vector3f.angle(forward, lookForw);
         MathUtils.cross(forward, lookForw, tmpVector);
+        tmpVector.normalise();
 
         //then, rotate up according to first rotation
         tmpMatrix.setIdentity();
         tmpMatrix.rotate(angle1, tmpVector);
         MathUtils.multiplyVec(tmpMatrix, up, tmpVector2);
+        tmpVector2.normalise();
 
         //after we have rotated up in tmp2, we need to rotate again, to move it to lookUp
         float angle2 = Vector3f.angle(tmpVector2, lookUp);

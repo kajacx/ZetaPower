@@ -20,16 +20,17 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.hrkalk.zetapower.client.render.vessel.FakeRenderChunk;
 import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.loader.F1;
 import com.hrkalk.zetapower.utils.loader.FilteredClassLoader;
 import com.hrkalk.zetapower.utils.loader.ReflectUtil;
 
+import net.minecraft.client.renderer.EntityRenderer;
+
 public class DynamicClassReloadPrepare {
     public List<ReloadTrigger> reloadWhen = new ArrayList<>();
     public List<Method> targetedMethods = new ArrayList<>();
-    public String binFolder = "../bin";
+    public String binFolder = "bin";
     public String srcFolder = "src/main/java";
     public String extensionForCopy = ".java";
     public Class<?> watchedClass;
@@ -47,8 +48,8 @@ public class DynamicClassReloadPrepare {
             return;
         }
 
-        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(FakeRenderChunk.class);
-        loader.addMethods("rebuildChunk");
+        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(EntityRenderer.class);
+        loader.addMethods("orientCamera");
         loader.doWork();
     }
 
@@ -391,7 +392,7 @@ public class DynamicClassReloadPrepare {
 
         public ReloadOnChange(Class<?> clazz, String binFolder) {
             this.clazz = clazz;
-            this.binFolder = binFolder;
+            this.binFolder = "bin"; //binFolder;
             String filename = binFolder + '/' + clazz.getCanonicalName().replace('.', '/') + "_Reload.class";
             //L.d(filename);
             watchedFile = new File(filename);
@@ -451,11 +452,11 @@ public class DynamicClassReloadPrepare {
         private List<String> blacklistPrefix = new ArrayList<>();
         private Object instance;
         private Class<?> watchedClass;
-        private String binFolder;
+        public String binFolder;
 
         public DynamicReloader(Class<?> watchedClass, String binFolder) {
             this.watchedClass = watchedClass;
-            this.binFolder = binFolder;
+            this.binFolder = "bin"; //binFolder;
         }
 
         public void addToBlacklist(String className) {

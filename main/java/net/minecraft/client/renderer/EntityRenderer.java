@@ -17,13 +17,14 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.util.glu.Project;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.gson.JsonSyntaxException;
-import com.hrkalk.zetapower.utils.MathUtils;
+import com.hrkalk.zetapower.utils.loader.ReflectUtil;
+import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.DynamicReloader;
+import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadEveryNTicks;
+import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadOnChange;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -34,8 +35,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.MapItemRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.client.renderer.ccc.CustomCameraControl;
-import net.minecraft.client.renderer.ccc.IPlayerCamera;
 import net.minecraft.client.renderer.culling.ClippingHelperImpl;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
@@ -56,7 +55,6 @@ import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySpider;
-import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
@@ -80,11 +78,29 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
 public class EntityRenderer implements IResourceManagerReloadListener {
+
+    private DynamicReloader reloader = new DynamicReloader(EntityRenderer.class, "../bin");
+
+    {
+        reloader.reloadWhen.add(new ReloadOnChange(net.minecraft.client.renderer.EntityRenderer.class, "../bin"));
+        reloader.reloadWhen.add(new ReloadEveryNTicks(20));
+        reloader.binFolder = "bin";
+
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadTrigger");
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadEveryNTicks");
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadOnChange");
+        reloader.addToBlacklist("net.minecraft.client.renderer.EntityRenderer");
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.ReflectUtil");
+        reloader.addToBlacklist("java.lang.Object");
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.DynamicReloader");
+
+        reloader.addToBlacklistPrefix("net.minecraft");
+        reloader.addToBlacklistPrefix("net.minecraftforge");
+        reloader.addToBlacklistPrefix("com.hrkalk.zetapower.dimension");
+    }
+
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ResourceLocation RAIN_TEXTURES = new ResourceLocation("textures/environment/rain.png");
     private static final ResourceLocation SNOW_TEXTURES = new ResourceLocation("textures/environment/snow.png");
@@ -92,7 +108,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     /** Anaglyph field (0=R, 1=GB) */
     public static int anaglyphField;
     /** A reference to the Minecraft object. */
-    private final Minecraft mc;
+    public final Minecraft mc;
     private final IResourceManager resourceManager;
     private final Random random = new Random();
     private float farPlaneDistance;
@@ -106,7 +122,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     private final MouseFilter mouseFilterYAxis = new MouseFilter();
     private final float thirdPersonDistance = 4.0F;
     /** Previous third person distance */
-    private float thirdPersonDistancePrev = 4.0F;
+    public float thirdPersonDistancePrev = 4.0F;
     /** Smooth cam yaw */
     private float smoothCamYaw;
     /** Smooth cam pitch */
@@ -124,7 +140,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     private float bossColorModifier;
     private float bossColorModifierPrev;
     /** Cloud fog mode */
-    private boolean cloudFog;
+    public boolean cloudFog;
     private boolean renderHand = true;
     private boolean drawBlockOutline = true;
     private long timeWorldIcon;
@@ -505,165 +521,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             GlStateManager.rotate(MathHelper.sin(f1 * (float) Math.PI) * f2 * 3.0F, 0.0F, 0.0F, 1.0F);
             GlStateManager.rotate(Math.abs(MathHelper.cos(f1 * (float) Math.PI - 0.2F) * f2) * 5.0F, 1.0F, 0.0F, 0.0F);
             GlStateManager.rotate(f3, 1.0F, 0.0F, 0.0F);
-        }
-    }
-
-    /**
-     * sets up player's eye (or camera in third person mode)
-     */
-    private void orientCamera(float partialTicks) {
-        Entity entity = this.mc.getRenderViewEntity();
-        // CCC_EDIT
-
-        if (this.mc.gameSettings.thirdPersonView <= 2) {
-            //use old code for vanilla camera
-
-            float f = entity.getEyeHeight();
-            double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
-            double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks + f;
-            double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
-
-            if (entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isPlayerSleeping()) {
-                f = (float) (f + 1.0D);
-                GlStateManager.translate(0.0F, 0.3F, 0.0F);
-
-                if (!this.mc.gameSettings.debugCamEnable) {
-                    BlockPos blockpos = new BlockPos(entity);
-                    IBlockState iblockstate = this.mc.theWorld.getBlockState(blockpos);
-                    net.minecraftforge.client.ForgeHooksClient.orientBedCamera(this.mc.theWorld, blockpos, iblockstate, entity);
-
-                    GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, -1.0F, 0.0F);
-                    GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
-                }
-            } else if (this.mc.gameSettings.thirdPersonView > 0) {
-                double d3 = this.thirdPersonDistancePrev + (4.0F - this.thirdPersonDistancePrev) * partialTicks;
-
-                if (this.mc.gameSettings.debugCamEnable) {
-                    GlStateManager.translate(0.0F, 0.0F, (float) (-d3));
-                } else {
-                    float f1 = entity.rotationYaw;
-                    float f2 = entity.rotationPitch;
-
-                    if (this.mc.gameSettings.thirdPersonView == 2) {
-                        f2 += 180.0F;
-                    }
-
-                    double d4 = -MathHelper.sin(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F) * d3;
-                    double d5 = MathHelper.cos(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F) * d3;
-                    double d6 = (-MathHelper.sin(f2 * 0.017453292F)) * d3;
-
-                    for (int i = 0; i < 8; ++i) {
-                        float f3 = (i & 1) * 2 - 1;
-                        float f4 = (i >> 1 & 1) * 2 - 1;
-                        float f5 = (i >> 2 & 1) * 2 - 1;
-                        f3 = f3 * 0.1F;
-                        f4 = f4 * 0.1F;
-                        f5 = f5 * 0.1F;
-                        RayTraceResult raytraceresult = this.mc.theWorld.rayTraceBlocks(new Vec3d(d0 + f3, d1 + f4, d2 + f5), new Vec3d(d0 - d4 + f3 + f5, d1 - d6 + f4, d2 - d5 + f5));
-
-                        if (raytraceresult != null) {
-                            double d7 = raytraceresult.hitVec.distanceTo(new Vec3d(d0, d1, d2));
-
-                            if (d7 < d3) {
-                                d3 = d7;
-                            }
-                        }
-                    }
-
-                    if (this.mc.gameSettings.thirdPersonView == 2) {
-                        GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
-                    }
-
-                    GlStateManager.rotate(entity.rotationPitch - f2, 1.0F, 0.0F, 0.0F);
-                    GlStateManager.rotate(entity.rotationYaw - f1, 0.0F, 1.0F, 0.0F);
-                    GlStateManager.translate(0.0F, 0.0F, (float) (-d3));
-                    GlStateManager.rotate(f1 - entity.rotationYaw, 0.0F, 1.0F, 0.0F);
-                    GlStateManager.rotate(f2 - entity.rotationPitch, 1.0F, 0.0F, 0.0F);
-                }
-            } else {
-                GlStateManager.translate(0.0F, 0.0F, 0.05F);
-            }
-
-            if (!this.mc.gameSettings.debugCamEnable) {
-                float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F;
-                float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
-                float roll = 0.0F;
-                if (entity instanceof EntityAnimal) {
-                    EntityAnimal entityanimal = (EntityAnimal) entity;
-                    yaw = entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0F;
-                }
-                IBlockState state = ActiveRenderInfo.getBlockStateAtEntityViewpoint(this.mc.theWorld, entity, partialTicks);
-                net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup event = new net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup(this, entity, state, partialTicks, yaw, pitch, roll);
-                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
-                GlStateManager.rotate(event.getRoll(), 0.0F, 0.0F, 1.0F);
-                GlStateManager.rotate(event.getPitch(), 1.0F, 0.0F, 0.0F);
-                GlStateManager.rotate(event.getYaw(), 0.0F, 1.0F, 0.0F);
-            }
-
-            GlStateManager.translate(0.0F, -f, 0.0F);
-            d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
-            d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks + f;
-            d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
-            this.cloudFog = this.mc.renderGlobal.hasCloudFog(d0, d1, d2, partialTicks);
-        } else {
-            //use new code for CCC
-
-            IPlayerCamera camera = CustomCameraControl.getCamera(this.mc.gameSettings);
-            camera.update(entity, partialTicks);
-
-            //camera position
-            float cameraX = camera.getCameraPosition().x;
-            float cameraY = camera.getCameraPosition().y;
-            float cameraZ = camera.getCameraPosition().z;
-
-            //entity position
-            double entityX = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
-            double entityY = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
-            double entityZ = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
-
-            //look vectors
-            Vector3f forward = MathUtils.vectorZNeg; //reference look forward vector
-            Vector3f lookForw = camera.getLookVector(); //camera look forward vector
-            Vector3f up = MathUtils.vectorY; //reference look up vector
-            Vector3f lookUp = camera.getLookVector(); //camera look up vector
-
-            //tmp vectors
-            Vector3f tmpVector = new Vector3f();
-            Vector3f tmpVector2 = new Vector3f();
-            Matrix4f tmpMatrix = new Matrix4f();
-
-            // -- Rotate by using MAD SCIENCE!
-
-            //First, rotate up
-            float angle1 = Vector3f.angle(forward, lookForw);
-            MathUtils.cross(forward, lookForw, tmpVector);
-
-            //then, rotate up according to first rotation
-            tmpMatrix.setIdentity();
-            tmpMatrix.rotate(angle1, tmpVector);
-            MathUtils.multiplyVec(tmpMatrix, up, tmpVector2);
-
-            //after we have rotated up in tmp2, we need to rotate again, to move it to lookUp
-            float angle2 = Vector3f.angle(tmpVector2, lookUp);
-            if (Math.abs(angle2) < Math.PI - MathUtils.EPSILON) {
-                MathUtils.cross(tmpVector2, lookUp, tmpVector2);
-            } else {
-                //full 180 degree rotation, use rotForward instead
-                tmpVector2.set(lookForw);
-            }
-
-            //3rd transformation: align look up vector
-            //GlStateManager.rotate(angle2 * MathUtils.radToDegF, tmpVector2.x, tmpVector2.y, tmpVector2.z);//*/
-
-            //2nd transformation: align look forward vector
-            GlStateManager.rotate(-angle1 * MathUtils.radToDegF, tmpVector.x, tmpVector.y, tmpVector.z);
-
-            //1st transformation: simply move the camera to a correct spot
-            GlStateManager.translate(entityX - cameraX, entityY - cameraY, entityZ - cameraZ);
-
-            //GlStateManager.translate(0.0F, -entity.getEyeHeight(), 0.0F);
-
-            this.cloudFog = this.mc.renderGlobal.hasCloudFog(entityX, entityY, entityZ, partialTicks);
         }
     }
 
@@ -1869,4 +1726,16 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.popMatrix();
     }
+
+    public void orientCamera(float arg1) {
+        try {
+            ReflectUtil.invoke("orientCamera", reloader.getInstance(this), arg1);
+        } catch (Throwable t) {
+            System.out.println("Exception while executing reloadable code.");
+            t.printStackTrace(System.out);
+
+            //Thanks for using the Zeta Power Reloadable class generator.
+        }
+    }
+
 }

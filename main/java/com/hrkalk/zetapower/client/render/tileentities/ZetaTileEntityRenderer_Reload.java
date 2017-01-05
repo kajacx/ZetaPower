@@ -3,8 +3,10 @@ package com.hrkalk.zetapower.client.render.tileentities;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.hrkalk.zetapower.client.render.helper.EntityRotator;
+import com.hrkalk.zetapower.client.render.vessel.ScaledRotator;
 import com.hrkalk.zetapower.tileentities.ZetaChest;
 import com.hrkalk.zetapower.utils.L;
+import com.hrkalk.zetapower.utils.MathUtils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelChest;
@@ -17,6 +19,7 @@ public class ZetaTileEntityRenderer_Reload {
     private static final ResourceLocation texture = new ResourceLocation("zetapower", "textures/tileentities/zeta_chest.png");
     private ModelChest model = new ModelChest();
     private EntityRotator rotator = new EntityRotator();
+    private ScaledRotator scaled = new ScaledRotator(0);
 
     public ZetaTileEntityRenderer thiz;
 
@@ -43,22 +46,30 @@ public class ZetaTileEntityRenderer_Reload {
         //rotator.cameraSpin(.02f);
         //rotator.cameraUp(.003f);
 
-        renderTileEntityAt3(x, y, z, facing);
+        //L.d("render");
 
-        /*float time = (float) (System.currentTimeMillis() % 10000000 / 1000d);
-        
+        //renderTileEntityAt3(x, y, z, facing);
+
+        float time = (float) (System.currentTimeMillis() % 10000000 / 1000d);
+
         rotator.reset();
-        rotator.cameraLeft(time / 10);
-        //rotator.cameraSpin(time);
-        
-        rotator.pushTransformMatrix();
-        
-        tmp.set((float) x, (float) (y + Math.sin(time) / 5 + .3f), (float) z);
+        rotator.cameraLeft(time);
+        rotator.cameraUp(-30 * MathUtils.degToRadF);
+
+        scaled.resetRotation();
+        scaled.rotateLookUp(time);
+        scaled.rotateLookRight(-30 * MathUtils.degToRadF);
+
+        //rotator.pushTransformMatrix();
+        scaled.pushMatrixToGlStack();
+
+        //tmp.set((float) x, (float) (y + Math.sin(time) / 5 + .3f), (float) z);
+        tmp.set((float) x, (float) (y), (float) z);
         rotator.transform(tmp);
-        
+
         renderTileEntityAt3(tmp.x, tmp.y, tmp.z, facing);
-        
-        rotator.popTransformMatrix();*/
+
+        rotator.popTransformMatrix();//*/
     }
 
     public void renderTileEntityAt3(double x, double y, double z, int facing) {
