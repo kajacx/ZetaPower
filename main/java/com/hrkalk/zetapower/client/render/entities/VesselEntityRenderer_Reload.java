@@ -64,20 +64,20 @@ public class VesselEntityRenderer_Reload {
 
     public void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
         //L.s("kappa");
-        VesselEntity ship = (VesselEntity) entity;
+        VesselEntity vessel = (VesselEntity) entity;
         //L.d("Cluster from: " + ship.cluster.getFrom());
         //L.d("Cluster to: " + ship.cluster.getTo());
         //L.d("Cluster anchor: " + ship.cluster.getAnchor());
-        if (ship.cluster != null) {
+        if (vessel.cluster != null) {
             //L.s("new render");
             World mallocWorld = DimensionManager.getWorld(ZetaDimensionHandler.mallocDimension.type.getId());
 
             //L.d("ff: " + iter.hasNext());
-            Vec3d anchor = ship.cluster.getAnchor();
+            Vec3d anchor = vessel.cluster.getAnchor();
 
             //L.d("Reprot");
 
-            for (BlockPos pos : ship.cluster) {
+            for (BlockPos pos : vessel.cluster) {
                 TileEntity te = mallocWorld.getTileEntity(pos);
                 //L.d("Pos: " + pos + " kappa: " + mallocWorld.getBlockState(pos) + " te: " + te);
                 //IBlockState state = mallocWorld.getBlockState(pos);
@@ -165,7 +165,7 @@ public class VesselEntityRenderer_Reload {
                 //state = world.getBlockState(new BlockPos(0, 67, 0));
                 //L.d("Block: " + test);
 
-                IBlockAccess myBlockAccess = new ClusterAccess(ship.cluster);
+                IBlockAccess myBlockAccess = new ClusterAccess(vessel.cluster);
 
                 //L.d("Use vbo: " + OpenGlHelper.useVbo());
                 //player.getEntityWorld().setWorldTime(0);
@@ -178,7 +178,7 @@ public class VesselEntityRenderer_Reload {
                         boolean success = false;
                         solidVertexBuffer.setTranslation(-anchor.xCoord, -anchor.yCoord, -anchor.zCoord);
                         //solidVertexBuffer.setTranslation((-pos.getX()), (-pos.getY()), (-pos.getZ()));
-                        for (BlockPos b : ship.cluster) {
+                        for (BlockPos b : vessel.cluster) {
                             IBlockState state2 = mallocWorld.getBlockState(b);
                             success |= dispatcher.renderBlock(state2, b, myBlockAccess, solidVertexBuffer);
                         }
@@ -232,8 +232,8 @@ public class VesselEntityRenderer_Reload {
 
                     GlStateManager.translate(posX - viewX, posY - viewY, posZ - viewZ);
 
-                    float time = System.currentTimeMillis() % 1000000;
-
+                    /*float time = System.currentTimeMillis() % 1000000;
+                    
                     float rotationYaw;
                     float rotationPitch;
                     if (entity.getControllingPassenger() == player) {
@@ -243,7 +243,7 @@ public class VesselEntityRenderer_Reload {
                         rotationYaw = entity.rotationYaw;
                         rotationPitch = entity.rotationPitch;
                     }
-                    float rotXY = rotationYaw * MathUtils.degToRadF;
+                    float rotXY = rotationYaw * MathUtils.degToRadF;*/
 
                     //GlStateManager.rotate(-rotationPitch, (float) -Math.cos(rotXY), 0, (float) -Math.sin(rotXY));
                     //GlStateManager.rotate(-rotationYaw + 180, 0, 1, 0);
@@ -252,13 +252,13 @@ public class VesselEntityRenderer_Reload {
                     //L.d("Rendering vessel entity, cluster: " + ship.cluster);
                     //L.d("Rendering vessel entity, rotator: " + (ship.cluster.getRotator() == null ? "---" : ship.cluster.getRotator().toString()));
 
-                    ScaledRotator rotator = ship.cluster.getRotator();
+                    ScaledRotator rotator = vessel.cluster.getRotator();
                     //rotator.rotateLookForward(0.01f);
                     //rotator.resetRotation();
                     if (rotator != null) {
                         //L.s("rotator found");
                         //L.s("up:" + rotator.lookUp);
-                        rotator.pushMatrixToGlStack(false);
+                        rotator.pushMatrixToGlStack(false, vessel.prevLookForw, vessel.prevLookUp, partialTicks);
                     }
 
                     Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);

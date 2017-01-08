@@ -10,10 +10,23 @@ public class ScaledRotator_Reload {
 
     public ScaledRotator thiz;
 
+    private Vector3f interLookForw = new Vector3f();
+    private Vector3f interLookUp = new Vector3f();
 
-    public void pushMatrixToGlStack(boolean pushNewMatrix) {
+    public void pushMatrixToGlStack(boolean pushNewMatrix, Vector3f prevLookForward, Vector3f prevLookUp, float partialTicks) {
         if (pushNewMatrix) {
             GlStateManager.pushMatrix();
+        }
+
+        if (prevLookForward != null) {
+            MathUtils.interpolate(prevLookForward, thiz.lookForw, partialTicks, interLookForw);
+        } else {
+            interLookForw.set(thiz.lookForw);
+        }
+        if (prevLookUp != null) {
+            MathUtils.interpolate(prevLookUp, thiz.lookUp, partialTicks, interLookUp);
+        } else {
+            interLookUp.set(thiz.lookUp);
         }
 
         // -- Last, scale after
@@ -22,8 +35,8 @@ public class ScaledRotator_Reload {
         // -- Rotate by using MAD SCIENCE!
 
         //First, rotate up
-        float angle1 = Vector3f.angle(thiz.forward, thiz.lookForw);
-        MathUtils.cross(thiz.forward, thiz.lookForw, thiz.tmpVector);
+        float angle1 = Vector3f.angle(thiz.forward, interLookForw);
+        MathUtils.cross(thiz.forward, interLookForw, thiz.tmpVector);
         thiz.tmpVector.normalise();
 
         //then, rotate up according to first rotation
@@ -33,13 +46,13 @@ public class ScaledRotator_Reload {
         thiz.tmpVector2.normalise();
 
         //after we have rotated up in tmp2, we need to rotate again, to move it to lookUp
-        float angle2 = Vector3f.angle(thiz.tmpVector2, thiz.lookUp);
+        float angle2 = Vector3f.angle(thiz.tmpVector2, interLookUp);
         //L.s("Angle2: " + angle2);
         if (Math.abs(angle2) < Math.PI - MathUtils.EPSILON) {
-            MathUtils.cross(thiz.tmpVector2, thiz.lookUp, thiz.tmpVector2);
+            MathUtils.cross(thiz.tmpVector2, interLookUp, thiz.tmpVector2);
         } else {
             //full 180 degree rotation, use rotForward instead
-            thiz.tmpVector2.set(thiz.lookForw);
+            thiz.tmpVector2.set(interLookForw);
         }
 
         //Lastly, apply those rotations

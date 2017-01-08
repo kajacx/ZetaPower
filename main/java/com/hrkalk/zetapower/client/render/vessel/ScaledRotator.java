@@ -174,21 +174,25 @@ public class ScaledRotator extends Object {
     }
 
     public void pushMatrixToGlStack() {
-        pushMatrixToGlStack(true);
+        pushMatrixToGlStack(true, null, null, 0);
     }
 
-    public void popMatrixFromGlStack() {
-        GlStateManager.popMatrix();
+    public void pushMatrixToGlStack(Vector3f prevLookForward, Vector3f prevLookUp, float partialTicks) {
+        pushMatrixToGlStack(true, prevLookForward, prevLookUp, partialTicks);
     }
 
-    public void pushMatrixToGlStack(boolean pushNewMatrix) {
+    public void pushMatrixToGlStack(boolean pushNewMatrix, Vector3f prevLookForward, Vector3f prevLookUp, float partialTicks) {
         try {
-            ReflectUtil.invoke("pushMatrixToGlStack", reloader.getInstance(this), pushNewMatrix);
+            ReflectUtil.invoke("pushMatrixToGlStack", reloader.getInstance(this), pushNewMatrix, prevLookForward, prevLookUp, partialTicks);
         } catch (Throwable t) {
             System.out.println("Exception while executing reloadable code.");
             t.printStackTrace(System.out);
             //Thanks for using the Zeta Power Reloadable class generator.
         }
+    }
+
+    public void popMatrixFromGlStack() {
+        GlStateManager.popMatrix();
     }
 
     public NBTTagCompound saveToNBT(NBTTagCompound tag) {
@@ -209,7 +213,8 @@ public class ScaledRotator extends Object {
         lookForw = NBTReader.readVec3fWithPrefix(tag, "lookForw");
         lookUp = NBTReader.readVec3fWithPrefix(tag, "lookUp");
         MathUtils.cross(lookForw, lookUp, lookRight);
-        //fixPollution();
+        fixPollution();
+        fixPollution();
         return tag;
     }
 
