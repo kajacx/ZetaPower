@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
@@ -40,21 +41,26 @@ public class ModBlockShipCoreTier1_Reload {
         // MEKA ACTIVATE!
         L.d("MEKA ACTIVATE!");
 
-        AllocatedSpace space = ZetaDimensionHandler.mallocDimension.allocator.allocate12(11, 11);
+        int sizeX = 1; //5
+        int sizeY = 1; //5
+        int sizeZ = 1; //5
 
-        BlockPos center = new BlockPos(space.getX12() + 5, pos.getY(), space.getZ12() + 5);
-        BlockPos from = center.add(-5, -5, -5);
-        BlockPos to = center.add(6, 6, 6);
+        AllocatedSpace space = ZetaDimensionHandler.mallocDimension.allocator.allocate12(2 * sizeX + 1, 2 * sizeZ + 1);
+
+        BlockPos center = new BlockPos(space.getX12() + sizeX, pos.getY(), space.getZ12() + sizeZ);
+        Vec3d anchor = new Vec3d(center.getX() + .5, center.getY() + .5, center.getZ() + .5);
+        BlockPos from = center.add(-sizeX, -sizeY, -sizeZ);
+        BlockPos to = center.add(sizeX + 1, sizeY + 1, sizeZ + 1);
         //Vec3d anchor = new Vec3d(center.getX() + .5, center.getY() + .5, center.getZ() + .5);
-        BlockCluster cluster = new BlockCluster(mallocWorld, from, to);//, anchor, space);
-        cluster.setSpace(space).setSpace(space).setRotator(new ScaledRotator(new Vector3f(1, 0, 0)));
+        BlockCluster cluster = new BlockCluster(mallocWorld, from, to, anchor);//, anchor, space);
+        cluster.setSpace(space).setRotator(new ScaledRotator(new Vector3f(-1, 0, 0)));
 
         //Util.teleportAll(worldIn, pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, DimensionManager.getWorld(mallocDim), space.getX14(), pos.getY() - 1, space.getZ14(), 3, 3, 3);
-        L.d("teleporting");
-        Util.teleportAll(worldIn, pos.add(-5, -5, -5), cluster);
+        L.d("teleporting3");
+        Util.teleportAll(worldIn, pos.add(-sizeX, -sizeY, -sizeZ), cluster);
 
         L.d("Spawing ship...");
-        VesselEntity ship = new VesselEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), cluster);
+        VesselEntity ship = new VesselEntity(worldIn, anchor.xCoord - center.getX() + pos.getX(), anchor.yCoord - center.getY() + pos.getY(), anchor.zCoord - center.getZ() + pos.getZ(), cluster);
         worldIn.spawnEntityInWorld(ship);
         L.d("Ship spawned");
 

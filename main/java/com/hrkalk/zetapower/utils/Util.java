@@ -28,7 +28,7 @@ public class Util {
 
         TileEntity te = world.getTileEntity(pos);
         if (te == null) {
-            L.w("no tile entoty to refresh");
+            L.w("no tile entity to refresh");
             return;
         }
 

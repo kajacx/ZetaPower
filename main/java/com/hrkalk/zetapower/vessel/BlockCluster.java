@@ -154,6 +154,9 @@ public class BlockCluster implements Iterable<BlockPos> {
             tag.setInteger("spaceXPos", space.getX()); //Musk FTW
             tag.setInteger("spaceZSize", space.getZ());
         }
+        if (rotator != null) {
+            tag.setTag("rotator", rotator.saveToNBT(new NBTTagCompound()));
+        }
         return tag;
     }
 
@@ -168,6 +171,9 @@ public class BlockCluster implements Iterable<BlockPos> {
             int xPos = tag.getInteger("spaceXpos");
             int zSize = tag.getInteger("spaceZSize");
             space = ZetaDimensionHandler.mallocDimension.allocator.getSavedSpace(xPos, zSize);
+        }
+        if (tag.hasKey("rotator")) {
+            rotator = new ScaledRotator(tag.getCompoundTag("rotator"));
         }
         return tag;
     }

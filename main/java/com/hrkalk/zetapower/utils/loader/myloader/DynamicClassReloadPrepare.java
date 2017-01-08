@@ -20,17 +20,16 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.hrkalk.zetapower.client.render.vessel.ScaledRotator;
 import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.loader.F1;
 import com.hrkalk.zetapower.utils.loader.FilteredClassLoader;
 import com.hrkalk.zetapower.utils.loader.ReflectUtil;
 
-import net.minecraft.client.renderer.EntityRenderer;
-
 public class DynamicClassReloadPrepare {
     public List<ReloadTrigger> reloadWhen = new ArrayList<>();
     public List<Method> targetedMethods = new ArrayList<>();
-    public String binFolder = "bin";
+    public String binFolder = "../bin";
     public String srcFolder = "src/main/java";
     public String extensionForCopy = ".java";
     public Class<?> watchedClass;
@@ -48,8 +47,8 @@ public class DynamicClassReloadPrepare {
             return;
         }
 
-        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(EntityRenderer.class);
-        loader.addMethods("orientCamera");
+        DynamicClassReloadPrepare loader = new DynamicClassReloadPrepare(ScaledRotator.class);
+        loader.addMethods("pushMatrixToGlStack");
         loader.doWork();
     }
 
@@ -66,6 +65,7 @@ public class DynamicClassReloadPrepare {
         blacklistPrefix.add("net.minecraft");
         blacklistPrefix.add("net.minecraftforge");
         blacklistPrefix.add("com.hrkalk.zetapower.dimension");
+        blacklistPrefix.add("com.hrkalk.zetapower.client.input");
     }
 
     /**
@@ -392,7 +392,7 @@ public class DynamicClassReloadPrepare {
 
         public ReloadOnChange(Class<?> clazz, String binFolder) {
             this.clazz = clazz;
-            this.binFolder = "bin"; //binFolder;
+            this.binFolder = binFolder;
             String filename = binFolder + '/' + clazz.getCanonicalName().replace('.', '/') + "_Reload.class";
             //L.d(filename);
             watchedFile = new File(filename);
@@ -456,7 +456,7 @@ public class DynamicClassReloadPrepare {
 
         public DynamicReloader(Class<?> watchedClass, String binFolder) {
             this.watchedClass = watchedClass;
-            this.binFolder = "bin"; //binFolder;
+            this.binFolder = binFolder;
         }
 
         public void addToBlacklist(String className) {
@@ -475,7 +475,7 @@ public class DynamicClassReloadPrepare {
                 reload |= trigger.shouldReload();
             }
             //L.s("Reload: " + reload);
-            if (reload) {
+            if (reload || instance == null) {
                 F1<String, Boolean> reloadWhat = this::shouldReload;
 
                 FilteredClassLoader classLoader = new FilteredClassLoader(reloadWhat, binFolder);

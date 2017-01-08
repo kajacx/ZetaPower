@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import javax.annotation.Nullable;
 
+import com.hrkalk.zetapower.client.input.InputHandler;
+import com.hrkalk.zetapower.client.render.vessel.ScaledRotator;
 import com.hrkalk.zetapower.dimension.ZetaDimensionHandler;
 import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.MathUtils;
@@ -42,6 +44,8 @@ public class VesselEntity_Reload {
 
     public VesselEntity thiz;
 
+    private boolean useOldControls = false;
+
     public VesselEntity_Reload() {
         goUp |= goForw;
     }
@@ -63,18 +67,26 @@ public class VesselEntity_Reload {
     public void moveEntity(EntityLivingBase entityLivingBase) {
 
         if (thiz.worldObj.isRemote) {
-            double speed = 10 / 20d;
-            double rotationXZ = entityLivingBase.rotationYaw * MathUtils.degToRadF;
-            double rotationY = entityLivingBase.rotationPitch * MathUtils.degToRadF;
+            double moveSpeed = 10 / 20d;
+            float rotSpeed = 0.01f;
 
-            thiz.rotationYaw = entityLivingBase.rotationYaw;
-            thiz.rotationPitch = entityLivingBase.rotationPitch;
+            if (useOldControls) {
+                double rotationXZ = entityLivingBase.rotationYaw * MathUtils.degToRadF;
+                double rotationY = entityLivingBase.rotationPitch * MathUtils.degToRadF;
 
-            fillLookVectors(rotationXZ, rotationY);
-            fillMoveVectors(rotationXZ, rotationY);
+                thiz.rotationYaw = entityLivingBase.rotationYaw;
+                thiz.rotationPitch = entityLivingBase.rotationPitch;
+
+                fillLookVectorsOld(rotationXZ, rotationY);
+                fillMoveVectorsOld(rotationXZ, rotationY);
+            } else {
+                //use new controls with scaled rotator
+                rotateShipFromInput(rotSpeed);
+                fillMoveVectors();
+            }
             scaleMoveVectors();
 
-            tmp.set(movForw).add(movUp).add(movRight).normalise().scale(speed);
+            tmp.set(movForw).add(movUp).add(movRight).normalise().scale(moveSpeed);
 
             //L.d("Forw: " + movForw);
             //L.d("Up: " + movUp);
@@ -85,7 +97,35 @@ public class VesselEntity_Reload {
         }
     }
 
-    private void fillLookVectors(double rotationXZ, double rotationY) {
+    private void rotateShipFromInput(float rotSpeed) {
+        Minecraft mc = FMLClientHandler.instance().getClient();
+        //GameSettings settings = mc.gameSettings;
+
+        float angle = 0;
+        if (InputHandler.vesselRotateCW.isKeyDown())
+            angle += 1;
+        if (InputHandler.vesselRotateCCW.isKeyDown())
+            angle -= 1;
+
+
+        ScaledRotator rotator = thiz.cluster.getRotator();
+        if (rotator != null) {
+            rotator.rotateLookForward(angle * rotSpeed);
+            //L.d("rot up: " + rotator.lookUp);
+            //L.s("rotator: ");
+        }
+    }
+
+    private void fillMoveVectors() {
+        ScaledRotator rotator = thiz.cluster.getRotator();
+        if (rotator != null) {
+            movForw.set(rotator.lookForw.x, rotator.lookForw.y, rotator.lookForw.z);
+            movUp.set(rotator.lookUp.x, rotator.lookUp.y, rotator.lookUp.z);
+            movRight.set(rotator.lookRight.x, rotator.lookRight.y, rotator.lookRight.z);
+        }
+    }
+
+    private void fillLookVectorsOld(double rotationXZ, double rotationY) {
         double x, y, z;
         double cosY = Math.cos(rotationY);
 
@@ -110,7 +150,7 @@ public class VesselEntity_Reload {
         L.d("Lengths: " + lookForw.lengthSquared() + ", " + lookUp.lengthSquared() + ", " + lookRight.lengthSquared());*/
     }
 
-    private void fillMoveVectors(double rotationXZ, double rotationY) {
+    private void fillMoveVectorsOld(double rotationXZ, double rotationY) {
         if (goForw) {
             double x, y, z;
             x = -Math.sin(rotationXZ);

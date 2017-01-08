@@ -60,8 +60,8 @@ public class ZetaTileEntityRenderer_Reload {
         scaled.rotateLookUp(time);
         scaled.rotateLookRight(-30 * MathUtils.degToRadF);
 
-        //rotator.pushTransformMatrix();
-        scaled.pushMatrixToGlStack();
+        rotator.pushTransformMatrix();
+        //scaled.pushMatrixToGlStack();
 
         //tmp.set((float) x, (float) (y + Math.sin(time) / 5 + .3f), (float) z);
         tmp.set((float) x, (float) (y), (float) z);

@@ -4,31 +4,71 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.hrkalk.zetapower.utils.MathUtils;
+import com.hrkalk.zetapower.utils.NBTReader;
+import com.hrkalk.zetapower.utils.loader.ReflectUtil;
+import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.DynamicReloader;
+import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadEveryNTicks;
+import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadOnChange;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 
-public class ScaledRotator {
-    private Vector3f forward = new Vector3f(1, 0, 0);
-    private Vector3f up = new Vector3f(0, 1, 0);
+public class ScaledRotator extends Object {
 
-    private Vector3f lookForw = new Vector3f(1, 0, 0);
-    private Vector3f lookUp = new Vector3f(0, 1, 0);
-    private Vector3f lookRight = new Vector3f(0, 0, 1);
+    private DynamicReloader reloader = new DynamicReloader(ScaledRotator.class, "../bin");
 
-    private Vector3f scaleBefore = new Vector3f(1, 1, 1);
-    private Vector3f scaleAfter = new Vector3f(1, 1, 1);
+    {
+        reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.client.render.vessel.ScaledRotator.class, "../bin"));
+        reloader.reloadWhen.add(new ReloadEveryNTicks(20));
 
-    private Matrix4f tmpMatrix = new Matrix4f(); //temporal matrix to avoid memory allocation
-    private Vector3f tmpVector = new Vector3f();
-    private Vector3f tmpVector2 = new Vector3f();
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadTrigger");
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadEveryNTicks");
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadOnChange");
+        reloader.addToBlacklist("com.hrkalk.zetapower.client.render.vessel.ScaledRotator");
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.ReflectUtil");
+        reloader.addToBlacklist("java.lang.Object");
+        reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.DynamicReloader");
+
+        reloader.addToBlacklistPrefix("net.minecraft");
+        reloader.addToBlacklistPrefix("net.minecraftforge");
+        reloader.addToBlacklistPrefix("com.hrkalk.zetapower.dimension");
+    }
+
+    public Vector3f forward = new Vector3f(1, 0, 0);
+    public Vector3f up = new Vector3f(0, 1, 0);
+
+    public Vector3f lookForw = new Vector3f(1, 0, 0);
+    public Vector3f lookUp = new Vector3f(0, 1, 0);
+    public Vector3f lookRight = new Vector3f(0, 0, 1);
+
+    public Vector3f scaleBefore = new Vector3f(1, 1, 1);
+    public Vector3f scaleAfter = new Vector3f(1, 1, 1);
+
+    public Matrix4f tmpMatrix = new Matrix4f(); //temporal matrix to avoid memory allocation
+    public Vector3f tmpVector = new Vector3f();
+    public Vector3f tmpVector2 = new Vector3f();
 
     public ScaledRotator(NBTTagCompound nbt) {
+        loadFromNBT(nbt);
+    }
 
+    private static Vector3f facingToVector(int horizontalFacing) {
+        switch (EnumFacing.getHorizontal(horizontalFacing)) {
+        case EAST:
+            return new Vector3f(-1, 0, 0);
+        case NORTH:
+            return new Vector3f(0, 0, 1);
+        case SOUTH:
+            return new Vector3f(0, 0, -1);
+        default:
+        case WEST:
+            return new Vector3f(1, 0, 0);
+        }
     }
 
     public ScaledRotator(int horizontalFacing) {
-        //this(switch(horizontalFacing) {}); 
+        this(facingToVector(horizontalFacing));
     }
 
     public ScaledRotator(Vector3f originalForward) {
@@ -132,40 +172,43 @@ public class ScaledRotator {
     }
 
     public void pushMatrixToGlStack() {
-        GlStateManager.pushMatrix();
-
-        // -- Last, scale after
-        GlStateManager.scale(scaleAfter.x, scaleAfter.y, scaleAfter.z);
-
-        // -- Rotate by using MAD SCIENCE!
-
-        //First, rotate up
-        float angle1 = Vector3f.angle(forward, lookForw);
-        MathUtils.cross(forward, lookForw, tmpVector);
-        tmpVector.normalise();
-
-        //then, rotate up according to first rotation
-        tmpMatrix.setIdentity();
-        tmpMatrix.rotate(angle1, tmpVector);
-        MathUtils.multiplyVec(tmpMatrix, up, tmpVector2);
-        tmpVector2.normalise();
-
-        //after we have rotated up in tmp2, we need to rotate again, to move it to lookUp
-        float angle2 = Vector3f.angle(tmpVector2, lookUp);
-        //L.s("Angle2: " + angle2);
-        if (Math.abs(angle2) < Math.PI - MathUtils.EPSILON) {
-            MathUtils.cross(tmpVector2, lookUp, tmpVector2);
-        } else {
-            //full 180 degree rotation, use rotForward instead
-            tmpVector2.set(lookForw);
-        }
-
-        //Lastly, apply those rotations
-        GlStateManager.rotate(angle2 * MathUtils.radToDegF, tmpVector2.x, tmpVector2.y, tmpVector2.z);//*/
-
-        GlStateManager.rotate(angle1 * MathUtils.radToDegF, tmpVector.x, tmpVector.y, tmpVector.z);//*/
-
-        // -- First, scale before
-        GlStateManager.scale(scaleBefore.x, scaleBefore.y, scaleBefore.z);
+        pushMatrixToGlStack(true);
     }
+
+    public void popMatrixFromGlStack() {
+        GlStateManager.popMatrix();
+    }
+
+    public void pushMatrixToGlStack(boolean pushNewMatrix) {
+        try {
+            ReflectUtil.invoke("pushMatrixToGlStack", reloader.getInstance(this), pushNewMatrix);
+        } catch (Throwable t) {
+            System.out.println("Exception while executing reloadable code.");
+            t.printStackTrace(System.out);
+            //Thanks for using the Zeta Power Reloadable class generator.
+        }
+    }
+
+    public NBTTagCompound saveToNBT(NBTTagCompound tag) {
+        NBTReader.writeVec3fWithPrefix(tag, scaleBefore, "scaleBefore");
+        NBTReader.writeVec3fWithPrefix(tag, scaleAfter, "scaleAfter");
+        NBTReader.writeVec3fWithPrefix(tag, forward, "forward");
+        NBTReader.writeVec3fWithPrefix(tag, up, "up");
+        NBTReader.writeVec3fWithPrefix(tag, lookForw, "lookForw");
+        NBTReader.writeVec3fWithPrefix(tag, lookUp, "lookUp");
+        return tag;
+    }
+
+    public NBTTagCompound loadFromNBT(NBTTagCompound tag) {
+        scaleBefore = NBTReader.readVec3fWithPrefix(tag, "scaleBefore");
+        scaleAfter = NBTReader.readVec3fWithPrefix(tag, "scaleAfter");
+        forward = NBTReader.readVec3fWithPrefix(tag, "forward");
+        up = NBTReader.readVec3fWithPrefix(tag, "up");
+        lookForw = NBTReader.readVec3fWithPrefix(tag, "lookForw");
+        lookUp = NBTReader.readVec3fWithPrefix(tag, "lookUp");
+        MathUtils.cross(lookForw, lookUp, lookRight);
+        //fixPollution();
+        return tag;
+    }
+
 }

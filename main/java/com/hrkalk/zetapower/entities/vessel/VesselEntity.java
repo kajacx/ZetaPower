@@ -73,14 +73,25 @@ public class VesselEntity extends Entity implements IEntityAdditionalSpawnData {
         reloader.addToBlacklistPrefix("net.minecraftforge");
         reloader.addToBlacklistPrefix("com.hrkalk.zetapower.dimension");
         reloader.addToBlacklistPrefix("com.hrkalk.zetapower.vessel");
+        reloader.addToBlacklistPrefix("com.hrkalk.zetapower.client.input");
     }
 
     public VesselEntity(World worldIn) {
         this(worldIn, 0, 0, 0, null);
     }
 
+    /**
+     * 
+     * @param worldIn
+     * @param x center x pos
+     * @param y center y pos
+     * @param z center z pos
+     * @param cluster
+     */
     public VesselEntity(World worldIn, double x, double y, double z, BlockCluster cluster) {
         super(worldIn);
+        float size = .95f;
+        this.setSize(size, size);
         this.setPosition(x, y, z);
         this.motionX = 0.0D;
         this.motionY = 0.0D;
@@ -88,8 +99,29 @@ public class VesselEntity extends Entity implements IEntityAdditionalSpawnData {
         this.prevPosX = x;
         this.prevPosY = y;
         this.prevPosZ = z;
-        this.setSize(0.9F, 0.9F);
         this.cluster = cluster;
+
+        //L.d("Creating vessel entity, entity: " + this);
+        //L.d("Creating vessel entity, cluster: " + cluster);
+        //L.d("Creating vessel entity, rotator: " + (cluster == null ? "---" : cluster.getRotator().toString()));
+    }
+
+    @Override
+    public void setPosition(double x, double y, double z) {
+        this.posX = x;
+        this.posY = y;
+        this.posZ = z;
+        float w2 = this.width / 2f;
+        float h2 = this.height / 2f;
+        this.setEntityBoundingBox(new AxisAlignedBB(x - w2, y - h2, z - w2, x + w2, y + h2, z + w2));
+    }
+
+    @Override
+    public void resetPositionToBB() {
+        AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
+        this.posX = (axisalignedbb.minX + axisalignedbb.maxX) / 2.0D;
+        this.posY = (axisalignedbb.minY + axisalignedbb.maxY) / 2.0D;
+        this.posZ = (axisalignedbb.minZ + axisalignedbb.maxZ) / 2.0D;
     }
 
     public int get_rideCooldown() {

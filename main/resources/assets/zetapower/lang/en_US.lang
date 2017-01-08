@@ -1,4 +1,4 @@
-< en_US.lang - English localization file for the mod Zeta Power >
+<en_US.lang - English localization file for the mod Zeta Power>
 
 <Custom creative tab>
 itemGroup.zetapower=Zeta Power
@@ -50,3 +50,5 @@ entity.zetapower.rideable_ship.name=Ridable Ship
 key.categories.zetapower=Zeta Power Keys
 key.ping=Ping
 key.pong=Pong
+key.vessel_rotate_cw=Rotate vessel clock-wise
+key.vessel_rotate_ccw=Rotate vessel counter clock-wise

@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.hrkalk.zetapower.client.render.vessel.ClusterAccess;
 import com.hrkalk.zetapower.client.render.vessel.FakeRenderChunk;
+import com.hrkalk.zetapower.client.render.vessel.ScaledRotator;
 import com.hrkalk.zetapower.dimension.ZetaDimensionHandler;
 import com.hrkalk.zetapower.entities.vessel.VesselEntity;
 import com.hrkalk.zetapower.utils.L;
@@ -86,7 +87,7 @@ public class VesselEntityRenderer_Reload {
                 // --- TILE ENTITY ---
 
                 if (te != null) {
-                    TileEntitySpecialRenderer<TileEntity> renderer = TileEntityRendererDispatcher.instance.<TileEntity> getSpecialRenderer(te);
+                    TileEntitySpecialRenderer<TileEntity> renderer = TileEntityRendererDispatcher.instance.<TileEntity>getSpecialRenderer(te);
                     //L.d("Found tile entity, renderer: " + renderer);
                     if (renderer != null) {
                         // L.s("Found renderer");
@@ -243,8 +244,22 @@ public class VesselEntityRenderer_Reload {
                         rotationPitch = entity.rotationPitch;
                     }
                     float rotXY = rotationYaw * MathUtils.degToRadF;
-                    GlStateManager.rotate(-rotationPitch, (float) -Math.cos(rotXY), 0, (float) -Math.sin(rotXY));
-                    GlStateManager.rotate(-rotationYaw + 180, 0, 1, 0);
+
+                    //GlStateManager.rotate(-rotationPitch, (float) -Math.cos(rotXY), 0, (float) -Math.sin(rotXY));
+                    //GlStateManager.rotate(-rotationYaw + 180, 0, 1, 0);
+
+                    //L.d("Rendering vessel entity, entity: " + ship);
+                    //L.d("Rendering vessel entity, cluster: " + ship.cluster);
+                    //L.d("Rendering vessel entity, rotator: " + (ship.cluster.getRotator() == null ? "---" : ship.cluster.getRotator().toString()));
+
+                    ScaledRotator rotator = ship.cluster.getRotator();
+                    //rotator.rotateLookForward(0.01f);
+                    //rotator.resetRotation();
+                    if (rotator != null) {
+                        //L.s("rotator found");
+                        //L.s("up:" + rotator.lookUp);
+                        rotator.pushMatrixToGlStack(false);
+                    }
 
                     Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                     Minecraft.getMinecraft().entityRenderer.enableLightmap();

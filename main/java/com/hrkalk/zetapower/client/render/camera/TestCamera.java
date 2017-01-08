@@ -43,8 +43,8 @@ public class TestCamera implements IPlayerCamera {
         //L.d("Forw: " + look);
         //L.d("Up: " + lookUp);
 
-        //position.set((float) entityX - 4 * look.x, (float) entityY + entity.getEyeHeight() - 4 * look.y, (float) entityZ - 4 * look.z);
-        position.set((float) entityX, (float) entityY + entity.getEyeHeight() + 1, (float) entityZ);
+        position.set((float) entityX - 4 * look.x, (float) entityY + entity.getEyeHeight() - 4 * look.y, (float) entityZ - 4 * look.z);
+        //position.set((float) entityX, (float) entityY + entity.getEyeHeight() + 1, (float) entityZ);
     }
 
     @Override

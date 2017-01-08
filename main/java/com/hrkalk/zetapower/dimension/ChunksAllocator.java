@@ -42,8 +42,8 @@ public class ChunksAllocator {
 
     /**
      * call this when reconstructing saved space in NBT, DON'T allocate new space instead!
-     * @param xs x coordinate of the desired chunk
-     * @param zs z coordinate of the desired chunk
+     * @param xPos x coordinate of the desired chunk
+     * @param zSize z size of the desired chunk
      * @return AllocatedSpace
      */
     public AllocatedSpace getSavedSpace(int xPos, int zSize) {
