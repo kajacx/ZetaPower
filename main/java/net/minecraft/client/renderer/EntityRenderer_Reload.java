@@ -3,7 +3,6 @@ package net.minecraft.client.renderer;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.MathUtils;
 
 import net.minecraft.block.state.IBlockState;
@@ -148,10 +147,10 @@ public class EntityRenderer_Reload {
 
             //First, rotate up
             float angle1 = Vector3f.angle(lookForw, forward);
-            L.d("angle1: " + angle1);
+            //L.d("angle1: " + angle1);
             MathUtils.cross(lookForw, forward, tmpVector);
             tmpVector.normalise();
-            L.d("tmp1: " + tmpVector);
+            //L.d("tmp1: " + tmpVector);
 
             //then, rotate up according to first rotation
             tmpMatrix.setIdentity();
@@ -161,7 +160,7 @@ public class EntityRenderer_Reload {
 
             //after we have rotated up in tmp2, we need to rotate again, to move it to lookUp
             float angle2 = Vector3f.angle(tmpVector2, up);
-            L.d("angle2: " + angle2);
+            //L.d("angle2: " + angle2);
             if (Math.abs(angle2) < Math.PI - MathUtils.EPSILON) {
                 MathUtils.cross(tmpVector2, up, tmpVector2);
                 tmpVector2.normalise();

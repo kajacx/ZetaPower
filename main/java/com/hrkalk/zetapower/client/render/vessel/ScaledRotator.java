@@ -20,7 +20,7 @@ public class ScaledRotator extends Object {
 
     {
         reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.client.render.vessel.ScaledRotator.class, "../bin"));
-        reloader.reloadWhen.add(new ReloadEveryNTicks(20));
+        reloader.reloadWhen.add(new ReloadEveryNTicks(200));
 
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadTrigger");
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadEveryNTicks");
@@ -106,11 +106,13 @@ public class ScaledRotator extends Object {
     }
 
     private int pollution = 0;
-    private static final int MAX_POLLUTION = 1_000_000;
+    private static final int MAX_POLLUTION = 100;
 
     private void pollute() {
         pollution++;
         if (pollution > MAX_POLLUTION) {
+            //L.i("Fixing the pollution");
+
             fixPollution();
             fixPollution();
 

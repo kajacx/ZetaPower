@@ -11,8 +11,8 @@ public class InputHandler {
     public static KeyBinding ping;
     public static KeyBinding pong;
 
-    public static KeyBinding vesselRotateCW;
     public static KeyBinding vesselRotateCCW;
+    public static KeyBinding vesselRotateCW;
 
     public static void preInit() {
         // Define the "ping" binding, with (unlocalized) name "key.ping" and
@@ -25,15 +25,15 @@ public class InputHandler {
         // key code 25 ("P", LWJGL constant: Keyboard.KEY_P)
         pong = new KeyBinding("key.pong", Keyboard.KEY_P, "key.categories.zetapower");
 
+        vesselRotateCCW = new KeyBinding("key.vessel_rotate_ccw", Keyboard.KEY_X, "key.categories.zetapower");
         vesselRotateCW = new KeyBinding("key.vessel_rotate_cw", Keyboard.KEY_C, "key.categories.zetapower");
-        vesselRotateCCW = new KeyBinding("key.vessel_rotate_ccw", Keyboard.KEY_V, "key.categories.zetapower");
 
         // Register both KeyBindings to the ClientRegistry
         ClientRegistry.registerKeyBinding(ping);
         ClientRegistry.registerKeyBinding(pong);
 
-        ClientRegistry.registerKeyBinding(vesselRotateCW);
         ClientRegistry.registerKeyBinding(vesselRotateCCW);
+        ClientRegistry.registerKeyBinding(vesselRotateCW);
     }
 
     @SubscribeEvent

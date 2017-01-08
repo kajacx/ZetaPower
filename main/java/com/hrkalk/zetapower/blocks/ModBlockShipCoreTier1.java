@@ -30,7 +30,7 @@ public class ModBlockShipCoreTier1 extends BasicBlock {
 
     {
         reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.blocks.ModBlockShipCoreTier1.class, "../bin"));
-        reloader.reloadWhen.add(new ReloadEveryNTicks(20));
+        reloader.reloadWhen.add(new ReloadEveryNTicks(200));
 
         reloader.addToBlacklist("net.minecraft.util.math.AxisAlignedBB");
         reloader.addToBlacklist("net.minecraft.util.EnumHand");

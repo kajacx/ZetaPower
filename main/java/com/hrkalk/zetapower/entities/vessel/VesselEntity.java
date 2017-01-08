@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import org.lwjgl.util.vector.Vector3f;
+
 import com.hrkalk.zetapower.utils.L;
 import com.hrkalk.zetapower.utils.loader.ReflectUtil;
 import com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.DynamicReloader;
@@ -38,11 +40,14 @@ public class VesselEntity extends Entity implements IEntityAdditionalSpawnData {
 
     public BlockCluster cluster;
 
+    public Vector3f prevLookForw = new Vector3f();
+    public Vector3f prevLookUp = new Vector3f();
+
     private DynamicReloader reloader = new DynamicReloader(VesselEntity.class, "../bin");
 
     {
         reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.entities.vessel.VesselEntity.class, "../bin"));
-        reloader.reloadWhen.add(new ReloadEveryNTicks(20));
+        reloader.reloadWhen.add(new ReloadEveryNTicks(200));
 
         reloader.addToBlacklist("net.minecraft.nbt.NBTTagCompound");
         reloader.addToBlacklist("net.minecraft.network.datasync.EntityDataManager");

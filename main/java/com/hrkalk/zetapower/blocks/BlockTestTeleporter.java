@@ -31,7 +31,7 @@ public class BlockTestTeleporter extends Block {
 
     {
         reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.blocks.BlockTestTeleporter.class, "../bin"));
-        reloader.reloadWhen.add(new ReloadEveryNTicks(20));
+        reloader.reloadWhen.add(new ReloadEveryNTicks(200));
 
         reloader.addToBlacklist("net.minecraft.block.SoundType");
         reloader.addToBlacklist("net.minecraft.block.material.MapColor");

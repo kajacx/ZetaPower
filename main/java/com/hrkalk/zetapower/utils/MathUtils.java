@@ -153,4 +153,20 @@ public class MathUtils {
         Vector3f.add(v2, tmp, tmp);
         return tmp.lengthSquared();
     }
+
+    /**
+     * interpolates between <code>v1</code> and <code>v2</code>
+     * @param v1
+     * @param v2
+     * @param coef from range [0,1], 0 for <code>v1</code>, 1 for <code>v2</code>
+     * @param target result is stored here
+     * @return <code>target</code>
+     */
+    public static Vector3f interpolate(Vector3f v1, Vector3f v2, float coef, Vector3f target) {
+        float x = (float) (v1.x + (v2.x - v1.x) * coef);
+        float y = (float) (v1.y + (v2.y - v1.y) * coef);
+        float z = (float) (v1.z + (v2.z - v1.z) * coef);
+        target.set(x, y, z);
+        return target;
+    }
 }

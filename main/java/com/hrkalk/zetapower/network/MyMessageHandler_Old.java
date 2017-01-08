@@ -14,7 +14,7 @@ public class MyMessageHandler_Old extends Object {
 
     {
         reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.network.MyMessageHandler.class, "../bin"));
-        reloader.reloadWhen.add(new ReloadEveryNTicks(20));
+        reloader.reloadWhen.add(new ReloadEveryNTicks(200));
 
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadTrigger");
         reloader.addToBlacklist("com.hrkalk.zetapower.network.MyMessageHandler");

@@ -54,7 +54,7 @@ public class VanillaPlayerCamera implements IPlayerCamera {
 
         //convert 2d spehere coords (like GPS) to 3d vectors
         double lookX = -Math.sin(yaw * Math.PI / 180);
-        double lookZ = -Math.cos(yaw * Math.PI / 180);
+        double lookZ = Math.cos(yaw * Math.PI / 180);
 
         double lookY = -Math.sin(pitch * Math.PI / 180);
         double coefY = Math.cos(pitch * Math.PI / 180);

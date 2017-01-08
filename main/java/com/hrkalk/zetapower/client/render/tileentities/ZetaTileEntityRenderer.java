@@ -17,7 +17,7 @@ public class ZetaTileEntityRenderer extends TileEntitySpecialRenderer<ZetaChest>
 
     {
         reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.client.render.tileentities.ZetaTileEntityRenderer.class, "../bin"));
-        reloader.reloadWhen.add(new ReloadEveryNTicks(20));
+        reloader.reloadWhen.add(new ReloadEveryNTicks(200));
 
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadOnChange");
         reloader.addToBlacklist("net.minecraft.world.World");

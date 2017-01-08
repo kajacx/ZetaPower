@@ -53,7 +53,7 @@ public class DynamicClassReloadPrepare {
     }
 
     public DynamicClassReloadPrepare(Class<?> watchedClass) {
-        this(watchedClass, 20);
+        this(watchedClass, 200);
     }
 
     public DynamicClassReloadPrepare(Class<?> watchedClass, int reloadTicks) {

@@ -85,7 +85,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
     {
         reloader.reloadWhen.add(new ReloadOnChange(net.minecraft.client.renderer.EntityRenderer.class, "../bin"));
-        reloader.reloadWhen.add(new ReloadEveryNTicks(20));
+        reloader.reloadWhen.add(new ReloadEveryNTicks(200));
         //reloader.binFolder = "bin";
 
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadTrigger");

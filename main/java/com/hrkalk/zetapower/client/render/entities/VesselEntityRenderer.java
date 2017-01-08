@@ -16,7 +16,7 @@ public class VesselEntityRenderer extends Render {
 
     {
         reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.client.render.entities.VesselEntityRenderer.class, "../bin"));
-        reloader.reloadWhen.add(new ReloadEveryNTicks(20));
+        reloader.reloadWhen.add(new ReloadEveryNTicks(200));
 
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadTrigger");
         reloader.addToBlacklist("net.minecraft.entity.Entity");

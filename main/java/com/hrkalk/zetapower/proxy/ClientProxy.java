@@ -3,6 +3,7 @@ package com.hrkalk.zetapower.proxy;
 import com.hrkalk.zetapower.client.input.InputHandler;
 import com.hrkalk.zetapower.client.render.blocks.BlockRenderRegister;
 import com.hrkalk.zetapower.client.render.camera.TestCamera;
+import com.hrkalk.zetapower.client.render.camera.VesselCamera;
 import com.hrkalk.zetapower.client.render.entities.EntitiesRegister;
 import com.hrkalk.zetapower.client.render.items.ItemRenderRegister;
 import com.hrkalk.zetapower.client.render.tileentities.TileEntitiesRegister;
@@ -27,6 +28,7 @@ public class ClientProxy extends CommonProxy {
 
         //TEST: add a test camera
         CustomCameraControl.cameras.add(new TestCamera());
+        CustomCameraControl.cameras.add(new VesselCamera(CustomCameraControl.cameras.get(1)));
     }
 
     @Override

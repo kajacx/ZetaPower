@@ -30,7 +30,7 @@ public class ZetaChest extends TileEntity implements ITickable, IInventory {
 
     {
         reloader.reloadWhen.add(new ReloadOnChange(com.hrkalk.zetapower.tileentities.ZetaChest.class, "../bin"));
-        reloader.reloadWhen.add(new ReloadEveryNTicks(20));
+        reloader.reloadWhen.add(new ReloadEveryNTicks(200));
 
         reloader.addToBlacklist("net.minecraft.nbt.NBTTagCompound");
         reloader.addToBlacklist("com.hrkalk.zetapower.utils.loader.myloader.DynamicClassReloadPrepare.ReloadTrigger");
